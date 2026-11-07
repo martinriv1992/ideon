@@ -8,7 +8,7 @@ import { parse } from "node-html-parser";
 export type QaLevel = "ok" | "warn" | "bad";
 export interface QaCheck { level: QaLevel; text: string }
 
-export function runQa(html: string, opts: { app: boolean; imageIds: string[] }): QaCheck[] {
+export function runQa(html: string, opts: { app: boolean; imageIds: string[]; fileIds?: string[] }): QaCheck[] {
   const out: QaCheck[] = [];
   const ok = (t: string) => out.push({ level: "ok", text: t });
   const warn = (t: string) => out.push({ level: "warn", text: t });
@@ -36,6 +36,12 @@ export function runQa(html: string, opts: { app: boolean; imageIds: string[] }):
   if (badImg.length) bad(`Imágenes con origen no permitido: ${badImg.length}.`);
   else if (unknown.length) warn(`Referencias a fotos inexistentes: ${unknown.length}.`);
   else ok(refs.length ? "Fotos del cliente correctamente referenciadas." : "Sin imágenes externas.");
+
+  const fileRefs = [...html.matchAll(/\{\{FILE:([a-z0-9-]+)\}\}/gi)].map((m) => m[1]);
+  if (fileRefs.length) {
+    const unknownFiles = fileRefs.filter((id) => !(opts.fileIds ?? []).includes(id));
+    unknownFiles.length ? warn(`Enlaces a archivos inexistentes: ${unknownFiles.length}.`) : ok(`Archivos del cliente enlazados (${new Set(fileRefs).size}).`);
+  }
 
   const anchors = doc.querySelectorAll('a[href^="#"]').map((a) => (a.getAttribute("href") || "").slice(1)).filter(Boolean);
   const missing = anchors.filter((id) => !doc.getElementById(id));

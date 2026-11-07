@@ -42,3 +42,38 @@ export function clearPendingIdea() {
     /* ignore */
   }
 }
+
+// ----------------------------------------------------------------- adjuntos pendientes
+// Los archivos adjuntados en la homepage antes de registrarse se guardan en
+// IndexedDB (sessionStorage no admite archivos) y se suben al crear el proyecto.
+const DB = "ideon"; const STORE = "pendingFiles";
+
+function openDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function tx<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+  const db = await openDb();
+  return new Promise<T>((resolve, reject) => {
+    const req = fn(db.transaction(STORE, mode).objectStore(STORE));
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  }).finally(() => db.close());
+}
+
+export async function savePendingFiles(files: File[]) {
+  try { await tx("readwrite", (s) => s.put(files, "files")); } catch { /* sin IndexedDB: se adjuntan después */ }
+}
+
+export async function readPendingFiles(): Promise<File[]> {
+  try { return ((await tx<File[] | undefined>("readonly", (s) => s.get("files"))) ?? []).filter((f) => f instanceof Blob); } catch { return []; }
+}
+
+export async function clearPendingFiles() {
+  try { await tx("readwrite", (s) => s.delete("files")); } catch { /* ignore */ }
+}

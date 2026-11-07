@@ -1,12 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FieldError, Input, Label, Textarea } from "@/components/ui/input";
 import { createProjectAction, type ActionState } from "@/features/projects/actions";
-import { clearPendingIdea, readPendingIdea } from "@/features/projects/pending-idea";
+import { clearPendingFiles, clearPendingIdea, readPendingFiles, readPendingIdea } from "@/features/projects/pending-idea";
+import { AttachmentPicker } from "@/components/app/attachment-picker";
+import { uploadToProject } from "@/lib/upload-client";
+import { useRouter } from "@/i18n/navigation";
 import { PROJECT_KINDS } from "@/features/projects/kinds";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +21,11 @@ export function NewProjectForm() {
   const [kind, setKind] = useState("web");
   const tk = useTranslations("app.workspace.kinds");
   const [restored, setRestored] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const router = useRouter();
+  const uploadedFor = useRef<string | null>(null);
 
   useEffect(() => {
     const pendingIdea = readPendingIdea();
@@ -26,11 +34,29 @@ export function NewProjectForm() {
       if (pendingIdea.kind) setKind(pendingIdea.kind);
       setRestored(true);
     }
+    void readPendingFiles().then((f) => { if (f.length) { setFiles(f); setRestored(true); } });
   }, []);
 
   useEffect(() => {
     if (state.ok) clearPendingIdea();
   }, [state.ok]);
+
+  // Proyecto creado con adjuntos: se suben antes de abrirlo para que el consultor los vea desde el principio.
+  useEffect(() => {
+    const projectId = state.projectId;
+    if (!projectId || uploadedFor.current === projectId) return;
+    uploadedFor.current = projectId;
+    void (async () => {
+      const errors: string[] = [];
+      for (const [i, f] of files.entries()) {
+        setUploadStatus(t("uploading", { n: i + 1, total: files.length }));
+        try { await uploadToProject(projectId, f); } catch (e) { errors.push(`${f.name}: ${e instanceof Error ? e.message : "error"}`); }
+      }
+      await clearPendingFiles();
+      if (errors.length) { setUploadErrors(errors); setUploadStatus(null); setTimeout(() => router.push(`/projects/${projectId}`), 4000); }
+      else router.push(`/projects/${projectId}`);
+    })();
+  }, [state.projectId, files, router, t]);
 
   return (
     <form
@@ -84,14 +110,27 @@ export function NewProjectForm() {
         </div>
       </div>
 
+      <div>
+        <Label>{t("attachLabel")}</Label>
+        <input type="hidden" name="hasAttachments" value={files.length ? "1" : "0"} />
+        <AttachmentPicker files={files} onChange={setFiles} />
+      </div>
+
       {state.error && (
         <p className="text-[13px] text-danger" role="alert">
           {state.error}
         </p>
       )}
 
-      <Button type="submit" size="lg" loading={pending}>
-        {t("submit")}
+      {uploadErrors.length > 0 && (
+        <div className="text-[13px] text-danger" role="alert">
+          <p>{t("uploadErrors")}</p>
+          <ul className="mt-1 list-disc pl-5">{uploadErrors.map((e) => <li key={e}>{e}</li>)}</ul>
+        </div>
+      )}
+
+      <Button type="submit" size="lg" loading={pending || Boolean(uploadStatus)} disabled={Boolean(state.projectId)}>
+        {uploadStatus ?? t("submit")}
       </Button>
     </form>
   );

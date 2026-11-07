@@ -12,6 +12,8 @@ export interface ActionState {
   error?: string;
   fieldErrors?: Record<string, string>;
   ok?: boolean;
+  /** Solo cuando el formulario trae adjuntos: el cliente los sube y después navega. */
+  projectId?: string;
 }
 
 const createProjectSchema = z.object({
@@ -80,6 +82,9 @@ export async function createProjectAction(_prev: ActionState, formData: FormData
 
   revalidatePath(`/${locale}/dashboard`);
   revalidatePath(`/${locale}/projects`);
+  // Con adjuntos, el navegador los sube antes de abrir el proyecto (así el
+  // consultor los tiene desde su primera pregunta).
+  if (formData.get("hasAttachments") === "1") return { ok: true, projectId: project.id };
   redirect({ href: `/projects/${project.id}`, locale });
   return { ok: true };
 }

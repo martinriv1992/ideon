@@ -2,7 +2,7 @@ import "server-only";
 import { promises as dns } from "node:dns";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getDeployProvider } from "./providers";
-import { getVersionFile, siteBaseUrl, slugify } from "./serve";
+import { bundleStaticAssets, getVersionFile, siteBaseUrl, slugify } from "./serve";
 import type { Json } from "@/types/database.types";
 
 export class PublishError extends Error {
@@ -41,21 +41,10 @@ export async function publishProject(projectId: string, userId: string, opts: { 
   try {
     const file = await getVersionFile(versionId);
     if (!file) throw new PublishError("not_found", "Archivo no encontrado");
-    // Para proveedores externos, las imágenes viajan como archivos estáticos.
-    const assets: { path: string; data: Uint8Array; contentType: string }[] = [];
+    // Para proveedores externos, imágenes y archivos viajan como archivos estáticos.
     let html = file.content;
-    if (opts.target !== "ideon") {
-      const { data: images } = await db.from("project_images").select("id,storage_path").eq("project_id", projectId);
-      for (const img of images ?? []) {
-        if (!html.includes(`{{IMG:${img.id}}}`)) continue;
-        const { data: blob } = await db.storage.from("project-images").download(img.storage_path);
-        if (!blob) continue;
-        const ext = (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
-        const path = `images/${img.id}.${ext}`;
-        assets.push({ path, data: new Uint8Array(await blob.arrayBuffer()), contentType: blob.type });
-        html = html.split(`{{IMG:${img.id}}}`).join(path);
-      }
-    }
+    let assets: { path: string; data: Uint8Array; contentType: string }[] = [];
+    if (opts.target !== "ideon") ({ html, assets } = await bundleStaticAssets(projectId, html));
     const result = await provider.deploy({ slug, html, assets });
     if (opts.target === "ideon") {
       await db.from("published_sites").upsert({ project_id: projectId, slug, version_id: versionId, custom_domain: existing?.custom_domain ?? null, domain_status: existing?.domain_status ?? null, domain_verification: existing?.domain_verification ?? null, published_at: new Date().toISOString() });

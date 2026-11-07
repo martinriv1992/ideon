@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { aiProviderName } from "@/lib/ai/provider";
 import type {
-  AgentRun, Conversation, Deployment, Message, Project, ProjectEvent, ProjectImage, ProjectVersion, Proposal, PublishedSite, Specification,
+  AgentRun, Conversation, Deployment, Message, Project, ProjectAsset, ProjectEvent, ProjectImage, ProjectVersion, Proposal, PublishedSite, Specification,
 } from "@/types/database.types";
 
 export const ACTIVE_STATUSES = ["approved", "in_development", "review", "ready_to_deploy"] as const;
@@ -27,6 +27,8 @@ export interface ProjectDetail {
   specification: Specification | null;
   versions: ProjectVersion[];
   images: ProjectImage[];
+  /** Archivos del proyecto (sin el texto extraído, que solo usan los agentes). */
+  assets: Omit<ProjectAsset, "text_content">[];
   deployments: Deployment[];
   site: PublishedSite | null;
   activeRun: AgentRun | null;
@@ -52,6 +54,9 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
     supabase.from("deployments").select("*").eq("project_id", projectId).order("created_at", { ascending: false }).limit(20),
     supabase.from("published_sites").select("*").eq("project_id", projectId).maybeSingle(),
   ]);
+  const { data: assets } = await supabase.from("project_assets")
+    .select("id,project_id,name,label,storage_path,mime,size,use_reference,use_site,text_chars,extract_status,created_by,created_at")
+    .eq("project_id", projectId).order("created_at", { ascending: true });
 
   const conversation = conversations?.[0] ?? null;
   let messages: Message[] = [];
@@ -67,7 +72,7 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
 
   return {
     project, conversation, messages, events: events ?? [],
-    proposal: proposals?.[0] ?? null, specification: specs?.[0] ?? null, versions: versions ?? [], images: images ?? [],
+    proposal: proposals?.[0] ?? null, specification: specs?.[0] ?? null, versions: versions ?? [], images: images ?? [], assets: assets ?? [],
     deployments: deployments ?? [], site: site ?? null, activeRun,
     aiConfigured: aiProviderName() !== null,
     vercelConfigured: Boolean(process.env.VERCEL_TOKEN),

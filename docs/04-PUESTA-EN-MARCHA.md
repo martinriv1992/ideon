@@ -13,6 +13,8 @@
    - `supabase/migrations/0001_foundation.sql`
    - `supabase/seed.sql`
    - `supabase/migrations/0002_intelligence_build_deploy_billing.sql` (crea también el bucket privado `project-images` y sus políticas).
+   - `supabase/migrations/0003_project_assets.sql` (archivos del proyecto: documentos que lee la IA y archivos que se publican; bucket privado `project-files` de 10 MB por archivo).
+   - `supabase/migrations/0004_models_sonnet_5_5.sql` (los agentes pasan a `claude-sonnet-5-5`).
 3. **Authentication → Providers → Email**: activa *Email*; decide si exiges confirmación de correo.
 4. **Authentication → URL Configuration**: *Site URL* = `http://localhost:3000` (y la de producción); *Redirect URLs* = `http://localhost:3000/api/auth/callback` y `https://<tu-dominio>/api/auth/callback`.
 5. Para convertirte en administrador de la plataforma, tras registrarte ejecuta en SQL Editor:

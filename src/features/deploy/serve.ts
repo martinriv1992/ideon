@@ -2,12 +2,47 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { publicEnv } from "@/lib/env";
 
+import { safeFileName } from "@/lib/uploads";
+
 /**
- * Servicio de archivos de una versión: resuelve los marcadores de imagen
- * {{IMG:id}} a la ruta pública de streaming y devuelve el contenido listo para servir.
+ * Servicio de archivos de una versión: resuelve los marcadores {{IMG:id}} y
+ * {{FILE:id}} a las rutas públicas de streaming y devuelve el contenido listo para servir.
  */
 export function resolveImageMarkers(html: string, base = "") {
-  return html.replace(/\{\{IMG:([a-z0-9-]+)\}\}/gi, (_m, id) => `${base}/api/images/${id}`);
+  return html
+    .replace(/\{\{IMG:([a-z0-9-]+)\}\}/gi, (_m, id) => `${base}/api/images/${id}`)
+    .replace(/\{\{FILE:([a-z0-9-]+)\}\}/gi, (_m, id) => `${base}/api/files/${id}`);
+}
+
+/**
+ * Para exportar el sitio como archivos estáticos (ZIP o Vercel): descarga las
+ * imágenes y archivos referenciados, los coloca en images/ y files/ y reescribe
+ * los marcadores a rutas relativas. Los marcadores sin archivo se eliminan.
+ */
+export async function bundleStaticAssets(projectId: string, html: string) {
+  const db = createAdminClient();
+  const assets: { path: string; data: Uint8Array; contentType: string }[] = [];
+  const { data: images } = await db.from("project_images").select("id,storage_path").eq("project_id", projectId);
+  for (const img of images ?? []) {
+    if (!html.includes(`{{IMG:${img.id}}}`)) continue;
+    const { data: blob } = await db.storage.from("project-images").download(img.storage_path);
+    if (!blob) continue;
+    const ext = img.storage_path.split(".").pop() || "jpg";
+    const path = `images/${img.id}.${ext}`;
+    assets.push({ path, data: new Uint8Array(await blob.arrayBuffer()), contentType: blob.type || "application/octet-stream" });
+    html = html.split(`{{IMG:${img.id}}}`).join(path);
+  }
+  const { data: files } = await db.from("project_assets").select("id,storage_path,name,mime").eq("project_id", projectId).eq("use_site", true);
+  for (const f of files ?? []) {
+    if (!html.includes(`{{FILE:${f.id}}}`)) continue;
+    const { data: blob } = await db.storage.from("project-files").download(f.storage_path);
+    if (!blob) continue;
+    const path = `files/${f.id.slice(0, 8)}-${safeFileName(f.name)}`;
+    assets.push({ path, data: new Uint8Array(await blob.arrayBuffer()), contentType: f.mime });
+    html = html.split(`{{FILE:${f.id}}}`).join(path);
+  }
+  html = html.replace(/\{\{(?:IMG|FILE):[a-z0-9-]+\}\}/gi, "");
+  return { html, assets };
 }
 
 export async function getVersionFile(versionId: string, path = "index.html") {

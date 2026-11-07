@@ -298,7 +298,10 @@
       "ideaPlaceholder": "Tell us what you want to build, for whom and what problem it solves...",
       "submit": "Create project",
       "restored": "We restored the idea you wrote before signing up.",
-      "kindLabel": "Solution type"
+      "kindLabel": "Solution type",
+      "attachLabel": "Photos and documents (optional)",
+      "uploading": "Uploading attachments ({n} of {total})…",
+      "uploadErrors": "Some attachments could not be uploaded (you can add them later in the Images and Files tabs):"
     },
     "status": {
       "draft": "Draft",
@@ -379,23 +382,47 @@
       },
       "noEvents": "No activity recorded.",
       "eventTypes": {
-        "project.created": "Project created",
-        "message.sent": "Message sent",
-        "status.changed": "Status changed to {to}",
-        "project.archived": "Project archived",
-        "project.restored": "Project restored",
-        "consultant.question": "Consultant asked a question",
-        "consultant.ready": "Scope confirmed by consultant",
-        "specification.created": "Specification generated",
-        "proposal.sent": "Proposal sent",
-        "proposal.approved": "Proposal approved",
-        "version.created": "Version v{n} generated",
-        "version.restored": "Version v{n} set as current",
-        "image.uploaded": "Photo uploaded",
-        "deploy.live": "Site published",
-        "deploy.failed": "Publish failed",
-        "domain.requested": "Custom domain requested",
-        "domain.verified": "Domain verified"
+        "project": {
+          "created": "Project created",
+          "archived": "Project archived",
+          "restored": "Project restored"
+        },
+        "message": {
+          "sent": "Message sent"
+        },
+        "status": {
+          "changed": "Status changed to {to}"
+        },
+        "consultant": {
+          "question": "Consultant asked a question",
+          "ready": "Scope confirmed by consultant"
+        },
+        "specification": {
+          "created": "Specification generated"
+        },
+        "proposal": {
+          "sent": "Proposal sent",
+          "approved": "Proposal approved"
+        },
+        "version": {
+          "created": "Version v{n} generated",
+          "restored": "Version v{n} set as current"
+        },
+        "image": {
+          "uploaded": "Photo uploaded"
+        },
+        "deploy": {
+          "live": "Site published",
+          "failed": "Publish failed"
+        },
+        "domain": {
+          "requested": "Custom domain requested",
+          "verified": "Domain verified"
+        },
+        "asset": {
+          "uploaded": "File uploaded",
+          "deleted": "File deleted"
+        }
       },
       "kind": "Solution type",
       "kinds": {
@@ -453,7 +480,7 @@
       "current": "current",
       "view": "View",
       "makeCurrent": "Set as current",
-      "imagesHelp": "Upload photos of your business, products or team and give them clear names: the developer uses them where they fit and you can ask in chat \"use the storefront photo in the hero\".",
+      "imagesHelp": "Upload photos of your business, products or team, plus your logo (transparent PNG or SVG), and give them clear names: the developer uses them where they fit and you can ask in chat \"use the storefront photo in the hero\".",
       "uploadPhotos": "Upload photos",
       "processing": "Processing…",
       "uploadFailed": "The image could not be uploaded.",
@@ -484,7 +511,23 @@
       "downloadZip": "Download ZIP",
       "paid": "Paid",
       "payNow": "Pay by card",
-      "paymentNotConfigured": "Online payment activates once the platform configures its gateway; until then it is arranged manually."
+      "paymentNotConfigured": "Online payment activates once the platform configures its gateway; until then it is arranged manually.",
+      "imageFormats": "JPG, PNG, WebP, GIF or SVG · max 10 MB",
+      "uploadingN": "Uploading {n} of {total}…",
+      "files": "Files",
+      "filesHelp": "Upload documents about your business (menu, catalog, price list, brief…) for the AI to read, and files you want to offer for download on your site.",
+      "uploadFiles": "Upload files",
+      "fileFormats": "PDF, Word, Excel, PowerPoint, TXT, CSV, ZIP… · max 10 MB",
+      "filesUnsupported": "Unsupported file type: {name}. Photos go in the Images tab.",
+      "filesTokens": "The documents the AI reads add up to ≈ {tokens} tokens. They are sent to the agents at each step (with a per-agent limit), so they count towards cost.",
+      "fileName": "File name",
+      "useReference": "AI reads it",
+      "useSite": "Publish on the site",
+      "noFiles": "No files yet.",
+      "extractOk": "text read (≈ {tokens} tokens)",
+      "extractEmpty": "no readable text (scanned PDF?)",
+      "extractFailed": "text could not be read",
+      "extractNone": "publish only"
     },
     "settings": {
       "title": "Settings",
@@ -681,5 +724,13 @@
       "missing": "missing",
       "envNote": "Keys are set in the server environment (.env.local or Vercel), never from this screen."
     }
+  },
+  "attachments": {
+    "button": "Attach",
+    "hint": "Photos (JPG, PNG, WebP, GIF, SVG) and documents (PDF, Word, Excel, PowerPoint, TXT, CSV) up to 10 MB. The AI reads the documents and uses the photos on your site.",
+    "unsupported": "Unsupported file type: {name}",
+    "tooLarge": "\"{name}\" is larger than 10 MB",
+    "tooMany": "Up to {max} attachments",
+    "remove": "Remove {name}"
   }
 }

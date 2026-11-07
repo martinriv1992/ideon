@@ -298,7 +298,10 @@
       "ideaPlaceholder": "Cuéntanos qué quieres crear, para quién y qué problema resuelve...",
       "submit": "Crear proyecto",
       "restored": "Hemos recuperado la idea que escribiste antes de registrarte.",
-      "kindLabel": "Tipo de solución"
+      "kindLabel": "Tipo de solución",
+      "attachLabel": "Fotos y documentos (opcional)",
+      "uploading": "Subiendo adjuntos ({n} de {total})…",
+      "uploadErrors": "Algunos adjuntos no se pudieron subir (puedes añadirlos luego en las pestañas Imágenes y Archivos):"
     },
     "status": {
       "draft": "Borrador",
@@ -379,23 +382,47 @@
       },
       "noEvents": "Sin actividad registrada.",
       "eventTypes": {
-        "project.created": "Proyecto creado",
-        "message.sent": "Mensaje enviado",
-        "status.changed": "Estado cambiado a {to}",
-        "project.archived": "Proyecto archivado",
-        "project.restored": "Proyecto restaurado",
-        "consultant.question": "El consultor hizo una pregunta",
-        "consultant.ready": "Alcance confirmado por el consultor",
-        "specification.created": "Especificación generada",
-        "proposal.sent": "Propuesta enviada",
-        "proposal.approved": "Propuesta aprobada",
-        "version.created": "Versión v{n} generada",
-        "version.restored": "Versión v{n} marcada como actual",
-        "image.uploaded": "Foto subida",
-        "deploy.live": "Sitio publicado",
-        "deploy.failed": "Fallo al publicar",
-        "domain.requested": "Dominio propio solicitado",
-        "domain.verified": "Dominio verificado"
+        "project": {
+          "created": "Proyecto creado",
+          "archived": "Proyecto archivado",
+          "restored": "Proyecto restaurado"
+        },
+        "message": {
+          "sent": "Mensaje enviado"
+        },
+        "status": {
+          "changed": "Estado cambiado a {to}"
+        },
+        "consultant": {
+          "question": "El consultor hizo una pregunta",
+          "ready": "Alcance confirmado por el consultor"
+        },
+        "specification": {
+          "created": "Especificación generada"
+        },
+        "proposal": {
+          "sent": "Propuesta enviada",
+          "approved": "Propuesta aprobada"
+        },
+        "version": {
+          "created": "Versión v{n} generada",
+          "restored": "Versión v{n} marcada como actual"
+        },
+        "image": {
+          "uploaded": "Foto subida"
+        },
+        "deploy": {
+          "live": "Sitio publicado",
+          "failed": "Fallo al publicar"
+        },
+        "domain": {
+          "requested": "Dominio propio solicitado",
+          "verified": "Dominio verificado"
+        },
+        "asset": {
+          "uploaded": "Archivo subido",
+          "deleted": "Archivo eliminado"
+        }
       },
       "kind": "Tipo de solución",
       "kinds": {
@@ -453,7 +480,7 @@
       "current": "actual",
       "view": "Ver",
       "makeCurrent": "Usar como actual",
-      "imagesHelp": "Sube fotos de tu negocio, productos o equipo y ponles un nombre claro: el desarrollador las usará donde corresponda y puedes pedir por chat «usa la foto del local en la portada».",
+      "imagesHelp": "Sube fotos de tu negocio, productos o equipo, y tu logo (PNG con transparencia o SVG), y ponles un nombre claro: el desarrollador las usará donde corresponda y puedes pedir por chat «usa la foto del local en la portada».",
       "uploadPhotos": "Subir fotos",
       "processing": "Procesando…",
       "uploadFailed": "No se pudo subir la imagen.",
@@ -484,7 +511,23 @@
       "downloadZip": "Descargar ZIP",
       "paid": "Pagado",
       "payNow": "Pagar con tarjeta",
-      "paymentNotConfigured": "El pago en línea se activa cuando la plataforma configure la pasarela; mientras tanto se coordina manualmente."
+      "paymentNotConfigured": "El pago en línea se activa cuando la plataforma configure la pasarela; mientras tanto se coordina manualmente.",
+      "imageFormats": "JPG, PNG, WebP, GIF o SVG · máx. 10 MB",
+      "uploadingN": "Subiendo {n} de {total}…",
+      "files": "Archivos",
+      "filesHelp": "Sube documentos de tu negocio (carta, catálogo, lista de precios, brief…) para que la IA los lea, y archivos que quieras ofrecer en tu sitio para descargar.",
+      "uploadFiles": "Subir archivos",
+      "fileFormats": "PDF, Word, Excel, PowerPoint, TXT, CSV, ZIP… · máx. 10 MB",
+      "filesUnsupported": "Tipo de archivo no admitido: {name}. Las fotos se suben en la pestaña Imágenes.",
+      "filesTokens": "Los documentos que lee la IA suman ≈ {tokens} tokens. Se envían a los agentes en cada paso (con un límite por agente), así que cuentan en el coste.",
+      "fileName": "Nombre del archivo",
+      "useReference": "La IA lo lee",
+      "useSite": "Publicar en el sitio",
+      "noFiles": "Sin archivos todavía.",
+      "extractOk": "texto leído (≈ {tokens} tokens)",
+      "extractEmpty": "sin texto legible (¿PDF escaneado?)",
+      "extractFailed": "no se pudo leer el texto",
+      "extractNone": "solo para publicar"
     },
     "settings": {
       "title": "Configuración",
@@ -681,5 +724,13 @@
       "missing": "no configurada",
       "envNote": "Las claves se definen en el entorno del servidor (.env.local o panel de Vercel), nunca desde esta pantalla."
     }
+  },
+  "attachments": {
+    "button": "Adjuntar",
+    "hint": "Fotos (JPG, PNG, WebP, GIF, SVG) y documentos (PDF, Word, Excel, PowerPoint, TXT, CSV) de hasta 10 MB. La IA lee los documentos y usa las fotos en tu sitio.",
+    "unsupported": "Tipo de archivo no admitido: {name}",
+    "tooLarge": "«{name}» supera los 10 MB",
+    "tooMany": "Máximo {max} adjuntos",
+    "remove": "Quitar {name}"
   }
 }
