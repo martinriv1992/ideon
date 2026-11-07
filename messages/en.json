@@ -247,7 +247,8 @@
       "rateLimited": "Too many attempts. Wait a moment and try again.",
       "disposableEmail": "Use a permanent email address (temporary emails are not allowed).",
       "tooManySignups": "Too many accounts were created from this connection today. Try again tomorrow or contact us."
-    }
+    },
+    "linkInvalid": "This link is invalid or has expired. Sign in or, if you forgot your password, request a new link via “Forgot your password?”."
   },
   "app": {
     "nav": {
