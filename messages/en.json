@@ -814,7 +814,7 @@
       "requireApproval": "true: the client must approve the proposal before building.",
       "requirePayment": "true: require payment before building (needs a configured gateway).",
       "currency": "Default currency for proposals.",
-      "siteBase": "Base URL for published sites (optional, e.g. https://sites.ideon.app).",
+      "siteBase": "Base URL for published sites (optional, e.g. https://sitios.ideonapp.com).",
       "integrations": "Integrations (environment variables)",
       "configured": "configured",
       "missing": "missing",

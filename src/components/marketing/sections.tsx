@@ -346,7 +346,7 @@ export async function Footer() {
             <ul className="space-y-2 text-[14px] text-fg-muted">
               <li><Link href="/privacy" className="hover:text-fg transition-colors">{t("privacy")}</Link></li>
               <li><Link href="/terms" className="hover:text-fg transition-colors">{t("terms")}</Link></li>
-              <li><a href="mailto:hola@ideon.app" className="hover:text-fg transition-colors">{t("contact")}</a></li>
+              <li><a href="mailto:hola@ideonapp.com" className="hover:text-fg transition-colors">{t("contact")}</a></li>
             </ul>
           </div>
         </div>
