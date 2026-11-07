@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Café Altura · Ventas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6EEE0;--fg:#3B2418;--ac:#8B5A2B;--card:#FFFAF0;--bd:#e0d2bb;--mut:#7a6552;--ok:#3f7a4a;--warn:#c2851c;--bad:#a8402f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Playfair Display',Georgia,serif;display:flex;min-height:100vh}
+aside{width:230px;background:#3B2418;color:#F6EEE0;padding:20px 14px;position:sticky;top:0;height:100vh;flex-shrink:0;display:flex;flex-direction:column;gap:4px}
+aside h1{font-size:19px;margin:0 0 4px;line-height:1.2}
+aside small{color:#cdb99c;font-size:11px;margin-bottom:14px;display:block}
+aside button{background:none;border:0;color:#e9dcc5;text-align:left;padding:10px 12px;border-radius:8px;font:inherit;font-size:15px;cursor:pointer;display:flex;gap:10px;align-items:center}
+aside button.on,aside button:hover{background:#8B5A2B;color:#fff}
+main{flex:1;padding:24px;min-width:0;max-width:1200px}
+h2{font-size:28px;margin:0 0 4px}
+.sub{color:var(--mut);font-size:13px;margin-bottom:18px}
+.demo{background:#efe0c4;border:1px dashed var(--ac);padding:6px 10px;border-radius:8px;font-size:12px;margin-bottom:14px;display:inline-block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
+.card h3{margin:0 0 12px;font-size:17px}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.kpi{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
+.kpi span{font-size:12px;color:var(--mut);display:block}
+.kpi b{font-size:24px;display:block;margin:4px 0}
+.kpi i{font-style:normal;font-size:12px}
+.up{color:var(--ok)}.down{color:var(--bad)}
+.two{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.bar{height:16px;background:#eadcc2;border-radius:9px;overflow:hidden}
+.bar div{height:100%;background:var(--ac);border-radius:9px}
+.bar.big{height:28px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+input,select,textarea{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:#fff;color:var(--fg);max-width:100%}
+.btn{background:var(--ac);color:#fff;border:0;padding:9px 16px;border-radius:9px;font:inherit;font-size:14px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--fg);border:1px solid var(--bd)}
+.btn.dng{background:var(--bad)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th{font-size:12px;color:var(--mut);cursor:pointer;user-select:none}
+tfoot td{font-weight:700;border-bottom:0}
+.tag{padding:2px 9px;border-radius:12px;font-size:12px;background:#eadcc2}
+.tag.Pagada,.tag.Activo,.tag.ok{background:#d6ebd8;color:#2c5a35}
+.tag.Pendiente,.tag.warn{background:#f6e3b8;color:#7a560e}
+.tag.Reembolsada,.tag.Inactivo,.tag.bad{background:#f2d0c9;color:#7d2a1d}
+.modal{position:fixed;inset:0;background:rgba(40,20,10,.55);display:flex;align-items:center;justify-content:center;padding:14px;z-index:20}
+.modal .box{background:var(--card);border-radius:16px;padding:22px;width:480px;max-width:100%;max-height:92vh;overflow:auto}
+.modal h3{margin:0 0 12px}
+.fld{margin-bottom:10px}.fld label{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
+.fld input,.fld select,.fld textarea{width:100%}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.legend div{display:flex;align-items:center;gap:8px;font-size:13px;padding:5px 6px;cursor:pointer;border-radius:6px}
+.legend div.sel{background:#eadcc2}
+.legend span.dot{width:11px;height:11px;border-radius:50%}
+.tip{position:fixed;background:#3B2418;color:#fff;padding:6px 9px;border-radius:7px;font-size:12px;pointer-events:none;z-index:30;display:none}
+.alert{background:#f6e3b8;border:1px solid var(--warn);border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:14px}
+textarea.ex{width:100%;height:160px;font-family:monospace;font-size:12px}
+.rank{margin-bottom:10px;font-size:14px}.rank .bar{height:10px;margin-top:4px}
+.gf{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+.toast{position:fixed;bottom:18px;right:18px;background:#3B2418;color:#fff;padding:10px 16px;border-radius:10px;z-index:40;font-size:14px}
+@media(max-width:760px){body{flex-direction:column}aside{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap;padding:10px}aside h1,aside small{width:100%;margin:0}aside button{padding:7px 10px;font-size:13px}main{padding:14px}}
+</style>
+</head>
+<body>
+<aside id="nav"></aside>
+<main id="main"></main>
+<div class="tip" id="tip"></div>
+<div id="modal"></div>
+<script>
+const KEY='cafe-altura-ventas';
+const PAGES=[['dashboard','Panel','◔'],['ventas','Ventas','☕'],['productos','Productos','▣'],['canales','Canales','⇄'],['metas','Metas','◎'],['ajustes','Ajustes','⚙']];
+const PRODS=["Café Altura Clásico 250g","Geisha Reserva 250g","Espresso Blend 500g","Cold Brew Botella","Cápsulas Compatibles x20","Kit Prensa Francesa"];
+const COLORS=['#8B5A2B','#3B2418','#c2851c','#a8402f','#6b8e5a','#b58e5e'];
+let S,view='dashboard',filt={r:'30',from:'',to:'',canal:''},ui={ventas:{q:'',canal:'',estado:'',from:'',to:'',sort:'fecha',dir:-1},metric:'ing',cm:{}};
+const $=s=>document.querySelector(s);
+const d2s=d=>d.toISOString().slice(0,10);
+const today=()=>{const d=new Date();d.setHours(12,0,0,0);return d};
+const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const money=n=>{const c=S.settings.moneda;return c+' '+Math.round(n).toLocaleString('es-MX')};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let uid=1000;
+function seed(){
+const t=today();let r=7;const rnd=()=>{r=(r*9301+49297)%233280;return r/233280};
+const prods=[
+{id:1,nombre:PRODS[0],categoria:'Grano',precio:185,costo:82,stock:64,descripcion:'Chocolate, nuez y panela'},
+{id:2,nombre:PRODS[1],categoria:'Grano',precio:420,costo:210,stock:8,descripcion:'Jazmín, bergamota y durazno'},
+{id:3,nombre:PRODS[2],categoria:'Molido',precio:320,costo:140,stock:41,descripcion:'Cuerpo intenso, cacao amargo'},
+{id:4,nombre:PRODS[3],categoria:'Bebida fría',precio:75,costo:28,stock:6,descripcion:'Infusión en frío 12 horas'},
+{id:5,nombre:PRODS[4],categoria:'Cápsulas',precio:210,costo:95,stock:33,descripcion:'Notas de caramelo'},
+{id:6,nombre:PRODS[5],categoria:'Accesorios',precio:390,costo:170,stock:19,descripcion:'Vidrio borosilicato 600 ml'}];
+const canales=[
+{id:1,nombre:'Tienda web',tipo:'Propio',comision:3,estado:'Activo'},
+{id:2,nombre:'Instagram',tipo:'Red social',comision:5,estado:'Activo'},
+{id:3,nombre:'WhatsApp',tipo:'Red social',comision:0,estado:'Activo'},
+{id:4,nombre:'Mercado Libre',tipo:'Marketplace',comision:13,estado:'Activo'},
+{id:5,nombre:'Suscripción',tipo:'Recurrente',comision:2,estado:'Activo'}];
+const nombres=['Ana Prado','Luis Meneses','Sofía Quiroga','Mateo Rivas','Camila Ortega','Diego Salas','Valeria Núñez','Tomás Ibarra'];
+const ventas=[];
+for(let i=0;i<60;i++){const p=prods[Math.floor(rnd()*6)];const q=1+Math.floor(rnd()*4);const e=rnd();
+ventas.push({id:i+1,fecha:d2s(addD(t,-Math.floor(rnd()*58))),producto:p.nombre,canal:canales[Math.floor(rnd()*5)].nombre,cantidad:q,total:p.precio*q,cliente:nombres[Math.floor(rnd()*8)],estado:e<.82?'Pagada':e<.93?'Pendiente':'Reembolsada'})}
+const metas=[];
+for(let i=5;i>=0;i--){const d=new Date(t.getFullYear(),t.getMonth()-i,1,12);metas.push({id:i+1,mes:d2s(d),objetivo:[9000,10000,11000,12000,13000,14000][5-i]+(i%2)*500,notas:i==0?'Meta de temporada alta':''})}
+return{ventas,productos:prods,canales,metas,settings:{nombre:'Café Altura',moneda:'$',rango:'30'}}}
+function load(){try{const j=localStorage.getItem(KEY);if(j){S=JSON.parse(j);return}}catch(e){}S=seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function toast(m){const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),2200)}
+function range(){const t=today();let a,b=t;
+if(filt.r==='0')a=t;else if(filt.r==='7')a=addD(t,-6);else if(filt.r==='30')a=addD(t,-29);
+else if(filt.r==='mes')a=new Date(t.getFullYear(),t.getMonth(),1,12);
+else{a=filt.from?new Date(filt.from+'T12:00'):addD(t,-29);b=filt.to?new Date(filt.to+'T12:00'):t}
+return[a,b]}
+function inRange(v,a,b){return v.fecha>=d2s(a)&&v.fecha<=d2s(b)}
+function periodSales(a,b,canal){return S.ventas.filter(v=>v.estado==='Pagada'&&inRange(v,a,b)&&(!canal||v.canal===canal))}
+const sum=l=>l.reduce((s,v)=>s+Number(v.total),0);
+function metaOf(ym){const m=S.metas.find(m=>m.mes.slice(0,7)===ym);return m?Number(m.objetivo):0}
+function monthSold(ym){return sum(S.ventas.filter(v=>v.estado==='Pagada'&&v.fecha.slice(0,7)===ym))}
+function stockAdj(v,sign){if(v.estado!=='Pagada')return;const p=S.productos.find(p=>p.nombre===v.producto);if(p)p.stock=Math.max(0,Number(p.stock)-sign*Number(v.cantidad))}
+function nav(){$('#nav').innerHTML=`<h1>☕ ${esc(S.settings.nombre)}</h1><small>Todo el negocio en una sola mirada</small>`+PAGES.map(p=>`<button class="${view===p[0]?'on':''}" onclick="go('${p[0]}')"><span>${p[2]}</span>${p[1]}</button>`).join('')}
+function go(v){view=v;render()}
+function render(){nav();const f={dashboard,ventas,productos,canales,metas,ajustes}[view];$('#main').innerHTML='<div class="demo">Datos de ejemplo ficticios · demo de Ideon</div>'+f();if(view==='dashboard')drawDash();if(view==='canales')drawCanales();if(view==='metas')drawMetas();window.scrollTo(0,0)}
+function setF(k,v){filt[k]=v;render()}
+function dashboard(){
+const [a,b]=range();const days=Math.round((b-a)/864e5)+1;
+const pa=addD(a,-days),pb=addD(a,-1);
+const cur=periodSales(a,b,filt.canal),prev=periodSales(pa,pb,filt.canal);
+const tot=sum(cur),ptot=sum(prev),n=cur.length,pn=prev.length;
+const tk=n?tot/n:0,ptk=pn?ptot/pn:0;
+const t=today(),ym=d2s(t).slice(0,7),meta=metaOf(ym),sold=monthSold(ym),pct=meta?sold/meta*100:0;
+const dl=(m,p)=>{if(!p)return'<i>sin periodo previo</i>';const x=(m-p)/p*100;return`<i class="${x>=0?'up':'down'}">${x>=0?'▲':'▼'} ${Math.abs(x).toFixed(1)}% vs. anterior</i>`};
+const byC={};cur.forEach(v=>byC[v.canal]=(byC[v.canal]||0)+Number(v.total));
+const lead=Object.entries(byC).sort((x,y)=>y[1]-x[1])[0];
+const byP={};cur.forEach(v=>{byP[v.producto]=byP[v.producto]||{u:0,m:0};byP[v.producto].u+=Number(v.cantidad);byP[v.producto].m+=Number(v.total)});
+const top=Object.entries(byP).sort((x,y)=>y[1].u-x[1].u);
+const low=S.productos.filter(p=>Number(p.stock)<10);
+const last=new Date(t.getFullYear(),t.getMonth()+1,0).getDate(),rem=last-t.getDate(),left=Math.max(0,meta-sold),need=rem?left/rem:left;
+const dayAvg=sold/t.getDate();const proj=dayAvg*last;
+const st=sold>=meta&&meta?['ok','Superada']:proj>=meta*0.95?['ok','En camino']:['bad','En riesgo'];
+const mx=top[0]?top[0][1].u:1;
+return`<h2>Panel</h2><div class="sub">${esc(S.settings.nombre)} · ${d2s(a)} a ${d2s(b)}${filt.canal?' · canal: '+esc(filt.canal):''}</div>
+<div class="gf"><select onchange="setF('r',this.value)">${[['0','Hoy'],['7','7 días'],['30','30 días'],['mes','Mes actual'],['custom','Personalizado']].map(o=>`<option value="${o[0]}" ${filt.r===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>
+${filt.r==='custom'?`<input type="date" value="${filt.from}" onchange="setF('from',this.value)"><input type="date" value="${filt.to}" onchange="setF('to',this.value)">`:''}
+${filt.canal?`<button class="btn sec sm" onclick="setF('canal','')">Quitar filtro de canal ✕</button>`:''}
+<button class="btn" style="margin-left:auto" onclick="editVenta()">Registrar venta</button></div>
+${low.length?`<div class="alert">⚠ Stock bajo: ${low.map(p=>esc(p.nombre)+' ('+p.stock+')').join(', ')}</div>`:''}
+<div class="grid kpis" style="margin-bottom:16px">
+<div class="kpi"><span>Ventas totales</span><b>${money(tot)}</b>${dl(tot,ptot)}</div>
+<div class="kpi"><span>Pedidos</span><b>${n}</b>${dl(n,pn)}</div>
+<div class="kpi"><span>Ticket promedio</span><b>${money(tk)}</b>${dl(tk,ptk)}</div>
+<div class="kpi"><span>Cumplimiento de meta</span><b>${pct.toFixed(0)}%</b><i class="tag ${st[0]}">${st[1]}</i></div>
+<div class="kpi"><span>Canal líder</span><b style="font-size:19px">${lead?esc(lead[0]):'—'}</b><i>${lead?money(lead[1]):''}</i></div>
+<div class="kpi"><span>Producto más vendido</span><b style="font-size:17px">${top[0]?esc(top[0][0]):'—'}</b><i>${top[0]?top[0][1].u+' uds.':''}</i></div></div>
+<div class="card"><h3>Ventas por día <span style="float:right"><select onchange="ui.metric=this.value;render()"><option value="ing" ${ui.metric==='ing'?'selected':''}>Ingresos</option><option value="uni" ${ui.metric==='uni'?'selected':''}>Unidades</option></select></span></h3><div id="ch1"></div></div>
+<div class="grid two"><div class="card"><h3>Ventas por canal</h3><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center"><div id="ch2"></div><div class="legend" id="lg"></div></div></div>
+<div class="card"><h3>Top de productos <button class="btn sec sm" style="float:right" onclick="go('productos')">Ver productos</button></h3>${top.slice(0,5).map(([k,v])=>`<div class="rank"><b>${esc(k)}</b><div style="font-size:12px;color:var(--mut)">${v.u} uds. · ${money(v.m)}</div><div class="bar"><div style="width:${v.u/mx*100}%"></div></div></div>`).join('')||'Sin ventas en el periodo'}</div></div>
+<div class="card"><h3>Meta mensual</h3>${meta?`<div class="bar big"><div style="width:${Math.min(100,pct)}%;background:${st[0]==='ok'?'var(--ok)':'var(--bad)'}"></div></div>
+<p>${money(sold)} de ${money(meta)} · <span class="tag ${st[0]}">${st[1]}</span></p>
+<div class="grid kpis"><div class="kpi"><span>Restante</span><b>${money(left)}</b></div><div class="kpi"><span>Días restantes</span><b>${rem}</b></div><div class="kpi"><span>Necesario por día</span><b>${money(need)}</b></div></div>`:'<p>No hay meta definida para este mes. <button class="btn sm" onclick="go(\'metas\')">Definir meta</button></p>'}</div>`}
+function tip(e,h){const t=$('#tip');t.innerHTML=h;t.style.display='block';t.style.left=Math.min(e.clientX+12,innerWidth-170)+'px';t.style.top=(e.clientY+12)+'px'}
+function untip(){$('#tip').style.display='none'}
+function barChart(el,items,fmt,opts={}){
+const W=700,H=220,pl=44,pb=26,pt=10,mx=Math.max(...items.map(i=>i.v),opts.min||1)*1.1;
+const bw=(W-pl)/items.length;
+let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:260px">`;
+for(let i=0;i<=4;i++){const y=pt+(H-pt-pb)*(1-i/4);s+=`<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="#e0d2bb"/><text x="${pl-5}" y="${y+4}" font-size="10" text-anchor="end" fill="#7a6552">${fmt(mx*i/4)}</text>`}
+if(opts.line){const y=pt+(H-pt-pb)*(1-opts.line/mx);s+=`<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="#a8402f" stroke-dasharray="5 4"/>`}
+const every=Math.ceil(items.length/12);
+items.forEach((it,i)=>{const h=(H-pt-pb)*it.v/mx,x=pl+i*bw+bw*.15,y=H-pb-h;
+s+=`<rect x="${x}" y="${y}" width="${bw*.7}" height="${Math.max(h,1)}" rx="3" fill="${it.c||'#8B5A2B'}" data-t="${esc(it.t)}" onmousemove="tip(event,this.dataset.t)" onmouseleave="untip()"/>`;
+if(i%every===0)s+=`<text x="${x+bw*.35}" y="${H-8}" font-size="10" text-anchor="middle" fill="#7a6552">${esc(it.l)}</text>`});
+$(el).innerHTML=s+'</svg>'}
+function drawDash(){
+const [a,b]=range();const cur=periodSales(a,b,filt.canal);
+const items=[];for(let d=new Date(a);d<=b;d=addD(d,1)){const k=d2s(d);const l=cur.filter(v=>v.fecha===k);
+const v=ui.metric==='ing'?sum(l):l.reduce((s,x)=>s+Number(x.cantidad),0);items.push({v,l:k.slice(5),t:`${k}<br>${money(sum(l))} · ${l.length} pedidos`})}
+barChart('#ch1',items,x=>ui.metric==='ing'?Math.round(x):Math.round(x));
+const all=periodSales(a,b,'');const byC={};all.forEach(v=>byC[v.canal]=(byC[v.canal]||0)+Number(v.total));
+const ent=Object.entries(byC).sort((x,y)=>y[1]-x[1]),T=sum(all)||1;
+let ang=-Math.PI/2,s='<svg viewBox="-60 -60 120 120" width="190">';
+ent.forEach(([k,v],i)=>{const a2=v/T*Math.PI*2;const x1=50*Math.cos(ang),y1=50*Math.sin(ang),x2=50*Math.cos(ang+a2),y2=50*Math.sin(ang+a2);
+const big=a2>Math.PI?1:0;const path=ent.length===1?`M0-50A50 50 0 1 1 0 50A50 50 0 1 1 0-50`:`M${x1} ${y1}A50 50 0 ${big} 1 ${x2} ${y2}`;
+s+=`<path d="${path}" fill="none" stroke="${COLORS[i%6]}" stroke-width="${filt.canal===k?24:16}" style="cursor:pointer;opacity:${filt.canal&&filt.canal!==k?.4:1}" data-t="${esc(k)}<br>${money(v)} · ${(v/T*100).toFixed(1)}%" onmousemove="tip(event,this.dataset.t)" onmouseleave="untip()" onclick="setF('canal','${k}')"/>`;ang+=a2});
+$('#ch2').innerHTML=s+`<text y="4" text-anchor="middle" font-size="11" fill="#3B2418">${money(T===1&&!all.length?0:T)}</text></svg>`;
+$('#lg').innerHTML=ent.map(([k,v],i)=>`<div class="${filt.canal===k?'sel':''}" onclick="setF('canal',filt.canal==='${k}'?'':'${k}')"><span class="dot" style="background:${COLORS[i%6]}"></span>${esc(k)} · ${money(v)}</div>`).join('')||'Sin datos'}
+function ventas(){
+const u=ui.ventas;let l=S.ventas.filter(v=>(!u.q||(v.producto+v.cliente).toLowerCase().includes(u.q.toLowerCase()))&&(!u.canal||v.canal===u.canal)&&(!u.estado||v.estado===u.estado)&&(!u.from||v.fecha>=u.from)&&(!u.to||v.fecha<=u.to));
+l.sort((x,y)=>(x[u.sort]>y[u.sort]?1:x[u.sort]<y[u.sort]?-1:0)*u.dir);
+const tp=sum(l.filter(v=>v.estado==='Pagada')),tq=l.reduce((s,v)=>s+Number(v.cantidad),0);
+const th=(k,n)=>`<th onclick="sortV('${k}')">${n}${u.sort===k?(u.dir>0?' ▲':' ▼'):''}</th>`;
+return`<h2>Ventas</h2><div class="sub">Registro de ventas</div><div class="card"><div class="tools">
+<input placeholder="Buscar producto o cliente" value="${esc(u.q)}" oninput="ui.ventas.q=this.value;rv()" id="qv">
+<select onchange="ui.ventas.canal=this.value;rv()"><option value="">Todos los canales</option>${S.canales.map(c=>`<option ${u.canal===c.nombre?'selected':''}>${esc(c.nombre)}</option>`).join('')}</select>
+<select onchange="ui.ventas.estado=this.value;rv()"><option value="">Todos los estados</option>${['Pagada','Pendiente','Reembolsada'].map(c=>`<option ${u.estado===c?'selected':''}>${c}</option>`).join('')}</select>
+<input type="date" value="${u.from}" onchange="ui.ventas.from=this.value;rv()"><input type="date" value="${u.to}" onchange="ui.ventas.to=this.value;rv()">
+<button class="btn" style="margin-left:auto" onclick="editVenta()">Nueva venta</button></div>
+<div class="tw"><table><thead><tr>${th('fecha','Fecha')}${th('producto','Producto')}${th('canal','Canal')}${th('cantidad','Cant.')}${th('total','Total')}${th('estado','Estado')}<th></th></tr></thead><tbody>
+${l.map(v=>`<tr><td>${v.fecha}</td><td>${esc(v.producto)}<div style="font-size:11px;color:var(--mut)">${esc(v.cliente)}</div></td><td>${esc(v.canal)}</td><td>${v.cantidad}</td><td>${money(v.total)}</td><td><span class="tag ${v.estado}">${v.estado}</span></td><td><button class="btn sec sm" onclick="editVenta(${v.id})">Editar</button> <button class="btn sec sm" onclick="askDel('ventas',${v.id})">Eliminar</button></td></tr>`).join('')||'<tr><td colspan="7">Sin resultados</td></tr>'}
+</tbody><tfoot><tr><td colspan="3">${l.length} registros · pagadas</td><td>${tq}</td><td>${money(tp)}</td><td colspan="2"></td></tr></tfoot></table></div></div>`}
+function rv(){const q=$('#qv'),v=q&&document.activeElement===q,p=q?q.selectionStart:0;render();if(v){const n=$('#qv');n.focus();n.setSelectionRange(p,p)}}
+function sortV(k){const u=ui.ventas;if(u.sort===k)u.dir*=-1;else{u.sort=k;u.dir=1}render()}
+function field(l,k,val,type,extra=''){return`<div class="fld"><label>${l}</label>${type==='textarea'?`<textarea name="${k}" rows="2">${esc(val)}</textarea>`:`<input name="${k}" type="${type}" value="${esc(val)}" ${extra}>`}</div>`}
+function sel(l,k,opts,val,extra=''){return`<div class="fld"><label>${l}</label><select name="${k}" ${extra}>${opts.map(o=>`<option ${o===val?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`}
+function modal(title,body,onsave){$('#modal').innerHTML=`<div class="modal" onclick="if(event.target===this)closeM()"><form class="box" id="frm"><h3>${title}</h3>${body}<div class="row"><button type="button" class="btn sec" onclick="closeM()">Cancelar</button><button class="btn">Guardar</button></div></form></div>`;
+$('#frm').onsubmit=e=>{e.preventDefault();const o=Object.fromEntries(new FormData(e.target));if(onsave(o)!==false){closeM();save();render()}}}
+function closeM(){$('#modal').innerHTML=''}
+function editVenta(id){
+const v=S.ventas.find(x=>x.id===id)||{fecha:d2s(today()),producto:S.productos[0]?.nombre,canal:'',cantidad:1,total:'',cliente:'',estado:'Pagada'};
+const cs=S.canales.filter(c=>c.estado==='Activo'||c.nombre===v.canal).map(c=>c.nombre);if(!v.canal)v.canal=cs[0];
+const pr=n=>Number(S.productos.find(p=>p.nombre===n)?.precio||0);
+modal(id?'Editar venta':'Registrar venta',field('Fecha','fecha',v.fecha,'date','required')+sel('Producto','producto',S.productos.map(p=>p.nombre),v.producto,'id="fp"')+sel('Canal','canal',cs,v.canal)+field('Cantidad','cantidad',v.cantidad,'number','min="1" required id="fq"')+field('Precio unitario','pu',pr(v.producto),'number','id="fu" step="0.01"')+field('Total (calculado)','total',v.total||pr(v.producto),'number','id="ft" step="0.01" required')+field('Cliente','cliente',v.cliente,'text')+sel('Estado','estado',['Pagada','Pendiente','Reembolsada'],v.estado),o=>{
+const n={fecha:o.fecha,producto:o.producto,canal:o.canal,cantidad:Number(o.cantidad),total:Number(o.total),cliente:o.cliente,estado:o.estado};
+if(id){stockAdj(v,-1);Object.assign(v,n);stockAdj(v,1)}else{n.id=++uid+Date.now()%1e6;S.ventas.push(n);stockAdj(n,1)}toast('Venta guardada')});
+const calc=()=>{$('#ft').value=(Number($('#fq').value)*Number($('#fu').value)).toFixed(2)};
+$('#fp').onchange=()=>{$('#fu').value=pr($('#fp').value);calc()};$('#fq').oninput=calc;$('#fu').oninput=calc;
+if(id){$('#fu').value=(v.total/v.cantidad).toFixed(2)}}
+function askDel(ent,id){$('#modal').innerHTML=`<div class="modal"><div class="box"><h3>¿Eliminar registro?</h3><p>Esta acción no se puede deshacer.</p><div class="row"><button class="btn sec" onclick="closeM()">Cancelar</button><button class="btn dng" onclick="doDel('${ent}',${id})">Eliminar</button></div></div></div>`}
+function doDel(ent,id){if(ent==='ventas'){const v=S.ventas.find(x=>x.id===id);stockAdj(v,-1)}S[ent]=S[ent].filter(x=>x.id!==id);closeM();save();render();toast('Eliminado')}
+function productos(){
+const [a,b]=range();const cur=periodSales(a,b,'');
+const q=ui.pq||'';const cat=ui.pc||'';
+const l=S.productos.filter(p=>(!q||p.nombre.toLowerCase().includes(q.toLowerCase()))&&(!cat||p.categoria===cat));
+return`<h2>Productos</h2><div class="sub">Catálogo · unidades vendidas del periodo ${d2s(a)} a ${d2s(b)}</div><div class="card"><div class="tools"><input placeholder="Buscar" value="${esc(q)}" oninput="ui.pq=this.value;rp()" id="qp"><select onchange="ui.pc=this.value;render()"><option value="">Todas las categorías</option>${['Grano','Molido','Bebida fría','Cápsulas','Accesorios'].map(c=>`<option ${cat===c?'selected':''}>${c}</option>`).join('')}</select><button class="btn" style="margin-left:auto" onclick="editProd()">Nuevo producto</button></div>
+<div class="tw"><table><thead><tr><th>Nombre</th><th>Categoría</th><th>Presentación</th><th>Precio</th><th>Costo</th><th>Margen</th><th>Stock</th><th>Vendidas</th><th></th></tr></thead><tbody>
+${l.map(p=>{const m=p.precio?(p.precio-p.costo)/p.precio*100:0;const u=cur.filter(v=>v.producto===p.nombre).reduce((s,v)=>s+Number(v.cantidad),0);const pres=(p.nombre.match(/\d+\s?g|x\d+|Botella/i)||['Unidad'])[0];
+return`<tr><td>${esc(p.nombre)}<div style="font-size:11px;color:var(--mut)">${esc(p.descripcion)}</div></td><td>${esc(p.categoria)}</td><td>${esc(pres)}</td><td>${money(p.precio)}</td><td>${money(p.costo)}</td><td>${m.toFixed(0)}%</td><td><span class="tag ${p.stock<10?'bad':'ok'}">${p.stock<10?'⚠ ':''}${p.stock}</span></td><td>${u}</td><td><button class="btn sec sm" onclick="editProd(${p.id})">Editar</button> <button class="btn sec sm" onclick="askDel('productos',${p.id})">Eliminar</button></td></tr>`}).join('')||'<tr><td colspan="9">Sin resultados</td></tr>'}</tbody></table></div></div>`}
+function rp(){const p=$('#qp').selectionStart;render();const n=$('#qp');n.focus();n.setSelectionRange(p,p)}
+function editProd(id){
+const p=S.productos.find(x=>x.id===id)||{nombre:'',categoria:'Grano',precio:'',costo:'',stock:0,descripcion:''};
+modal(id?'Editar producto':'Ficha de producto',field('Nombre','nombre',p.nombre,'text','required')+sel('Categoría','categoria',['Grano','Molido','Bebida fría','Cápsulas','Accesorios'],p.categoria)+field('Precio','precio',p.precio,'number','required min="0" step="0.01"')+field('Costo','costo',p.costo,'number','required min="0" step="0.01"')+field('Stock','stock',p.stock,'number','required min="0"')+field('Notas de cata','descripcion',p.descripcion,'textarea'),o=>{
+const n={nombre:o.nombre,categoria:o.categoria,precio:Number(o.precio),costo:Number(o.costo),stock:Number(o.stock),descripcion:o.descripcion};
+if(id){if(p.nombre!==n.nombre)S.ventas.forEach(v=>{if(v.producto===p.nombre)v.producto=n.nombre});Object.assign(p,n)}else{n.id=++uid+Date.now()%1e6;S.productos.push(n)}toast('Producto guardado')})}
+function chanStats(){const [a,b]=range();const cur=periodSales(a,b,'');return S.canales.map(c=>{const l=cur.filter(v=>v.canal===c.nombre);const t=sum(l);return{c,t,n:l.length,net:t*(1-c.comision/100)}})}
+function canales(){const st=chanStats();
+return`<h2>Canales</h2><div class="sub">Rendimiento en el rango del panel</div><div class="card"><div class="tools"><button class="btn" style="margin-left:auto" onclick="editCanal()">Nuevo canal</button></div><div class="tw"><table><thead><tr><th>Canal</th><th>Tipo</th><th>Comisión</th><th>Estado</th><th>Ventas</th><th>Ticket prom.</th><th></th></tr></thead><tbody>
+${st.map(({c,t,n})=>`<tr><td>${esc(c.nombre)}</td><td>${esc(c.tipo)}</td><td>${c.comision}%</td><td><span class="tag ${c.estado}">${c.estado}</span></td><td>${money(t)}</td><td>${money(n?t/n:0)}</td><td><button class="btn sec sm" onclick="editCanal(${c.id})">Editar</button> <button class="btn sec sm" onclick="togCanal(${c.id})">${c.estado==='Activo'?'Desactivar':'Activar'}</button></td></tr>`).join('')}</tbody></table></div></div>
+<div class="card"><h3>Comparativo de ventas netas (descontando comisión)</h3><div id="ch3"></div></div>`}
+function drawCanales(){barChart('#ch3',chanStats().map((s,i)=>({v:s.net,l:s.c.nombre.slice(0,10),c:COLORS[i%6],t:`${esc(s.c.nombre)}<br>Neto ${money(s.net)}<br>Bruto ${money(s.t)}`})),x=>Math.round(x))}
+function togCanal(id){const c=S.canales.find(x=>x.id===id);c.estado=c.estado==='Activo'?'Inactivo':'Activo';save();render();toast('Canal '+c.estado.toLowerCase())}
+function editCanal(id){
+const c=S.canales.find(x=>x.id===id)||{nombre:'',tipo:'Propio',comision:0,estado:'Activo'};
+modal(id?'Editar canal':'Nuevo canal',field('Nombre','nombre',c.nombre,'text','required')+sel('Tipo','tipo',['Propio','Red social','Marketplace','Recurrente'],c.tipo)+field('Comisión %','comision',c.comision,'number','required min="0" max="100" step="0.1"')+sel('Estado','estado',['Activo','Inactivo'],c.estado),o=>{
+const n={nombre:o.nombre,tipo:o.tipo,comision:Number(o.comision),estado:o.estado};
+if(id){if(c.nombre!==n.nombre)S.ventas.forEach(v=>{if(v.canal===c.nombre)v.canal=n.nombre});Object.assign(c,n)}else{n.id=++uid+Date.now()%1e6;S.canales.push(n)}toast('Canal guardado')})}
+const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const mlab=m=>MES[+m.slice(5,7)-1]+' '+m.slice(0,4);
+function metas(){const l=[...S.metas].sort((a,b)=>b.mes.localeCompare(a.mes));const cm=d2s(today()).slice(0,7);
+return`<h2>Metas</h2><div class="sub">Metas mensuales y cumplimiento</div><div class="card"><div class="tools"><button class="btn" style="margin-left:auto" onclick="editMeta()">Definir meta</button></div><div class="tw"><table><thead><tr><th>Mes</th><th>Objetivo</th><th>Vendido</th><th>Cumplimiento</th><th>Estado</th><th>Notas</th><th></th></tr></thead><tbody>
+${l.map(m=>{const ym=m.mes.slice(0,7),s=monthSold(ym),p=m.objetivo?s/m.objetivo*100:0;const st=p>=100?['ok','Superada']:ym===cm?['warn','En curso']:['bad','No alcanzada'];
+return`<tr><td>${mlab(m.mes)}</td><td>${money(m.objetivo)}</td><td>${money(s)}</td><td style="min-width:130px">${p.toFixed(0)}%<div class="bar" style="height:7px"><div style="width:${Math.min(100,p)}%"></div></div></td><td><span class="tag ${st[0]}">${st[1]}</span></td><td>${esc(m.notas)}</td><td><button class="btn sec sm" onclick="editMeta(${m.id})">Editar</button> <button class="btn sec sm" onclick="askDel('metas',${m.id})">Eliminar</button></td></tr>`}).join('')||'<tr><td colspan="7">Sin metas</td></tr>'}</tbody></table></div></div>
+<div class="card"><h3>Historial de cumplimiento (100% = meta)</h3><div id="ch4"></div></div>`}
+function drawMetas(){const l=[...S.metas].sort((a,b)=>a.mes.localeCompare(b.mes)).slice(-6);
+barChart('#ch4',l.map(m=>{const p=m.objetivo?monthSold(m.mes.slice(0,7))/m.objetivo*100:0;return{v:p,l:mlab(m.mes),c:p>=100?'#3f7a4a':'#8B5A2B',t:`${mlab(m.mes)}<br>${p.toFixed(0)}% de la meta`}}),x=>Math.round(x)+'%',{min:110,line:100})}
+function editMeta(id){
+const m=S.metas.find(x=>x.id===id)||{mes:d2s(today()).slice(0,7)+'-01',objetivo:'',notas:''};
+modal(id?'Editar meta':'Definir meta',field('Mes','mes',m.mes.slice(0,7),'month','required')+field('Meta de ventas','objetivo',m.objetivo,'number','required min="1"')+field('Notas','notas',m.notas,'textarea'),o=>{
+const n={mes:o.mes+'-01',objetivo:Number(o.objetivo),notas:o.notas};
+if(S.metas.some(x=>x.id!==id&&x.mes.slice(0,7)===o.mes)){toast('Ya existe una meta para ese mes');return false}
+if(id)Object.assign(m,n);else{n.id=++uid+Date.now()%1e6;S.metas.push(n)}toast('Meta guardada')})}
+function ajustes(){const s=S.settings;
+return`<h2>Ajustes</h2><div class="sub">Preferencias del negocio</div><div class="card" style="max-width:600px"><h3>Preferencias</h3>
+<div class="fld"><label>Nombre del negocio</label><input id="sn" value="${esc(s.nombre)}"></div>
+<div class="fld"><label>Moneda (símbolo)</label><input id="sm" value="${esc(s.moneda)}" maxlength="4"></div>
+<div class="fld"><label>Rango de fechas por defecto</label><select id="sr">${[['0','Hoy'],['7','7 días'],['30','30 días'],['mes','Mes actual']].map(o=>`<option value="${o[0]}" ${s.rango===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div>
+<div class="row" style="justify-content:flex-start"><button class="btn" onclick="saveSet()">Guardar preferencias</button><button class="btn sec" onclick="csv()">Exportar ventas a CSV</button><button class="btn sec" onclick="askReset()">Restablecer datos de ejemplo</button></div></div>
+<div class="card" style="max-width:600px"><h3>Exportar / importar datos</h3><textarea class="ex" id="ex" placeholder="JSON"></textarea><div class="row" style="justify-content:flex-start"><button class="btn" onclick="$('#ex').value=JSON.stringify(S,null,1)">Exportar datos</button><button class="btn sec" onclick="imp()">Importar</button></div></div>`}
+function saveSet(){S.settings={nombre:$('#sn').value||'Café Altura',moneda:$('#sm').value||'$',rango:$('#sr').value};filt.r=S.settings.rango;save();render();toast('Preferencias guardadas')}
+function imp(){try{const o=JSON.parse($('#ex').value);if(!o.ventas||!o.productos||!o.canales||!o.metas||!o.settings)throw 0;S=o;save();render();toast('Datos importados')}catch(e){toast('JSON no válido')}}
+function csv(){const rows=[['fecha','producto','canal','cantidad','total','cliente','estado'],...S.ventas.map(v=>[v.fecha,v.producto,v.canal,v.cantidad,v.total,v.cliente,v.estado])];
+const t=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download='ventas.csv';a.click()}
+function askReset(){$('#modal').innerHTML=`<div class="modal"><div class="box"><h3>¿Restablecer datos de ejemplo?</h3><p>Se perderán los cambios actuales.</p><div class="row"><button class="btn sec" onclick="closeM()">Cancelar</button><button class="btn dng" onclick="S=seed();filt.r='30';save();closeM();render();toast('Datos restablecidos')">Restablecer</button></div></div></div>`}
+load();filt.r=S.settings.rango||'30';render();
+</script>
+</body>
+</html>

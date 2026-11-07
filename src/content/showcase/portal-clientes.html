@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contaplus · Portal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#F5F7FB;--fg:#0F1F3D;--ac:#1B3A6B;--mut:#64708a;--bd:#e2e7f0;--ok:#1d8a5b;--warn:#c27a0a;--bad:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:14px;display:flex;min-height:100vh}
+aside{width:232px;background:#fff;border-right:1px solid var(--bd);padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;padding:0 8px 18px;color:var(--ac)}
+.logo svg{flex-shrink:0}
+nav button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:8px;font:inherit;color:var(--fg);cursor:pointer;font-weight:500}
+nav button:hover{background:var(--bg)}
+nav button.on{background:var(--ac);color:#fff}
+.role{margin-top:auto;font-size:12px;color:var(--mut);padding:8px}
+main{flex:1;padding:28px 32px;min-width:0;max-width:1200px}
+h1{margin:0 0 4px;font-size:24px}
+.sub{color:var(--mut);margin:0 0 22px}
+h2{font-size:16px;margin:26px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:18px}
+.kpi b{display:block;font-size:28px;margin-top:6px;color:var(--ac)}
+.kpi span{color:var(--mut);font-size:12.5px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+input,select,textarea{font:inherit;padding:9px 11px;border:1px solid var(--bd);border-radius:8px;background:#fff;color:var(--fg);width:100%}
+.bar input,.bar select{width:auto;min-width:160px}
+.btn{background:var(--ac);color:#fff;border:0;padding:9px 15px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+.btn.s{background:#fff;color:var(--ac);border:1px solid var(--bd)}
+.btn.d{background:var(--bad)}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.tw{overflow-x:auto;background:#fff;border:1px solid var(--bd);border-radius:12px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+td.w{white-space:normal;min-width:160px}
+th{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+tr:last-child td{border:0}
+.tag{display:inline-block;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#e8edf7;color:var(--ac)}
+.tag.ok{background:#e0f4ea;color:var(--ok)}.tag.warn{background:#fdf0d9;color:var(--warn)}.tag.bad{background:#fbe5e2;color:var(--bad)}
+.modal{position:fixed;inset:0;background:rgba(15,31,61,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal.on{display:flex}
+.box{background:#fff;border-radius:14px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow:auto}
+.box h3{margin:0 0 14px}
+label{display:block;font-size:12.5px;font-weight:600;margin:10px 0 4px}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.att{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--bd)}
+.att:last-child{border:0}
+.att small{color:var(--mut);display:block}
+.tl{border-left:2px solid var(--bd);margin:10px 0 0 6px;padding-left:16px}
+.tl div{position:relative;margin-bottom:12px}
+.tl div:before{content:"";position:absolute;left:-23px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--bd)}
+.tl .d:before{background:var(--ac)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal div{min-height:54px;background:#fff;border:1px solid var(--bd);border-radius:8px;padding:4px 6px;font-size:12px;cursor:pointer}
+.cal div.h{min-height:0;border:0;background:none;color:var(--mut);text-align:center;cursor:default;font-weight:600}
+.cal div.sel{outline:2px solid var(--ac)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin:2px 2px 0 0}
+.tabs{display:flex;gap:6px;margin:14px 0}
+.tabs button{border:0;background:#e8edf7;padding:7px 13px;border-radius:8px;cursor:pointer;font:inherit;color:var(--ac)}
+.tabs button.on{background:var(--ac);color:#fff}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--fg);color:#fff;padding:12px 18px;border-radius:10px;display:none;z-index:20}
+.demo{font-size:11.5px;background:#fdf0d9;color:var(--warn);padding:3px 9px;border-radius:99px;font-weight:600}
+textarea{min-height:80px}
+.mb{display:none}
+@media(max-width:760px){body{flex-direction:column}aside{width:100%;height:auto;position:static;flex-direction:row;overflow-x:auto;padding:10px;border:0;border-bottom:1px solid var(--bd);align-items:center}.logo,.role{display:none}nav{display:flex;gap:4px}nav button{white-space:nowrap}main{padding:18px 14px}}
+</style>
+</head>
+<body>
+<aside>
+<div class="logo"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="7" fill="#1B3A6B"/><path d="M8 19l4-5 3 3 5-7" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Contaplus</div>
+<nav id="nav"></nav>
+<div class="role" id="roleLbl"></div>
+</aside>
+<main id="main"></main>
+<div class="modal" id="modal"><div class="box" id="box"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const KEY='contaplus-portal';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+const iso=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const addD=n=>{const d=new Date(TODAY);d.setDate(d.getDate()+n);return iso(d)};
+const diff=s=>Math.round((new Date(s+'T00:00:00')-TODAY)/864e5);
+const fmtD=s=>{if(!s)return'—';const[a,b,c]=s.split('-');return c+'/'+b+'/'+a};
+const money=n=>n?'$ '+Number(n).toLocaleString('es-AR'):'—';
+const ENT={
+clientes:{label:'Cliente',f:[['razon_social','Razón social','text',1],['identificacion','CUIT / RUT','text',1],['email','Correo','email',1],['telefono','Teléfono','tel'],['regimen','Régimen tributario','select',1,['Monotributo','Responsable inscripto','Sociedad','Autónomo']],['contador','Contador asignado','select',1,['Laura Benítez','Martín Ocampo','Carolina Ruiz']]]},
+tramites:{label:'Trámite',f:[['cliente','Cliente','cli',1],['tipo','Tipo de trámite','select',1,['Declaración de IVA','Impuesto a las ganancias','Balance anual','Alta de empleado','Inscripción fiscal','Liquidación de sueldos']],['periodo','Período','text',1],['estado','Estado','select',1,['Iniciado','En revisión','Esperando documentos','Presentado','Finalizado']],['fecha_limite','Fecha límite','date',1],['notas','Notas del contador','textarea']]},
+documentos:{label:'Documento',f:[['nombre','Documento','text',1],['cliente','Cliente','cli',1],['tramite','Trámite asociado','tra',1],['estado','Estado','select',1,['Pendiente','Recibido','Aprobado','Rechazado']],['fecha_limite','Entregar antes de','date',1],['comentario','Comentario','textarea']]},
+solicitudes:{label:'Solicitud',f:[['asunto','Asunto','text',1],['cliente','Cliente','cli',1],['categoria','Categoría','select',1,['Consulta','Pedido de constancia','Cambio de datos','Reunión','Otro']],['prioridad','Prioridad','select',1,['Baja','Media','Alta']],['estado','Estado','select',1,['Enviada','En proceso','Respondida','Cerrada']],['descripcion','Descripción','textarea',1],['respuesta','Respuesta del contador','textarea']]},
+vencimientos:{label:'Vencimiento',f:[['cliente','Cliente','cli',1],['impuesto','Impuesto / obligación','select',1,['IVA','Ganancias','Ingresos brutos','Monotributo','Cargas sociales','Balance']],['fecha','Fecha de vencimiento','date',1],['monto','Monto estimado','number'],['estado','Estado','select',1,['Pendiente','Pagado','Vencido']]]}
+};
+const ESTT=['Iniciado','En revisión','Esperando documentos','Presentado','Finalizado'];
+function seed(){
+const cl=[['Panadería La Espiga de Prueba','20-00000001-1','Monotributo','Laura Benítez'],['Taller Ejemplo Norte SRL','30-00000002-2','Sociedad','Martín Ocampo'],['Estudio Demo Arquitectura','20-00000003-3','Responsable inscripto','Carolina Ruiz'],['Librería Ficticia Sur','27-00000004-4','Monotributo','Laura Benítez'],['Consultora Ejemplo Andes SA','30-00000005-5','Sociedad','Martín Ocampo'],['Dra. Marta Ejemplo','27-00000006-6','Autónomo','Carolina Ruiz'],['Transportes Muestra SRL','30-00000007-7','Responsable inscripto','Laura Benítez'],['Café Imaginario','20-00000008-8','Monotributo','Martín Ocampo']];
+const S={clientes:cl.map((c,i)=>({id:i+1,razon_social:c[0],identificacion:c[1],email:'contacto'+(i+1)+'@ejemplo.test',telefono:'+54 11 5550-010'+i,regimen:c[2],contador:c[3]})),tramites:[],documentos:[],solicitudes:[],vencimientos:[],cfg:{role:'cliente',cliente:1,nombre:'Usuario Demo',email:'demo@ejemplo.test',nv:true,nd:true,nr:true},seq:100};
+const tt=['Declaración de IVA','Impuesto a las ganancias','Balance anual','Alta de empleado','Inscripción fiscal','Liquidación de sueldos'];
+const te=['Esperando documentos','En revisión','Iniciado','Presentado','Finalizado','Esperando documentos'];
+for(let i=0;i<12;i++)S.tramites.push({id:i+1,cliente:(i%8)+1,tipo:tt[i%6],periodo:['Mar 2025','Abr 2025','2024','May 2025'][i%4],estado:te[i%6],fecha_limite:addD(i*4-3),notas:i%3==0?'Falta conciliación bancaria del período.':'',upd:addD(-(i%9)),ejemplo:1});
+const dn=['Extracto bancario','Facturas de compra','Facturas de venta','Recibos de sueldo','DNI del empleado','Constancia de inscripción','Libro IVA compras','Comprobantes de retención','Balance anterior','Contrato social','Planilla de gastos','Certificado de domicilio','Resumen de tarjeta','Estado de deudas'];
+const de=['Pendiente','Pendiente','Recibido','Aprobado','Pendiente','Rechazado','Pendiente'];
+for(let i=0;i<14;i++)S.documentos.push({id:i+1,nombre:dn[i],cliente:(i%8)+1,tramite:(i%12)+1,estado:de[i%7],fecha_limite:addD(i-2),comentario:de[i%7]=='Rechazado'?'Imagen ilegible, volver a subir.':'',fecha:addD(-i%5)});
+const sa=['Constancia de CUIT','Duda sobre categoría','Cambio de domicilio fiscal','Reunión trimestral','Plan de pagos','Alta de nuevo socio','Consulta por retenciones','Constancia de inscripción'];
+const se=['Enviada','En proceso','Respondida','Cerrada'];
+for(let i=0;i<8;i++)S.solicitudes.push({id:i+1,asunto:sa[i],cliente:(i%8)+1,categoria:['Pedido de constancia','Consulta','Cambio de datos','Reunión','Consulta','Cambio de datos','Consulta','Pedido de constancia'][i],prioridad:['Baja','Media','Alta'][i%3],estado:se[i%4],descripcion:'Consulta de ejemplo para la demo del portal.',respuesta:i%4>1?'Ya lo gestionamos, te enviamos el detalle por correo.':'',fecha:addD(-i-1),hrs:i%4>1?[5,26,8,14][i%4]:null,coms:[]});
+const im=['IVA','Ganancias','Ingresos brutos','Monotributo','Cargas sociales','Balance'];
+for(let i=0;i<12;i++){const f=addD(i*3-6);S.vencimientos.push({id:i+1,cliente:(i%8)+1,impuesto:im[i%6],fecha:f,monto:(i+2)*18500,estado:i%7==3?'Pagado':'Pendiente'})}
+return S}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.clientes)S=seed();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let view='dashboard',filt={},selTr=null,selCli=null,tab='Trámites',calSel=null,calM=new Date(TODAY.getFullYear(),TODAY.getMonth(),1),dashCli='';
+const isC=()=>S.cfg.role==='contador';
+const cname=id=>{const c=S.clientes.find(x=>x.id==id);return c?c.razon_social:'—'};
+const trname=id=>{const t=S.tramites.find(x=>x.id==id);return t?t.tipo+' · '+t.periodo:'—'};
+function scope(k){let a=S[k];if(!isC())return a.filter(x=>k=='clientes'?x.id==S.cfg.cliente:x.cliente==S.cfg.cliente);return a}
+function sync(){S.vencimientos.forEach(v=>{if(v.estado==='Pendiente'&&diff(v.fecha)<0)v.estado='Vencido'});
+S.tramites.forEach(t=>{const d=S.documentos.filter(x=>x.tramite==t.id);if(d.length&&t.estado==='Esperando documentos'&&d.every(x=>x.estado==='Aprobado')){t.estado='En revisión';t.upd=iso(TODAY)}})}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600)}
+const tagc=s=>({Aprobado:'ok',Pagado:'ok',Finalizado:'ok',Respondida:'ok',Presentado:'ok',Pendiente:'warn',Recibido:'warn','Esperando documentos':'warn','En proceso':'warn',Rechazado:'bad',Vencido:'bad',Alta:'bad'}[s]||'');
+const tag=s=>'<span class="tag '+tagc(s)+'">'+esc(s)+'</span>';
+const PAGES=[['dashboard','Panel'],['tramites','Trámites'],['documentos','Documentos'],['vencimientos','Vencimientos'],['solicitudes','Solicitudes'],['clientes','Clientes'],['ajustes','Mi cuenta']];
+function nav(){$('#nav').innerHTML=PAGES.filter(p=>p[0]!=='clientes'||isC()).map(p=>`<button class="${view===p[0]?'on':''}" onclick="go('${p[0]}')">${p[1]}</button>`).join('');
+$('#roleLbl').innerHTML='Rol: <b>'+(isC()?'Contador':'Cliente')+'</b><br><span class="demo">Datos de ejemplo</span>'}
+function go(v){view=v;selTr=null;selCli=null;render()}
+function render(){sync();save();if(view==='clientes'&&!isC())view='dashboard';nav();const m=$('#main');
+m.innerHTML=({dashboard:vDash,tramites:vTram,documentos:vDocs,vencimientos:vVenc,solicitudes:vSol,clientes:vCli,ajustes:vAj})[view]();window.scrollTo(0,0)}
+function head(t,s,btn){return `<div class="bar" style="justify-content:space-between"><div><h1>${t}</h1><p class="sub" style="margin:0">${s}</p></div>${btn||''}</div><br>`}
+function vDash(){
+let cf=isC()&&dashCli?+dashCli:null;
+const f=k=>scope(k).filter(x=>!cf||x.cliente==cf);
+const tr=f('tramites'),dc=f('documentos'),so=f('solicitudes'),ve=f('vencimientos');
+const enc=tr.filter(t=>t.estado!=='Finalizado').length;
+const pd=dc.filter(d=>d.estado==='Pendiente'||d.estado==='Rechazado').length;
+const pv=ve.filter(v=>v.estado==='Pendiente').sort((a,b)=>a.fecha<b.fecha?-1:1)[0];
+const ab=so.filter(s=>s.estado!=='Cerrada'&&s.estado!=='Respondida').length;
+const vv=ve.filter(v=>v.estado==='Vencido').length;
+const hs=so.filter(s=>s.hrs).map(s=>s.hrs);const avg=hs.length?Math.round(hs.reduce((a,b)=>a+b,0)/hs.length)+' h':'—';
+const K=[['Trámites en curso',enc],['Documentos pendientes',pd],['Próximo vencimiento',pv?diff(pv.fecha)+' días':'—'],['Solicitudes abiertas',ab],['Vencimientos vencidos',vv],['Respuesta media',avg]];
+let att=[];
+dc.filter(d=>d.estado==='Pendiente'||d.estado==='Rechazado').forEach(d=>att.push({o:diff(d.fecha_limite),h:`<div class="att"><div><b>${esc(d.nombre)}</b> ${tag(d.estado)}<small>${esc(trname(d.tramite))} · entregar antes del ${fmtD(d.fecha_limite)}${isC()?' · '+esc(cname(d.cliente)):''}</small></div><button class="btn sm" onclick="go('documentos')">${isC()?'Ver':'Subir documento'}</button></div>`}));
+ve.filter(v=>v.estado==='Vencido'||(v.estado==='Pendiente'&&diff(v.fecha)<7)).forEach(v=>att.push({o:diff(v.fecha)-1,h:`<div class="att"><div><b>${esc(v.impuesto)}</b> ${tag(v.estado)}<small>Vence ${fmtD(v.fecha)} · ${money(v.monto)}${isC()?' · '+esc(cname(v.cliente)):''}</small></div><button class="btn sm s" onclick="go('vencimientos')">Abrir</button></div>`}));
+att.sort((a,b)=>a.o-b.o);
+const cnt=ESTT.map(e=>tr.filter(t=>t.estado===e).length),mx=Math.max(1,...cnt);
+const bars=cnt.map((c,i)=>{const h=c/mx*150;return `<rect x="${i*84+20}" y="${170-h}" width="48" height="${h}" rx="6" fill="#1B3A6B" opacity="${.45+i*.14}"/><text x="${i*84+44}" y="${164-h}" text-anchor="middle" font-size="13" font-weight="700" fill="#0F1F3D">${c}</text><text x="${i*84+44}" y="190" text-anchor="middle" font-size="10" fill="#64708a">${['Iniciado','Revisión','Esperando','Presentado','Finalizado'][i]}</text>`}).join('');
+return head('Resumen de tu situación',isC()?'Vista de cartera completa':'Hola, '+esc(cname(S.cfg.cliente)),isC()?`<select style="width:auto" onchange="dashCli=this.value;render()"><option value="">Todos los clientes</option>${S.clientes.map(c=>`<option value="${c.id}" ${cf==c.id?'selected':''}>${esc(c.razon_social)}</option>`).join('')}</select>`:'')+
+`<div class="grid">${K.map(k=>`<div class="card kpi"><span>${k[0]}</span><b>${k[1]}</b></div>`).join('')}</div>
+<h2>Requiere tu atención</h2><div class="card">${att.length?att.slice(0,8).map(a=>a.h).join(''):'<p style="color:var(--mut)">Todo al día. ¡Buen trabajo!</p>'}</div>
+<h2>Trámites por estado</h2><div class="card"><svg viewBox="0 0 440 200" width="100%" style="max-width:560px">${bars}</svg></div>`}
+function vTram(){
+if(selTr)return detTr(selTr);
+let a=scope('tramites');const q=(filt.tq||'').toLowerCase();
+a=a.filter(t=>(!filt.te||t.estado===filt.te)&&(t.tipo+t.periodo+cname(t.cliente)).toLowerCase().includes(q));
+return head('Trámites',isC()?'Gestiona toda la cartera':'Mis trámites',isC()?'<button class="btn" onclick="edit(\'tramites\')">Nuevo trámite</button>':'')+
+`<div class="bar"><input placeholder="Buscar…" value="${esc(filt.tq||'')}" oninput="filt.tq=this.value;rr('tt')"><select onchange="filt.te=this.value;render()"><option value="">Todos los estados</option>${ESTT.map(e=>`<option ${filt.te===e?'selected':''}>${e}</option>`).join('')}</select></div><div id="tt">${tTram(a)}</div>`}
+function tTram(a){return `<div class="tw"><table><tr><th>Tipo</th>${isC()?'<th>Cliente</th>':''}<th>Período</th><th>Responsable</th><th>Estado</th><th>Actualizado</th><th></th></tr>${a.map(t=>{const c=S.clientes.find(x=>x.id==t.cliente)||{};return `<tr><td><b>${esc(t.tipo)}</b></td>${isC()?`<td>${esc(c.razon_social)}</td>`:''}<td>${esc(t.periodo)}</td><td>${esc(c.contador)}</td><td>${isC()?`<select style="width:auto;padding:4px" onchange="setEst(${t.id},this.value)">${ESTT.map(e=>`<option ${t.estado===e?'selected':''}>${e}</option>`).join('')}</select>`:tag(t.estado)}</td><td>${fmtD(t.upd||t.fecha_limite)}</td><td><button class="btn sm s" onclick="selTr=${t.id};render()">Detalle</button>${isC()?` <button class="btn sm s" onclick="edit('tramites',${t.id})">Editar</button> <button class="btn sm d" onclick="del('tramites',${t.id})">Borrar</button>`:''}</td></tr>`}).join('')||'<tr><td colspan="7">Sin resultados</td></tr>'}</table></div>`}
+function rr(id){const m={tt:()=>tTram(fl('tramites'))}[id];}
+function fl(){return[]}
+function setEst(id,v){const t=S.tramites.find(x=>x.id==id);t.estado=v;t.upd=iso(TODAY);toast('Estado actualizado');render()}
+function detTr(id){const t=S.tramites.find(x=>x.id==id);if(!t){selTr=null;return vTram()}
+const ds=S.documentos.filter(d=>d.tramite==id),ss=S.solicitudes.filter(s=>s.cliente==t.cliente).slice(0,3);
+const i=ESTT.indexOf(t.estado);const falta=ds.filter(d=>d.estado!=='Aprobado');
+return `<button class="btn s sm" onclick="selTr=null;render()">← Volver</button><br><br><h1>${esc(t.tipo)} · ${esc(t.periodo)}</h1><p class="sub">${esc(cname(t.cliente))} · límite ${fmtD(t.fecha_limite)} ${tag(t.estado)}</p>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))"><div class="card"><b>Línea de tiempo</b><div class="tl">${ESTT.map((e,k)=>`<div class="${k<=i?'d':''}">${e}</div>`).join('')}</div></div>
+<div class="card"><b>Qué falta para avanzar</b><p style="color:var(--mut)">${t.estado==='Finalizado'?'Trámite completo.':falta.length?falta.map(d=>esc(d.nombre)+' ('+d.estado+')').join(', '):'No hay documentos pendientes.'}</p><b>Notas del contador</b><p style="color:var(--mut)">${esc(t.notas)||'Sin notas.'}</p></div></div>
+<h2>Documentos asociados</h2><div class="card">${ds.map(d=>`<div class="att"><div>${esc(d.nombre)}</div>${tag(d.estado)}</div>`).join('')||'Sin documentos.'}</div>
+<h2>Solicitudes vinculadas</h2><div class="card">${ss.map(s=>`<div class="att"><div>#${s.id} ${esc(s.asunto)}</div>${tag(s.estado)}</div>`).join('')||'Sin solicitudes.'}</div>`}
+function vDocs(){
+const a=scope('documentos'),pen=a.filter(d=>d.estado==='Pendiente'||d.estado==='Rechazado');
+return head('Documentos','Checklist y archivo completo',isC()?'<button class="btn" onclick="edit(\'documentos\')">Solicitar documento</button>':'')+
+`<h2 style="margin-top:0">Documentos pendientes</h2><div class="card">${pen.map(d=>`<div class="att"><div><b>${esc(d.nombre)}</b> ${tag(d.estado)}<small>${esc(trname(d.tramite))} · antes del ${fmtD(d.fecha_limite)}${d.comentario?' · '+esc(d.comentario):''}</small></div><button class="btn sm" onclick="upload(${d.id})">Adjuntar archivo</button></div>`).join('')||'<p style="color:var(--mut)">No tienes documentos pendientes.</p>'}</div>
+<h2>Todos los documentos</h2><div class="tw"><table><tr><th>Documento</th><th>Trámite</th><th>Estado</th><th>Fecha</th><th>Comentario</th><th></th></tr>${a.map(d=>`<tr><td><b>${esc(d.nombre)}</b></td><td>${esc(trname(d.tramite))}</td><td>${tag(d.estado)}</td><td>${fmtD(d.fecha||d.fecha_limite)}</td><td class="w">${esc(d.comentario)}</td><td>${isC()?(d.estado==='Recibido'?`<button class="btn sm" onclick="aprobar(${d.id})">Aprobar</button> <button class="btn sm d" onclick="rechazar(${d.id})">Rechazar</button> `:'')+`<button class="btn sm s" onclick="edit('documentos',${d.id})">Editar</button> <button class="btn sm d" onclick="del('documentos',${d.id})">Borrar</button>`:''}</td></tr>`).join('')}</table></div>`}
+function upload(id){openM(`<h3>Adjuntar archivo</h3><p style="color:var(--mut)">Simulación: elige un archivo, no se envía a ningún servidor.</p><input type="file" id="fi"><div class="acts"><button class="btn s" onclick="closeM()">Cancelar</button><button class="btn" onclick="doUp(${id})">Enviar</button></div>`)}
+function doUp(id){const d=S.documentos.find(x=>x.id==id);d.estado='Recibido';d.fecha=iso(TODAY);d.comentario='';closeM();toast('Documento recibido');render()}
+function aprobar(id){S.documentos.find(x=>x.id==id).estado='Aprobado';toast('Documento aprobado');render()}
+function rechazar(id){openM(`<h3>Rechazar documento</h3><label>Motivo</label><textarea id="mot"></textarea><div class="acts"><button class="btn s" onclick="closeM()">Cancelar</button><button class="btn d" onclick="doRe(${id})">Rechazar</button></div>`)}
+function doRe(id){const m=$('#mot').value.trim();if(!m){toast('Indica el motivo');return}const d=S.documentos.find(x=>x.id==id);d.estado='Pendiente';d.comentario='Rechazado: '+m;closeM();toast('Rechazado; el cliente recibirá aviso');render()}
+function vVenc(){
+const a=scope('vencimientos').slice().sort((x,y)=>x.fecha<y.fecha?-1:1);
+const y=calM.getFullYear(),mo=calM.getMonth(),first=(new Date(y,mo,1).getDay()+6)%7,nd=new Date(y,mo+1,0).getDate();
+const col={IVA:'#1B3A6B',Ganancias:'#7b5ea7',"Ingresos brutos":'#2a8fa8',Monotributo:'#1d8a5b','Cargas sociales':'#c27a0a',Balance:'#c0392b'};
+let cells=['L','M','X','J','V','S','D'].map(d=>`<div class="h">${d}</div>`).join('')+'<div style="visibility:hidden;border:0"></div>'.repeat(first);
+for(let d=1;d<=nd;d++){const f=iso(new Date(y,mo,d));const vs=a.filter(v=>v.fecha===f);cells+=`<div class="${calSel===f?'sel':''}" onclick="calSel='${f}';render()">${d}<br>${vs.map(v=>`<span class="dot" style="background:${v.estado==='Vencido'?'#c0392b':col[v.impuesto]}"></span>`).join('')}</div>`}
+const ls=calSel?a.filter(v=>v.fecha===calSel):[];
+return head('Vencimientos','Calendario y próximos vencimientos',isC()?'<button class="btn" onclick="edit(\'vencimientos\')">Nuevo vencimiento</button>':'')+
+`<div class="card"><div class="bar" style="justify-content:space-between"><button class="btn s sm" onclick="calM=new Date(${y},${mo-1},1);render()">←</button><b>${calM.toLocaleDateString('es',{month:'long',year:'numeric'})}</b><button class="btn s sm" onclick="calM=new Date(${y},${mo+1},1);render()">→</button></div><div class="cal">${cells}</div>
+<div style="margin-top:10px;font-size:12px;color:var(--mut)">${Object.keys(col).map(k=>`<span class="dot" style="background:${col[k]}"></span>${k} &nbsp;`).join('')}<span class="dot" style="background:#c0392b"></span>Vencido</div>
+${calSel?`<h2>${fmtD(calSel)}</h2>${ls.map(v=>`<div class="att"><div>${esc(v.impuesto)} · ${money(v.monto)}</div>${tag(v.estado)}</div>`).join('')||'<p style="color:var(--mut)">Sin vencimientos este día.</p>'}`:''}</div>
+<h2>Próximos vencimientos</h2><div class="tw"><table><tr><th>Fecha</th><th>Impuesto</th>${isC()?'<th>Cliente</th>':''}<th>Organismo</th><th>Monto</th><th>Estado</th><th></th></tr>${a.map(v=>`<tr><td>${fmtD(v.fecha)}</td><td><b>${esc(v.impuesto)}</b></td>${isC()?`<td>${esc(cname(v.cliente))}</td>`:''}<td>${v.impuesto==='Ingresos brutos'?'Rentas provincial':v.impuesto==='Cargas sociales'?'Seguridad social':'Agencia tributaria'}</td><td>${money(v.monto)}</td><td>${tag(v.estado)}</td><td>${v.estado!=='Pagado'?`<button class="btn sm" onclick="pagar(${v.id})">Marcar pagado</button> `:''}${isC()?`<button class="btn sm s" onclick="edit('vencimientos',${v.id})">Editar</button> <button class="btn sm d" onclick="del('vencimientos',${v.id})">Borrar</button>`:''}</td></tr>`).join('')}</table></div>`}
+function pagar(id){S.vencimientos.find(x=>x.id==id).estado='Pagado';toast('Marcado como pagado');render()}
+function vSol(){
+const a=scope('solicitudes').slice().sort((x,y)=>y.id-x.id);
+return head('Solicitudes','Consulta o pide algo al estudio','<button class="btn" onclick="edit(\'solicitudes\')">Nueva solicitud</button>')+
+`<div class="tw"><table><tr><th>N.º</th><th>Asunto</th>${isC()?'<th>Cliente</th>':''}<th>Prioridad</th><th>Estado</th><th>Fecha</th><th></th></tr>${a.map(s=>`<tr><td>#${s.id}</td><td><b>${esc(s.asunto)}</b></td>${isC()?`<td>${esc(cname(s.cliente))}</td>`:''}<td>${tag(s.prioridad)}</td><td>${tag(s.estado)}</td><td>${fmtD(s.fecha)}</td><td><button class="btn sm s" onclick="openSol(${s.id})">Abrir</button>${isC()?` <button class="btn sm d" onclick="del('solicitudes',${s.id})">Borrar</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7">Sin solicitudes</td></tr>'}</table></div>`}
+function openSol(id){const s=S.solicitudes.find(x=>x.id==id);
+openM(`<h3>#${s.id} · ${esc(s.asunto)}</h3><p>${tag(s.estado)} ${esc(s.categoria)} · ${fmtD(s.fecha)}</p><p>${esc(s.descripcion)}</p><b>Respuesta del contador</b><p style="color:var(--mut)">${esc(s.respuesta)||'Aún sin respuesta.'}</p>${(s.coms||[]).map(c=>`<p style="background:var(--bg);padding:8px;border-radius:8px">💬 ${esc(c)}</p>`).join('')}
+${isC()?`<label>Responder</label><textarea id="rsp">${esc(s.respuesta)}</textarea>`:`<label>Añadir comentario</label><textarea id="rsp"></textarea>`}
+<div class="acts"><button class="btn s" onclick="closeM()">Cerrar</button>${!isC()&&s.estado!=='Cerrada'?`<button class="btn s" onclick="solAct(${id},'cerrar')">Cerrar solicitud</button>`:''}${!isC()&&s.estado==='Cerrada'?`<button class="btn s" onclick="solAct(${id},'reabrir')">Reabrir</button>`:''}<button class="btn" onclick="solAct(${id},'guardar')">${isC()?'Enviar respuesta':'Comentar'}</button></div>`)}
+function solAct(id,a){const s=S.solicitudes.find(x=>x.id==id),v=$('#rsp').value.trim();
+if(a==='guardar'){if(!v){toast('Escribe un texto');return}if(isC()){s.respuesta=v;s.estado='Respondida';s.hrs=s.hrs||6}else{s.coms=(s.coms||[]).concat(v)}}
+if(a==='cerrar')s.estado='Cerrada';if(a==='reabrir'){s.estado='Enviada';if(v)s.coms=(s.coms||[]).concat(v)}
+closeM();toast('Solicitud actualizada');render()}
+function vCli(){
+if(selCli)return fichaCli(selCli);
+const q=(filt.cq||'').toLowerCase();const a=S.clientes.filter(c=>(c.razon_social+c.identificacion).toLowerCase().includes(q)&&(!filt.cr||c.regimen===filt.cr));
+return head('Clientes','Cartera de clientes','<button class="btn" onclick="edit(\'clientes\')">Nuevo cliente</button>')+
+`<div class="bar"><input placeholder="Buscar cliente…" value="${esc(filt.cq||'')}" onchange="filt.cq=this.value;render()"><select onchange="filt.cr=this.value;render()"><option value="">Todos los regímenes</option>${ENT.clientes.f[4][4].map(r=>`<option ${filt.cr===r?'selected':''}>${r}</option>`).join('')}</select></div>
+<div class="tw"><table><tr><th>Razón social</th><th>CUIT/RUT</th><th>Régimen</th><th>Contacto</th><th>Trámites</th><th>Docs pend.</th><th></th></tr>${a.map(c=>`<tr><td><b>${esc(c.razon_social)}</b></td><td>${esc(c.identificacion)}</td><td>${esc(c.regimen)}</td><td>${esc(c.email)}</td><td>${S.tramites.filter(t=>t.cliente==c.id&&t.estado!=='Finalizado').length}</td><td>${S.documentos.filter(d=>d.cliente==c.id&&d.estado==='Pendiente').length}</td><td><button class="btn sm s" onclick="selCli=${c.id};tab='Trámites';render()">Ficha</button> <button class="btn sm s" onclick="edit('clientes',${c.id})">Editar</button> <button class="btn sm d" onclick="del('clientes',${c.id})">Borrar</button></td></tr>`).join('')}</table></div>`}
+function fichaCli(id){const c=S.clientes.find(x=>x.id==id);if(!c){selCli=null;return vCli()}
+const tb={'Trámites':S.tramites.filter(x=>x.cliente==id).map(t=>`${esc(t.tipo)} · ${esc(t.periodo)} ${tag(t.estado)}`),'Documentos':S.documentos.filter(x=>x.cliente==id).map(d=>`${esc(d.nombre)} ${tag(d.estado)}`),'Vencimientos':S.vencimientos.filter(x=>x.cliente==id).map(v=>`${esc(v.impuesto)} · ${fmtD(v.fecha)} ${tag(v.estado)}`)};
+return `<button class="btn s sm" onclick="selCli=null;render()">← Volver</button><br><br><h1>${esc(c.razon_social)}</h1><p class="sub">${esc(c.identificacion)} · ${esc(c.regimen)} · ${esc(c.email)} · ${esc(c.telefono)} · Contador: ${esc(c.contador)}</p>
+<div class="tabs">${Object.keys(tb).map(k=>`<button class="${tab===k?'on':''}" onclick="tab='${k}';render()">${k}</button>`).join('')}</div><div class="card">${tb[tab].map(x=>`<div class="att"><div>${x}</div></div>`).join('')||'Sin registros.'}</div>`}
+function vAj(){const c=S.cfg;
+return head('Mi cuenta','Perfil, notificaciones y datos')+`<div class="card" style="max-width:640px"><label>Rol (demo)</label><select id="arol"><option value="cliente" ${!isC()?'selected':''}>Cliente</option><option value="contador" ${isC()?'selected':''}>Contador</option></select>
+<label>Cliente que ves como cliente</label><select id="acli">${S.clientes.map(x=>`<option value="${x.id}" ${c.cliente==x.id?'selected':''}>${esc(x.razon_social)}</option>`).join('')}</select>
+<label>Nombre</label><input id="anom" value="${esc(c.nombre)}"><label>Correo</label><input id="aem" value="${esc(c.email)}">
+<label><input type="checkbox" id="nv" style="width:auto" ${c.nv?'checked':''}> Avisos de vencimientos</label><label><input type="checkbox" id="nd" style="width:auto" ${c.nd?'checked':''}> Avisos de documentos</label><label><input type="checkbox" id="nr" style="width:auto" ${c.nr?'checked':''}> Avisos de respuestas</label>
+<div class="acts"><button class="btn" onclick="saveAj()">Guardar</button></div></div>
+<h2>Exportar / importar datos</h2><div class="card"><textarea id="exp" style="min-height:140px;font-family:monospace;font-size:12px">${esc(JSON.stringify(S,null,1))}</textarea><div class="acts"><button class="btn s" onclick="$('#exp').value=JSON.stringify(S,null,1);toast('Datos exportados')">Exportar datos</button><button class="btn s" onclick="imp()">Importar</button><button class="btn d" onclick="resetD()">Restaurar ejemplo</button></div></div>`}
+function saveAj(){Object.assign(S.cfg,{role:$('#arol').value,cliente:+$('#acli').value,nombre:$('#anom').value,email:$('#aem').value,nv:$('#nv').checked,nd:$('#nd').checked,nr:$('#nr').checked});toast('Cambios guardados');render()}
+function imp(){try{const o=JSON.parse($('#exp').value);if(!o.clientes||!o.tramites)throw 0;S=o;toast('Datos importados');render()}catch(e){toast('JSON no válido')}}
+function resetD(){S=seed();toast('Datos de ejemplo restaurados');render()}
+function openM(h){$('#box').innerHTML=h;$('#modal').classList.add('on')}
+function closeM(){$('#modal').classList.remove('on')}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeM()});
+function opts(f){if(f[2]==='select')return f[4];return null}
+function edit(k,id){const E=ENT[k];const r=id?S[k].find(x=>x.id==id):{};
+const defs={cliente:isC()?S.clientes[0].id:S.cfg.cliente,estado:k==='solicitudes'?'Enviada':k==='documentos'?'Pendiente':k==='vencimientos'?'Pendiente':k==='tramites'?'Esperando documentos':'',prioridad:'Media',fecha:addD(15),fecha_limite:addD(15)};
+let h=`<h3>${id?'Editar':'Nuevo'} ${E.label.toLowerCase()}</h3><form id="fm" onsubmit="return false">`;
+E.f.forEach(f=>{const key=f[0];if(!isC()&&k==='solicitudes'&&['estado','respuesta','cliente'].includes(key))return;
+const val=r[key]!=null?r[key]:(id?'':defs[key]!=null?defs[key]:'');
+h+=`<label>${f[1]}${f[3]?' *':''}</label>`;
+if(f[2]==='select')h+=`<select name="${key}">${f[4].map(o=>`<option ${val===o?'selected':''}>${o}</option>`).join('')}</select>`;
+else if(f[2]==='cli')h+=`<select name="${key}">${S.clientes.map(c=>`<option value="${c.id}" ${val==c.id?'selected':''}>${esc(c.razon_social)}</option>`).join('')}</select>`;
+else if(f[2]==='tra')h+=`<select name="${key}">${S.tramites.map(t=>`<option value="${t.id}" ${val==t.id?'selected':''}>${esc(cname(t.cliente)+' · '+t.tipo+' '+t.periodo)}</option>`).join('')}</select>`;
+else if(f[2]==='textarea')h+=`<textarea name="${key}">${esc(val)}</textarea>`;
+else h+=`<input name="${key}" type="${f[2]}" value="${esc(val)}">`});
+h+=`</form><div class="acts"><button class="btn s" onclick="closeM()">Cancelar</button><button class="btn" onclick="submitF('${k}',${id||0})">Guardar</button></div>`;openM(h)}
+function submitF(k,id){const E=ENT[k],o={};
+for(const f of E.f){const el=document.querySelector('#fm [name="'+f[0]+'"]');if(!el)continue;let v=el.value.trim();if(f[3]&&!v){toast('Completa: '+f[1]);return}if(f[2]==='cli'||f[2]==='tra'||f[2]==='number')v=v===''?'':+v;o[f[0]]=v}
+if(id){Object.assign(S[k].find(x=>x.id==id),o)}else{o.id=++S.seq;if(!isC()&&k==='solicitudes'){o.cliente=S.cfg.cliente;o.estado='Enviada'}
+if(k==='tramites'){o.upd=iso(TODAY)}if(k==='documentos')o.fecha=iso(TODAY);if(k==='solicitudes'){o.fecha=iso(TODAY);o.coms=[];if(!o.estado)o.estado='Enviada'}S[k].push(o)}
+closeM();toast('Guardado');render()}
+function del(k,id){openM(`<h3>¿Eliminar registro?</h3><p style="color:var(--mut)">Esta acción no se puede deshacer.</p><div class="acts"><button class="btn s" onclick="closeM()">Cancelar</button><button class="btn d" onclick="doDel('${k}',${id})">Eliminar</button></div>`)}
+function doDel(k,id){S[k]=S[k].filter(x=>x.id!=id);if(k==='tramites')S.documentos=S.documentos.filter(d=>d.tramite!=id);closeM();toast('Eliminado');render()}
+render();
+</script>
+</body>
+</html>
