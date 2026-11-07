@@ -25,6 +25,7 @@ import { IdeaComposer } from "./idea-composer";
 import { Reveal } from "./reveal";
 import { FaqList } from "./faq";
 import { cn } from "@/lib/utils";
+import { whatsappLink } from "@/lib/contact";
 
 /* ----------------------------------------------------------------------------
  * HERO
@@ -323,6 +324,7 @@ export async function FinalCta() {
  * ------------------------------------------------------------------------- */
 export async function Footer() {
   const t = await getTranslations("footer");
+  const locale = await getLocale();
   const nav = await getTranslations("nav");
   return (
     <footer className="border-t border-border py-14">
@@ -335,9 +337,9 @@ export async function Footer() {
           <div>
             <p className="text-[13px] font-medium text-fg mb-3">{t("product")}</p>
             <ul className="space-y-2 text-[14px] text-fg-muted">
-              <li><a href="#process" className="hover:text-fg transition-colors">{nav("process")}</a></li>
-              <li><a href="#solutions" className="hover:text-fg transition-colors">{nav("solutions")}</a></li>
-              <li><a href="#pricing" className="hover:text-fg transition-colors">{nav("pricing")}</a></li>
+              <li><a href={`/${locale}#process`} className="hover:text-fg transition-colors">{nav("process")}</a></li>
+              <li><a href={`/${locale}#solutions`} className="hover:text-fg transition-colors">{nav("solutions")}</a></li>
+              <li><a href={`/${locale}#pricing`} className="hover:text-fg transition-colors">{nav("pricing")}</a></li>
               <li><Link href="/login" className="hover:text-fg transition-colors">{nav("login")}</Link></li>
             </ul>
           </div>
@@ -346,7 +348,7 @@ export async function Footer() {
             <ul className="space-y-2 text-[14px] text-fg-muted">
               <li><Link href="/privacy" className="hover:text-fg transition-colors">{t("privacy")}</Link></li>
               <li><Link href="/terms" className="hover:text-fg transition-colors">{t("terms")}</Link></li>
-              <li><a href="mailto:hola@ideonapp.com" className="hover:text-fg transition-colors">{t("contact")}</a></li>
+              <li><a href={whatsappLink()} target="_blank" rel="noreferrer" className="hover:text-fg transition-colors">{t("contact")} · WhatsApp</a></li>
             </ul>
           </div>
         </div>
