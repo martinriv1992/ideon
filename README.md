@@ -3,7 +3,7 @@
 **Tu idea. Nuestra inteligencia. Tu próximo negocio.**
 Plataforma SaaS para convertir ideas en productos digitales reales mediante un sistema multiagente de IA.
 
-Estado: **Fase 1 — Fundación** (identidad visual, homepage bilingüe, autenticación, dashboard, proyectos, conversación persistente, base de datos con RLS).
+Estado: **Fases 1–5 implementadas** (ver `docs/05-ESTADO-POR-FASES.md`): identidad, auth, agentes (consultor con cuestionario guiado, arquitecto, desarrollador, QA), propuestas, versiones, vista previa, imágenes, publicación con hosting propio y dominios, pagos con Stripe y backoffice.
 
 ## Documentación
 
@@ -11,6 +11,7 @@ Estado: **Fase 1 — Fundación** (identidad visual, homepage bilingüe, autenti
 - [`docs/02-MODELO-DE-DATOS.md`](docs/02-MODELO-DE-DATOS.md) — modelo de datos (Fase 1 y contrato de fases 2–5), políticas RLS.
 - [`docs/03-FLUJOS-Y-PLAN.md`](docs/03-FLUJOS-Y-PLAN.md) — flujos de usuario y plan de implementación por fases.
 - [`docs/04-PUESTA-EN-MARCHA.md`](docs/04-PUESTA-EN-MARCHA.md) — cómo configurar Supabase, variables de entorno y desplegar.
+- [`docs/05-ESTADO-POR-FASES.md`](docs/05-ESTADO-POR-FASES.md) — qué está hecho y qué falta en cada fase.
 
 ## Stack
 
@@ -24,6 +25,7 @@ cp .env.example .env.local   # completar con las claves de Supabase
 npm run dev                  # http://localhost:3000
 npm run build && npm start   # producción
 npm run lint
+npm test                     # pruebas de agentes (prompts, QA, propuestas)
 ```
 
 ## Principios de desarrollo
