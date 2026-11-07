@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
-import showcase from "@/content/showcase/index.json";
+import data from "@/content/showcase/index.json";
+import type { ShowcaseDemo } from "@/content/showcase/types";
 
-type Demo = (typeof showcase)[number];
+type Demo = ShowcaseDemo;
+const showcase = data as Demo[];
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;

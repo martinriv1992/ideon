@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulso Gym — Membresías, cobros y asistencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--fg:#f4f4f0;--ac:#b6f03c;--card:#151515;--line:#2a2a2a;--mut:#9a9a94;--red:#ff5a4d;--amb:#ffb02e}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:'Barlow Condensed',sans-serif;font-size:18px;display:flex;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+aside{width:230px;background:#0f0f0f;border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px;font-size:28px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.logo svg{width:30px;height:30px}
+.logo b{color:var(--ac)}
+nav{display:flex;flex-direction:column;gap:4px}
+nav button{background:none;border:0;text-align:left;padding:10px 12px;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;font-weight:600;color:var(--mut);font-size:18px}
+nav button:hover{background:#1a1a1a;color:var(--fg)}
+nav button.on{background:var(--ac);color:#000}
+.role{margin-top:auto;font-size:15px;color:var(--mut)}
+.role select{width:100%;background:#1a1a1a;border:1px solid var(--line);padding:8px;border-radius:8px;margin-top:4px}
+main{flex:1;padding:26px;min-width:0}
+h1{font-size:44px;text-transform:uppercase;letter-spacing:1px;line-height:1}
+h1 span{color:var(--ac)}
+h2{font-size:22px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.sub{color:var(--mut);margin:4px 0 20px}
+.tag{display:inline-block;font-size:13px;background:#222;color:var(--ac);padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;vertical-align:middle}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:20px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ac)}
+.kpi small{color:var(--mut);text-transform:uppercase;letter-spacing:1px;font-size:14px}
+.kpi div{font-size:40px;font-weight:700;line-height:1.1}
+.two{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+input,select,textarea{background:#0d0d0d;border:1px solid var(--line);border-radius:8px;padding:9px 11px;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);border-color:transparent}
+.btn{background:var(--ac);color:#000;border:0;border-radius:8px;padding:9px 16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer}
+.btn.g{background:#222;color:var(--fg)}
+.btn.d{background:var(--red);color:#000}
+.btn.s{padding:4px 9px;font-size:15px}
+.btn:hover{filter:brightness(1.1)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mut);text-transform:uppercase;font-size:14px;letter-spacing:1px;font-weight:600}
+td.a{display:flex;gap:4px;flex-wrap:wrap}
+.pill{padding:2px 10px;border-radius:99px;font-size:15px;font-weight:600;background:#222}
+.Activo,.Pagado{background:rgba(182,240,60,.18);color:var(--ac)}
+.Porvencer{background:rgba(255,176,46,.18);color:var(--amb)}
+.Vencido,.Anulado{background:rgba(255,90,77,.18);color:var(--red)}
+.Suspendido{background:#333;color:#bbb}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.meter{height:8px;background:#222;border-radius:9px;overflow:hidden;width:140px;margin-top:4px}
+.meter i{display:block;height:100%;background:var(--ac)}
+.meter i.f{background:var(--red)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:14px;z-index:10}
+.modal.on{display:flex}
+.box{background:#141414;border:1px solid var(--ac);border-radius:14px;padding:20px;width:100%;max-width:520px;max-height:92vh;overflow:auto}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg label{display:flex;flex-direction:column;font-size:15px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;gap:3px}
+.fg .w{grid-column:1/-1}
+.fg label input,.fg label select,.fg label textarea{color:var(--fg);text-transform:none;font-size:18px;letter-spacing:0}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.warn{padding:10px;border-radius:8px;margin:10px 0;background:rgba(255,176,46,.15);color:var(--amb)}
+.warn.e{background:rgba(255,90,77,.15);color:var(--red)}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--ac);color:#000;padding:10px 18px;border-radius:8px;font-weight:700;display:none;z-index:20}
+.sug{border:1px solid var(--line);border-radius:8px;margin-top:6px;overflow:hidden}
+.sug div{padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--line)}
+.sug div:hover{background:#222}
+textarea{width:100%;min-height:180px;font-family:monospace;font-size:14px}
+@media(max-width:800px){body{flex-direction:column}aside{width:100%;height:auto;position:static;flex-direction:column;padding:10px}nav{flex-direction:row;overflow-x:auto}nav button{white-space:nowrap;padding:8px 10px}.role{margin-top:6px}main{padding:14px}h1{font-size:34px}.fg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<aside>
+<div class="logo"><svg viewBox="0 0 32 32" fill="none" stroke="#b6f03c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17h7l3-10 5 18 3-8h10"/></svg><span>Pulso<b>Gym</b></span></div>
+<nav id="nav"></nav>
+<div class="role">Rol activo<select id="role"><option>recepción</option><option>administrador</option></select></div>
+</aside>
+<main id="main"></main>
+<div class="modal" id="modal"><div class="box" id="box"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const KEY='pulso-gym';
+const $=s=>document.querySelector(s);
+const today=()=>new Date().toISOString().slice(0,10);
+const addD=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return x.toISOString().slice(0,10)};
+const diff=d=>Math.round((new Date(d+'T12:00:00')-new Date(today()+'T12:00:00'))/864e5);
+const money=n=>'$'+Number(n||0).toLocaleString('es-CO');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+let S,view='dashboard',role='recepción',ui={};
+const DIAS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+function seed(){
+const planes=[{id:'p1',nombre:'Mensual',duracion:30,precio:90000,clases:'Sí',descripcion:'Acceso total a sala y clases grupales',activo:true},{id:'p2',nombre:'Trimestral',duracion:90,precio:240000,clases:'Sí',descripcion:'Tres meses con ahorro',activo:true},{id:'p3',nombre:'Anual',duracion:365,precio:850000,clases:'Sí',descripcion:'Todo el año, mejor precio',activo:true},{id:'p4',nombre:'Estudiante',duracion:30,precio:65000,clases:'Limitado',descripcion:'Tarifa con carnet vigente, clases limitadas',activo:true}];
+const nm=['Camila Ortega Demo','Julián Prado Demo','Valentina Ríos Demo','Mateo Salcedo Demo','Sofía Lemus Demo','Andrés Cortés Demo','Daniela Vega Demo','Sebastián Mora Demo','Laura Becerra Demo','Felipe Naranjo Demo','Isabela Duarte Demo','Tomás Quintero Demo'];
+const pl=['Mensual','Trimestral','Anual','Estudiante'];
+const off=[3,-12,5,20,-2,45,6,-40,60,1,200,10];
+const socios=nm.map((n,i)=>{const p=pl[i%4];const dur=planes[i%4].duracion;const v=addD(today(),off[i]);return{id:'s'+i,nombre:n,documento:'1000'+(200+i*7)+'00',email:'socio'+i+'@ejemplo.test',telefono:'555-01'+(10+i),plan:p,inicio:addD(v,-dur),vencimiento:v,estado:'Activo',emergencia:'Contacto Demo 555-02'+(10+i),suspendido:i==7}});
+const pagos=[];for(let i=0;i<15;i++){const s=socios[i%12];const p=planes[i%4];pagos.push({id:'g'+i,socio:s.nombre,socioId:s.id,plan:p.nombre,monto:p.precio,metodo:['Efectivo','Tarjeta','Transferencia'][i%3],fecha:addD(today(),-i*4),estado:i==9?'Anulado':'Pagado',prevV:null,dur:p.duracion})}
+const cl=[['Spinning','Marta Ibarra','Lunes','06:00',20,14],['Funcional','Diego Castaño','Martes','18:00',15,15],['Yoga','Elena Paz','Miércoles','07:00',12,8],['Crossfit','Ramiro Tovar','Jueves','19:00',16,10],['Zumba','Lucía Fonseca','Viernes','18:30',25,18],['Spinning','Marta Ibarra','Sábado','09:00',20,12],['Yoga','Elena Paz','Lunes','19:00',12,5],['Funcional','Diego Castaño','Viernes','07:00',15,9]];
+const hoyN=DIAS[new Date().getDay()];
+const clases=cl.map((c,i)=>({id:'c'+i,nombre:c[0],instructor:c[1],dia:c[2],hora:c[3],capacidad:c[4],inscritos:c[5],duracion:60}));
+if(hoyN!='Domingo'&&!clases.some(c=>c.dia==hoyN)){clases[0].dia=hoyN;clases[6].dia=hoyN}
+const asistencias=[];for(let i=0;i<20;i++){asistencias.push({id:'a'+i,socio:socios[i%12].nombre,fecha:addD(today(),-Math.floor(i/4)),hora:(6+i%12)+':'+(i%2?'30':'00'),clase:['Sin clase','Spinning','Funcional','Yoga','Crossfit','Zumba'][i%6]})}
+return{socios,planes,pagos,clases,asistencias,ajustes:{gym:'Pulso Gym Centro (demo)',direccion:'Calle Ficticia 123',aviso:7,metodos:['Efectivo','Tarjeta','Transferencia']}}}
+function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!S||!S.socios)S=seed();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function estado(s){if(s.suspendido)return'Suspendido';const d=diff(s.vencimiento);if(d<0)return'Vencido';if(d<=S.ajustes.aviso)return'Por vencer';return'Activo'}
+const cls=e=>e.replace(' ','');
+function pill(e){return`<span class="pill ${cls(e)}">${e}</span>`}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2500)}
+function openM(h){$('#box').innerHTML=h;$('#modal').classList.add('on')}
+function closeM(){$('#modal').classList.remove('on')}
+$('#modal').onclick=e=>{if(e.target.id=='modal')closeM()};
+const adm=()=>role=='administrador';
+const VIEWS=[['dashboard','Panel'],['socios','Socios'],['planes','Planes'],['pagos','Pagos'],['clases','Clases'],['asistencias','Asistencia'],['ajustes','Ajustes']];
+function nav(){$('#nav').innerHTML=VIEWS.filter(v=>adm()||!['planes','ajustes'].includes(v[0])).map(v=>`<button class="${v[0]==view?'on':''}" onclick="go('${v[0]}')">${v[1]}</button>`).join('')}
+function go(v){view=v;render()}
+$('#role').onchange=e=>{role=e.target.value;if(!adm()&&['planes','ajustes'].includes(view))view='dashboard';render()};
+function render(){S.socios.forEach(s=>s.estado=estado(s));nav();const m=$('#main');const f=V[view];m.innerHTML=f();window.scrollTo(0,0);save()}
+function head(t,sub,btn){return`<div class="bar" style="justify-content:space-between"><div><h1>${t}</h1><p class="sub">${sub} <span class="tag">datos de ejemplo</span></p></div>${btn||''}</div>`}
+function chart(){const w=[];for(let i=7;i>=0;i--){const e=addD(today(),-i*7),s=addD(e,-6);w.push({l:s.slice(5),v:S.pagos.filter(p=>p.estado=='Pagado'&&p.fecha>=s&&p.fecha<=e).reduce((a,p)=>a+p.monto,0)})}
+const mx=Math.max(1,...w.map(x=>x.v));return`<svg viewBox="0 0 400 190" style="width:100%">${w.map((x,i)=>{const h=x.v/mx*130;return`<rect x="${i*49+8}" y="${150-h}" width="36" height="${h}" rx="4" fill="#b6f03c"/><text x="${i*49+26}" y="${144-h}" text-anchor="middle" fill="#f4f4f0" font-size="11">${x.v?Math.round(x.v/1000)+'k':''}</text><text x="${i*49+26}" y="170" text-anchor="middle" fill="#9a9a94" font-size="11">${x.l}</text>`}).join('')}</svg>`}
+const V={
+dashboard(){const a=S.socios.filter(s=>s.estado=='Activo'||s.estado=='Por vencer').length;
+const pv=S.socios.filter(s=>!s.suspendido&&diff(s.vencimiento)>=0&&diff(s.vencimiento)<=7);
+const mes=today().slice(0,7);const ing=S.pagos.filter(p=>p.estado=='Pagado'&&p.fecha.startsWith(mes)).reduce((x,p)=>x+p.monto,0);
+const ah=S.asistencias.filter(x=>x.fecha==today()).length;
+const oc=S.clases.length?Math.round(S.clases.reduce((x,c)=>x+c.inscritos/c.capacidad,0)/S.clases.length*100):0;
+const hoy=S.clases.filter(c=>c.dia==DIAS[new Date().getDay()]);
+return head('Panel <span>de hoy</span>','Resumen del gimnasio.')+`<div class="grid kpis">
+<div class="kpi"><small>Socios activos</small><div>${a}</div></div>
+<div class="kpi"><small>Por vencer (7 días)</small><div>${pv.length}</div></div>
+${adm()?`<div class="kpi"><small>Ingresos del mes</small><div style="font-size:32px">${money(ing)}</div></div>`:''}
+<div class="kpi"><small>Asistencias de hoy</small><div>${ah}</div></div>
+<div class="kpi"><small>Ocupación promedio</small><div>${oc}%</div></div></div>
+${adm()?`<div class="card"><h2>Ingresos por semana</h2>${chart()}</div>`:''}
+<div class="grid two"><div class="card"><h2>Membresías por vencer</h2>${pv.map(s=>`<div class="row"><div><b>${esc(s.nombre)}</b><br><span class="sub" style="margin:0">${s.plan} · vence ${s.vencimiento}</span></div><button class="btn s" onclick="payForm('${s.id}')">Registrar pago</button></div>`).join('')||'<p class="sub">Nadie vence en los próximos 7 días.</p>'}</div>
+<div class="card"><h2>Clases de hoy</h2>${hoy.map(c=>`<div class="row"><div><b>${c.nombre}</b> · ${c.hora}<br><span class="sub" style="margin:0">${c.inscritos}/${c.capacidad} cupos</span><div class="meter"><i class="${c.inscritos>=c.capacidad?'f':''}" style="width:${Math.min(100,c.inscritos/c.capacidad*100)}%"></i></div></div><button class="btn s g" onclick="ui.cl='${c.nombre}';go('asistencias')">Asistencia</button></div>`).join('')||'<p class="sub">Hoy no hay clases programadas.</p>'}</div></div>`},
+socios(){const q=(ui.sq||'').toLowerCase();let l=S.socios.filter(s=>(s.nombre.toLowerCase().includes(q)||s.documento.includes(q))&&(!ui.se||s.estado==ui.se)&&(!ui.sp||s.plan==ui.sp));
+return head('Socios','Gestiona membresías.','<button class="btn" onclick="socForm()">+ Nuevo socio</button>')+`<div class="card"><div class="bar"><input placeholder="Buscar nombre o documento" value="${esc(ui.sq||'')}" oninput="ui.sq=this.value;keep(this,'socios')"><select onchange="ui.se=this.value;render()"><option value="">Todos los estados</option>${['Activo','Por vencer','Vencido','Suspendido'].map(e=>`<option ${ui.se==e?'selected':''}>${e}</option>`).join('')}</select><select onchange="ui.sp=this.value;render()"><option value="">Todos los planes</option>${S.planes.map(p=>`<option ${ui.sp==p.nombre?'selected':''}>${p.nombre}</option>`).join('')}</select></div><div class="tw"><table><tr><th>Nombre</th><th>Documento</th><th>Plan</th><th>Vence</th><th>Estado</th><th></th></tr>${l.map(s=>`<tr><td>${esc(s.nombre)}</td><td>${esc(s.documento)}</td><td>${s.plan}</td><td>${s.vencimiento}</td><td>${pill(s.estado)}</td><td class="a"><button class="btn s g" onclick="ficha('${s.id}')">Ficha</button><button class="btn s g" onclick="socForm('${s.id}')">Editar</button><button class="btn s g" onclick="susp('${s.id}')">${s.suspendido?'Reactivar':'Suspender'}</button><button class="btn s" onclick="payForm('${s.id}')">Pago</button><button class="btn s g" onclick="quick('${s.id}')">Asistió</button><button class="btn s d" onclick="del('socios','${s.id}')">×</button></td></tr>`).join('')||'<tr><td colspan=6>Sin resultados</td></tr>'}</table></div></div>`},
+planes(){return head('Planes','Planes de membresía.','<button class="btn" onclick="planForm()">+ Nuevo plan</button>')+`<div class="card tw"><table><tr><th>Plan</th><th>Días</th><th>Precio</th><th>Clases</th><th>Socios</th><th>Estado</th><th></th></tr>${S.planes.map(p=>`<tr><td>${esc(p.nombre)}</td><td>${p.duracion}</td><td>${money(p.precio)}</td><td>${p.clases}</td><td>${S.socios.filter(s=>s.plan==p.nombre).length}</td><td>${pill(p.activo?'Activo':'Suspendido').replace('Suspendido','Inactivo')}</td><td class="a"><button class="btn s g" onclick="planForm('${p.id}')">Editar</button><button class="btn s g" onclick="togPlan('${p.id}')">${p.activo?'Desactivar':'Activar'}</button></td></tr>`).join('')}</table></div>`},
+pagos(){let l=S.pagos.filter(p=>(!ui.pm||p.fecha.startsWith(ui.pm))&&(!ui.pt||p.metodo==ui.pt)&&(!ui.ps||p.socio.toLowerCase().includes(ui.ps.toLowerCase()))).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+const tot=l.filter(p=>p.estado=='Pagado').reduce((x,p)=>x+p.monto,0);
+return head('Pagos','Historial de cobros.','<button class="btn" onclick="payForm()">+ Registrar pago</button>')+`<div class="card"><div class="bar"><input type="month" value="${ui.pm||''}" onchange="ui.pm=this.value;render()"><select onchange="ui.pt=this.value;render()"><option value="">Todos los métodos</option>${S.ajustes.metodos.map(m=>`<option ${ui.pt==m?'selected':''}>${m}</option>`).join('')}</select><input placeholder="Socio" value="${esc(ui.ps||'')}" oninput="ui.ps=this.value;keep(this,'pagos')"><b style="margin-left:auto">Total periodo: <span style="color:var(--ac)">${adm()?money(tot):'— (solo admin)'}</span></b></div><div class="tw"><table><tr><th>Fecha</th><th>Socio</th><th>Plan</th><th>Monto</th><th>Método</th><th>Estado</th><th></th></tr>${l.map(p=>`<tr><td>${p.fecha}</td><td>${esc(p.socio)}</td><td>${p.plan}</td><td>${money(p.monto)}</td><td>${p.metodo}</td><td>${pill(p.estado)}</td><td class="a">${adm()&&p.estado=='Pagado'?`<button class="btn s d" onclick="anular('${p.id}')">Anular</button>`:''}</td></tr>`).join('')||'<tr><td colspan=7>Sin pagos</td></tr>'}</table></div></div>`},
+clases(){return head('Clases','Agenda semanal.','<button class="btn" onclick="claForm()">+ Nueva clase</button>')+`<div class="card tw"><table><tr><th>Clase</th><th>Día</th><th>Hora</th><th>Instructor</th><th>Cupos</th><th></th></tr>${S.clases.map(c=>{const full=c.inscritos>=c.capacidad;return`<tr><td>${esc(c.nombre)}</td><td>${c.dia}</td><td>${c.hora}</td><td>${esc(c.instructor)}</td><td>${c.inscritos}/${c.capacidad} ${full?'<span class="pill Vencido">Lleno</span>':`<span class="pill Activo">${c.capacidad-c.inscritos} libres</span>`}<div class="meter"><i class="${full?'f':''}" style="width:${Math.min(100,c.inscritos/c.capacidad*100)}%"></i></div></td><td class="a"><button class="btn s g" onclick="claForm('${c.id}')">Editar</button><button class="btn s d" onclick="del('clases','${c.id}')">Cancelar</button></td></tr>`}).join('')}</table></div>`},
+asistencias(){const f=ui.af||today();let l=S.asistencias.filter(a=>(!f||a.fecha==f)&&(!ui.ac||a.clase==ui.ac)&&(!ui.as||a.socio.toLowerCase().includes(ui.as.toLowerCase()))).sort((a,b)=>b.hora.localeCompare(a.hora));
+return head('Asistencia','Registro rápido de entradas.')+`<div class="card"><h2>Registro rápido</h2><input id="qs" style="width:100%" placeholder="Nombre o documento del socio…" oninput="sug(this.value)" autocomplete="off"><div id="sg"></div><div id="qsel"></div></div>
+<div class="card"><h2>Asistencias recientes</h2><div class="bar"><input type="date" value="${f}" onchange="ui.af=this.value;render()"><button class="btn s g" onclick="ui.af='';render()">Todas</button><select onchange="ui.ac=this.value;render()"><option value="">Todas las clases</option>${['Sin clase','Spinning','Funcional','Yoga','Crossfit','Zumba'].map(c=>`<option ${ui.ac==c?'selected':''}>${c}</option>`).join('')}</select><input placeholder="Socio" value="${esc(ui.as||'')}" oninput="ui.as=this.value;keep(this,'asistencias')"></div><div class="tw"><table><tr><th>Fecha</th><th>Hora</th><th>Socio</th><th>Clase</th><th></th></tr>${l.map(a=>`<tr><td>${a.fecha}</td><td>${a.hora}</td><td>${esc(a.socio)}</td><td>${a.clase||'Sin clase'}</td><td><button class="btn s d" onclick="del('asistencias','${a.id}')">×</button></td></tr>`).join('')||'<tr><td colspan=5>Sin registros</td></tr>'}</table></div></div>`},
+ajustes(){const a=S.ajustes;return head('Ajustes','Configuración y permisos.')+`<div class="card"><h2>Gimnasio</h2><div class="fg"><label>Nombre<input id="ag" value="${esc(a.gym)}"></label><label>Dirección<input id="ad" value="${esc(a.direccion)}"></label><label>Días de aviso de vencimiento<input id="av" type="number" min="1" max="30" value="${a.aviso}"></label><label>Métodos de pago (separados por coma)<input id="am" value="${esc(a.metodos.join(', '))}"></label></div><div class="acts"><button class="btn" onclick="saveAj()">Guardar</button></div></div>
+<div class="card"><h2>Permisos</h2><p class="sub">Recepción: socios, pagos, asistencia y clases. Administrador: además planes, ingresos, anulaciones y ajustes. Cambia el rol en la barra lateral.</p></div>
+<div class="card"><h2>Exportar / Importar datos</h2><textarea id="ex"></textarea><div class="acts"><button class="btn g" onclick="$('#ex').value=JSON.stringify(S,null,1)">Exportar datos</button><button class="btn" onclick="imp()">Importar</button><button class="btn d" onclick="reset()">Restaurar ejemplo</button></div></div>`}};
+function keep(el,v){const p=el.selectionStart;render();const i=[...document.querySelectorAll('#main input')].find(x=>x.placeholder==el.placeholder);if(i){i.focus();i.setSelectionRange(p,p)}}
+function saveAj(){const a=S.ajustes;a.gym=$('#ag').value;a.direccion=$('#ad').value;a.aviso=+$('#av').value||7;a.metodos=$('#am').value.split(',').map(x=>x.trim()).filter(Boolean);render();toast('Ajustes guardados')}
+function imp(){try{const d=JSON.parse($('#ex').value);if(!d.socios||!d.pagos||!d.planes)throw 0;S=d;render();toast('Datos importados')}catch(e){toast('JSON no válido')}}
+function reset(){S=seed();render();toast('Datos de ejemplo restaurados')}
+function fld(l,id,v,t='text',w){return`<label class="${w?'w':''}">${l}<input id="${id}" type="${t}" value="${esc(v)}"></label>`}
+function sel(l,id,o,v,ch){return`<label>${l}<select id="${id}" ${ch?`onchange="${ch}"`:''}>${o.map(x=>`<option ${x==v?'selected':''}>${x}</option>`).join('')}</select></label>`}
+function btns(f){return`<div class="acts"><button class="btn g" onclick="closeM()">Cancelar</button><button class="btn" onclick="${f}">Guardar</button></div>`}
+function planDur(n){return(S.planes.find(p=>p.nombre==n)||{duracion:30}).duracion}
+function socForm(id){const s=S.socios.find(x=>x.id==id)||{nombre:'',documento:'',email:'',telefono:'',plan:S.planes[0].nombre,inicio:today(),emergencia:''};
+openM(`<h2>${id?'Editar':'Nuevo'} socio</h2><div class="fg">${fld('Nombre completo','f1',s.nombre,'text',1)}${fld('Documento','f2',s.documento)}${fld('Teléfono','f3',s.telefono)}${fld('Correo','f4',s.email,'email',1)}${sel('Plan','f5',S.planes.map(p=>p.nombre),s.plan,'calcV()')}${fld('Inicio','f6',s.inicio,'date').replace('<input','<input onchange="calcV()"')}${fld('Vencimiento (auto)','f7',s.vencimiento||addD(s.inicio,planDur(s.plan)),'date')}${fld('Contacto de emergencia','f8',s.emergencia||'')}</div><div id="er"></div>${btns(`saveSoc('${id||''}')`)}`)}
+function calcV(){$('#f7').value=addD($('#f6').value||today(),planDur($('#f5').value))}
+function saveSoc(id){const v=i=>$('#'+i).value.trim();if(!v('f1')||!v('f2')||!v('f3')||!v('f6')){$('#er').innerHTML='<div class="warn e">Completa nombre, documento, teléfono e inicio.</div>';return}
+const o={nombre:v('f1'),documento:v('f2'),telefono:v('f3'),email:v('f4'),plan:v('f5'),inicio:v('f6'),vencimiento:v('f7'),emergencia:v('f8')};
+if(id)Object.assign(S.socios.find(x=>x.id==id),o);else S.socios.push({id:uid(),suspendido:false,estado:'Activo',...o});closeM();render();toast('Socio guardado')}
+function susp(id){const s=S.socios.find(x=>x.id==id);s.suspendido=!s.suspendido;render();toast(s.suspendido?'Socio suspendido':'Socio reactivado')}
+function ficha(id){const s=S.socios.find(x=>x.id==id);const pg=S.pagos.filter(p=>p.socioId==id||p.socio==s.nombre);const as=S.asistencias.filter(a=>a.socio==s.nombre).sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,5);
+openM(`<h2>${esc(s.nombre)} ${pill(s.estado)}</h2><p>Doc. ${esc(s.documento)} · ${esc(s.telefono)} · ${esc(s.email||'sin correo')}</p><p>Plan ${s.plan} · ${s.inicio} → <b>${s.vencimiento}</b></p><p>Emergencia: ${esc(s.emergencia||'—')}</p><h2 style="margin-top:12px">Pagos</h2>${pg.map(p=>`<div class="row"><span>${p.fecha} · ${p.plan}</span><span>${money(p.monto)} ${pill(p.estado)}</span></div>`).join('')||'<p class="sub">Sin pagos</p>'}<h2 style="margin-top:12px">Últimas asistencias</h2>${as.map(a=>`<div class="row"><span>${a.fecha} ${a.hora}</span><span>${a.clase||'Sin clase'}</span></div>`).join('')||'<p class="sub">Sin asistencias</p>'}<div class="acts"><button class="btn g" onclick="closeM()">Cerrar</button></div>`)}
+function payForm(sid){const act=S.planes.filter(p=>p.activo);const s=S.socios.find(x=>x.id==sid);const pn=s?s.plan:act[0].nombre;
+openM(`<h2>Registrar pago</h2><div class="fg"><label class="w">Socio<select id="g1">${S.socios.map(x=>`<option value="${x.id}" ${x.id==sid?'selected':''}>${esc(x.nombre)}</option>`).join('')}</select></label>${sel('Plan','g2',act.map(p=>p.nombre),pn,'$(\'#g3\').value=planPrice()')}${fld('Monto','g3',(S.planes.find(p=>p.nombre==pn)||{}).precio||0,'number')}${sel('Método','g4',S.ajustes.metodos,'')}${fld('Fecha','g5',today(),'date')}</div><div id="er"></div>${btns('savePay()')}`);
+$('#g1').onchange=()=>{const x=S.socios.find(z=>z.id==$('#g1').value);$('#g2').value=x.plan;$('#g3').value=planPrice()}}
+function planPrice(){return(S.planes.find(p=>p.nombre==$('#g2').value)||{}).precio||0}
+function savePay(){const s=S.socios.find(x=>x.id==$('#g1').value),pn=$('#g2').value,m=+$('#g3').value,f=$('#g5').value;if(!s||!(m>0)||!f){$('#er').innerHTML='<div class="warn e">Revisa monto y fecha.</div>';return}
+const dur=planDur(pn),prev=s.vencimiento;const base=diff(prev)>0?prev:f;
+S.pagos.push({id:uid(),socio:s.nombre,socioId:s.id,plan:pn,monto:m,metodo:$('#g4').value,fecha:f,estado:'Pagado',prevV:prev,dur});
+s.vencimiento=addD(base,dur);s.plan=pn;s.suspendido=false;closeM();render();toast('Pago registrado, membresía extendida')}
+function anular(id){openM(`<h2>¿Anular pago?</h2><p>Se revertirá la extensión del vencimiento y se descontará de los ingresos.</p><div class="acts"><button class="btn g" onclick="closeM()">Volver</button><button class="btn d" onclick="doAnular('${id}')">Anular pago</button></div>`)}
+function doAnular(id){const p=S.pagos.find(x=>x.id==id);p.estado='Anulado';const s=S.socios.find(x=>x.id==p.socioId||x.nombre==p.socio);if(s){s.vencimiento=p.prevV||addD(s.vencimiento,-(p.dur||planDur(p.plan)))}closeM();render();toast('Pago anulado')}
+function planForm(id){const p=S.planes.find(x=>x.id==id)||{nombre:'',duracion:30,precio:0,clases:'Sí',descripcion:''};
+openM(`<h2>${id?'Editar':'Nuevo'} plan</h2><div class="fg">${fld('Nombre','h1',p.nombre)}${fld('Duración (días)','h2',p.duracion,'number')}${fld('Precio','h3',p.precio,'number')}${sel('Incluye clases','h4',['Sí','No','Limitado'],p.clases)}<label class="w">Descripción<textarea id="h5" style="min-height:70px;font-family:inherit;font-size:18px">${esc(p.descripcion)}</textarea></label></div><div id="er"></div>${btns(`savePlan('${id||''}')`)}`)}
+function savePlan(id){const o={nombre:$('#h1').value.trim(),duracion:+$('#h2').value,precio:+$('#h3').value,clases:$('#h4').value,descripcion:$('#h5').value};if(!o.nombre||!(o.duracion>0)||!(o.precio>=0)){$('#er').innerHTML='<div class="warn e">Completa nombre, duración y precio.</div>';return}
+if(id){const p=S.planes.find(x=>x.id==id);S.socios.forEach(s=>{if(s.plan==p.nombre)s.plan=o.nombre});Object.assign(p,o)}else S.planes.push({id:uid(),activo:true,...o});closeM();render();toast('Plan guardado')}
+function togPlan(id){const p=S.planes.find(x=>x.id==id);p.activo=!p.activo;render()}
+function claForm(id){const c=S.clases.find(x=>x.id==id)||{nombre:'',instructor:'',dia:'Lunes',hora:'18:00',duracion:60,capacidad:15,inscritos:0};
+openM(`<h2>${id?'Editar':'Nueva'} clase</h2><div class="fg">${fld('Nombre','k1',c.nombre)}${fld('Instructor','k2',c.instructor)}${sel('Día','k3',DIAS.slice(1),c.dia)}${fld('Hora','k4',c.hora,'time')}${fld('Duración (min)','k5',c.duracion||60,'number')}${fld('Capacidad','k6',c.capacidad,'number')}</div><div id="er"></div>${btns(`saveCla('${id||''}')`)}`)}
+function saveCla(id){const o={nombre:$('#k1').value.trim(),instructor:$('#k2').value.trim(),dia:$('#k3').value,hora:$('#k4').value,duracion:+$('#k5').value,capacidad:+$('#k6').value};if(!o.nombre||!o.instructor||!o.hora||!(o.capacidad>0)){$('#er').innerHTML='<div class="warn e">Completa todos los campos.</div>';return}
+if(id)Object.assign(S.clases.find(x=>x.id==id),o);else S.clases.push({id:uid(),inscritos:0,...o});closeM();render();toast('Clase guardada')}
+function del(ent,id){openM(`<h2>¿Eliminar registro?</h2><p>Esta acción no se puede deshacer.</p><div class="acts"><button class="btn g" onclick="closeM()">Cancelar</button><button class="btn d" onclick="doDel('${ent}','${id}')">Eliminar</button></div>`)}
+function doDel(e,id){S[e]=S[e].filter(x=>x.id!=id);closeM();render();toast('Eliminado')}
+function sug(q){q=q.toLowerCase().trim();const b=$('#sg');if(!q){b.innerHTML='';return}
+b.innerHTML='<div class="sug">'+(S.socios.filter(s=>s.nombre.toLowerCase().includes(q)||s.documento.includes(q)).slice(0,6).map(s=>`<div onclick="pick('${s.id}')">${esc(s.nombre)} · ${s.documento} ${pill(s.estado)}</div>`).join('')||'<div>Sin coincidencias</div>')+'</div>'}
+function pick(id){const s=S.socios.find(x=>x.id==id);$('#sg').innerHTML='';$('#qs').value=s.nombre;
+const bad=s.estado=='Vencido'||s.estado=='Suspendido';
+$('#qsel').innerHTML=`<div class="row"><div><b>${esc(s.nombre)}</b> ${pill(s.estado)}<br><span class="sub" style="margin:0">Vence ${s.vencimiento}</span></div></div>${bad?`<div class="warn e">Atención: membresía ${s.estado.toLowerCase()}. Se recomienda regularizar antes del ingreso.</div>`:''}<div class="bar"><select id="qc"><option value="">Sin clase</option>${S.clases.map(c=>`<option ${ui.cl==c.nombre?'selected':''} value="${c.id}">${c.nombre} · ${c.dia} ${c.hora} (${c.inscritos}/${c.capacidad})${c.inscritos>=c.capacidad?' — LLENA':''}</option>`).join('')}</select><button class="btn" onclick="regAs('${id}')">${bad?'Registrar de todos modos':'Registrar entrada'}</button></div>`}
+function regAs(id,cid){const s=S.socios.find(x=>x.id==id);cid=cid??($('#qc')?$('#qc').value:'');const c=S.clases.find(x=>x.id==cid);
+if(c&&c.inscritos>=c.capacidad){toast('Clase llena: no se puede inscribir');return}
+if(c)c.inscritos++;const n=new Date();S.asistencias.push({id:uid(),socio:s.nombre,fecha:today(),hora:String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'),clase:c?c.nombre:'Sin clase'});
+const w=s.estado=='Vencido'||s.estado=='Suspendido';render();toast(w?'Entrada registrada con advertencia':'Entrada registrada')}
+function quick(id){regAs(id,'')}
+load();render();
+</script>
+</body>
+</html>

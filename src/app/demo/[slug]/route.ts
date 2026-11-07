@@ -1,7 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { siteHeaders, withPreviewBadge } from "@/features/deploy/serve";
-import showcase from "@/content/showcase/index.json";
+import data from "@/content/showcase/index.json";
+import type { ShowcaseDemo } from "@/content/showcase/types";
+
+const showcase = data as ShowcaseDemo[];
 
 export const dynamic = "force-static";
 
