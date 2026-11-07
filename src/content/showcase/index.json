@@ -1,5 +1,53 @@
 [
   {
+    "slug": "crm-ventas",
+    "kind": "crm",
+    "title": {
+      "es": "CRM de ventas con cotizaciones",
+      "en": "Sales CRM with quotes"
+    },
+    "summary": {
+      "es": "Embudo por etapas, seguimientos, historial y cotizaciones con descuentos e impuestos.",
+      "en": "Stage pipeline, follow-ups, history and quotes with discounts and taxes."
+    },
+    "idea": "CRM comercial para una distribuidora mayorista: embudo de ventas, contactos, seguimientos y cotizaciones a clientes.",
+    "name": "Nativa Distribuciones · CRM",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 15,
+      "warn": 0,
+      "bad": 0,
+      "total": 15
+    },
+    "calls": 2,
+    "costUsd": 0.2995,
+    "generatedAt": "2026-11-07T16:58:04.927Z"
+  },
+  {
+    "slug": "inventario-produccion",
+    "kind": "inventory",
+    "title": {
+      "es": "Inventario con producción",
+      "en": "Inventory with production"
+    },
+    "summary": {
+      "es": "Insumos, recetas, lotes de producción, pedidos, qué comprar y conteo físico.",
+      "en": "Supplies, recipes, production batches, orders, what to buy and stock counts."
+    },
+    "idea": "Inventario para una jabonería artesanal que fabrica sus productos: insumos, recetas, producción por lotes, producto terminado, pedidos de clientes y compras.",
+    "name": "Espuma de Monte · Inventario",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 15,
+      "warn": 0,
+      "bad": 0,
+      "total": 15
+    },
+    "calls": 2,
+    "costUsd": 0.5413,
+    "generatedAt": "2026-11-07T17:04:59.642Z"
+  },
+  {
     "slug": "restaurante",
     "kind": "web",
     "title": {

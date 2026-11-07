@@ -107,17 +107,22 @@ async function generate(demo) {
   const spec = extractJson(arch.text);
   if (!spec?.pages) throw new Error(`${demo.slug}: especificación no válida`);
   const devUser = developerUser({ spec, images: [] }) + "\n\nNOTA: es una DEMO pública de Ideon; todos los datos (nombres, teléfonos, direcciones, cifras) deben ser claramente ficticios.";
-  let dev = await call("developer", developerSystem(demo.kind), devUser, 32000);
+  const MAX = Number(process.env.SHOWCASE_MAX_TOKENS) || 32000;
+  let dev = await call("developer", developerSystem(demo.kind), devUser, MAX);
   let html = cleanHtml(dev.text);
   const calls = [arch.usage, dev.usage];
   // Igual que la plataforma: si el JavaScript sale con errores de sintaxis, un reintento.
   const jsErr = isCompleteHtml(html) && !dev.truncated ? jsSyntaxErrors(html) : [];
   if (jsErr.length) {
     console.log(`${demo.slug}: error de sintaxis (${jsErr[0]}), reintentando`);
-    dev = await call("developer", developerSystem(demo.kind), devUser + `\n\nIMPORTANTE: un intento anterior produjo JavaScript con un error de sintaxis (${jsErr[0]}). Genera de nuevo el HTML completo y revisa que todo el JavaScript sea válido (paréntesis, llaves y comillas equilibrados).`, 32000);
+    dev = await call("developer", developerSystem(demo.kind), devUser + `\n\nIMPORTANTE: un intento anterior produjo JavaScript con un error de sintaxis (${jsErr[0]}). Genera de nuevo el HTML completo y revisa que todo el JavaScript sea válido (paréntesis, llaves y comillas equilibrados).`, MAX);
     html = cleanHtml(dev.text); calls.push(dev.usage);
   }
-  if (!isCompleteHtml(html) || dev.truncated) throw new Error(`${demo.slug}: HTML incompleto`);
+  if (!isCompleteHtml(html) || dev.truncated) {
+    // El intento fallido también se paga: se registra su coste.
+    const lost = calls.reduce((n, u) => n + cost(u), 0);
+    throw new Error(`${demo.slug}: HTML incompleto (${calls.map((u) => `${u.input_tokens}→${u.output_tokens}`).join(", ")} tokens · $${lost.toFixed(3)} gastados)`);
+  }
   const qa = qaSummary(runQa(html, { app: demo.kind !== "web", imageIds: [] }));
   await fs.writeFile(path.join(OUT, `${demo.slug}.html`), html);
   const usd = calls.reduce((n, u) => n + cost(u), 0);

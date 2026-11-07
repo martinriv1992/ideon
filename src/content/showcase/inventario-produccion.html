@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espuma de Monte · Inventario</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f0e1;--fg:#2f3a2e;--ac:#7d9a7a;--acd:#587456;--wood:#a47148;--card:#fffaf0;--bd:#e3d9c0;--ok:#5c8a4f;--warn:#d9a02b;--bad:#b8483a;--mut:#6b7566}
+*{box-sizing:border-box}
+body{margin:0;font-family:Lora,Georgia,serif;background:var(--bg);color:var(--fg);font-size:15px;line-height:1.45}
+#app{display:flex;min-height:100vh}
+aside{width:244px;background:#e9e3cd;border-right:1px solid var(--bd);padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto;flex-shrink:0;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;gap:10px;align-items:center;padding:4px 8px 14px}
+.logo{width:40px;height:40px;border-radius:50% 50% 50% 12px;background:linear-gradient(135deg,var(--ac),var(--acd));display:grid;place-items:center;color:#fff;flex-shrink:0}
+.brand b{display:block;font-size:16px;line-height:1.15}.brand small{color:var(--mut)}
+.nv{display:flex;align-items:center;gap:10px;border:0;background:none;color:var(--fg);font:inherit;padding:9px 12px;border-radius:12px;cursor:pointer;text-align:left;width:100%}
+.nv:hover{background:#f2ecd9}.nv.on{background:var(--acd);color:#fff}
+.nv svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sf{margin-top:auto;padding:12px 8px 0;font-size:12px;color:var(--mut)}
+main{flex:1;padding:24px 28px 60px;min-width:0;max-width:1200px}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+h1{margin:0;font-size:28px}h2{margin:0 0 12px;font-size:19px}h3{margin:0 0 8px;font-size:16px}
+.badge{background:#f3e4cf;color:#7a4f2a;border:1px solid #e2c9a6;border-radius:99px;padding:3px 12px;font-size:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:18px;margin-bottom:18px;box-shadow:0 2px 8px #7d9a7a14}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}
+.kc{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:16px;color:inherit;text-decoration:none;border-top:4px solid var(--ac);cursor:pointer;display:block;text-align:left;font:inherit;width:100%}
+.kc:hover{transform:translateY(-2px);box-shadow:0 6px 14px #7d9a7a30}
+.kc.w{border-top-color:var(--wood)}.kc.r{border-top-color:var(--bad)}
+.kc small{color:var(--mut);display:block}.kc b{font-size:26px;display:block;margin-top:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.btn{background:var(--acd);color:#fff;border:0;border-radius:12px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{background:#476345}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:5px 11px;font-size:13px;border-radius:9px}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--bd)}.btn.ghost:hover{background:#f2ecd9}
+.btn.wood{background:var(--wood)}.btn.wood:hover{background:#8a5c38}
+.btn.danger{background:var(--bad)}
+.lk{background:none;border:0;color:var(--acd);font:inherit;font-weight:600;cursor:pointer;padding:0;text-align:left;text-decoration:underline}
+.bar{height:8px;background:#e8e0c8;border-radius:9px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;border-radius:9px}
+.tb{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center}
+input,select,textarea{font:inherit;color:var(--fg);background:#fffdf7;border:1px solid #d6cbad;border-radius:10px;padding:8px 10px;width:100%}
+.tb input,.tb select{width:auto;min-width:140px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);border-color:var(--ac)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);padding:8px 10px;border-bottom:2px solid var(--bd);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid #eee5cd;vertical-align:middle}
+tr:hover td{background:#faf3e0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--ok)}
+.dot.bajo{background:var(--warn)}.dot.agotado{background:var(--bad)}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;background:#e5eedf;color:#3f6038;white-space:nowrap}
+.chip.Salida,.chip.Cancelado,.chip.neg{background:#f5ddd8;color:#8d3226}
+.chip.Pendiente,.chip.warn{background:#faecc8;color:#7d5a0c}.chip.Producido{background:#dde8f0;color:#35607f}
+.pos{color:var(--ok);font-weight:600}.neg{color:var(--bad);font-weight:600}
+.empty{color:var(--mut);padding:14px;text-align:center}
+.al{list-style:none;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee5cd}
+ul.l{margin:0;padding:0}.al>div{flex:1;min-width:0}.al small{color:var(--mut);display:block}
+.tl{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--bd)}
+.tl li{position:relative;padding:0 0 12px 14px}.tl li:before{content:"";position:absolute;left:-22px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--ac);border:2px solid var(--card)}
+.tl .Salida:before{background:var(--wood)}.tl .Lote:before{background:var(--acd)}.tl .Pedido:before{background:#5b8bb0}.tl .Conteo:before{background:var(--warn)}
+.tl small{color:var(--mut)}
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.rc{background:#fffdf7;border:1px solid var(--bd);border-radius:16px;padding:16px;border-left:5px solid var(--wood)}
+.rc p{margin:4px 0;color:var(--mut)}.rc .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ov{position:fixed;inset:0;background:#2f3a2e88;display:flex;align-items:center;justify-content:center;padding:14px;z-index:50}
+.ov[hidden]{display:none}
+.dlg{background:var(--card);border-radius:20px;width:min(560px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 50px #0004}
+.dlg.wide{width:min(760px,100%)}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bd)}.dh h2{margin:0}
+.x{background:none;border:0;font-size:26px;cursor:pointer;color:var(--fg)}
+form{display:contents}.db{padding:18px 20px;overflow:auto}.df{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--bd)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fl{display:block}.fl span{display:block;font-size:13px;color:var(--mut);margin-bottom:3px}.fl.full{grid-column:1/-1}
+.err{color:var(--bad);margin:10px 0 0;font-weight:600}
+.ln{display:grid;grid-template-columns:1fr 100px 40px 32px;gap:8px;align-items:center;margin-bottom:8px}
+.u{color:var(--mut);font-size:13px}
+.sum{background:#f1ead3;border-radius:12px;padding:12px;margin-top:10px}
+.warnbox{background:#faecc8;border:1px solid #e8cf86;border-radius:12px;padding:10px 12px;margin:10px 0}
+.okbox{background:#e5eedf;border:1px solid #b9d0b0;border-radius:12px;padding:10px 12px;margin:10px 0}
+.st{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}.st div{background:#f1ead3;border-radius:12px;padding:8px 14px}.st b{display:block;font-size:18px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--fg);color:#fff;padding:10px 20px;border-radius:12px;opacity:0;transition:.3s;z-index:99;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%)}
+textarea.wa{min-height:140px}
+.hint{color:var(--mut);font-size:13px}
+@media(max-width:860px){
+#app{flex-direction:column}
+aside{width:100%;height:auto;position:sticky;z-index:20;flex-direction:row;overflow-x:auto;padding:8px;gap:4px;align-items:center}
+.brand{padding:0 8px 0 4px}.brand small,.sf{display:none}.nv{width:auto;white-space:nowrap;padding:8px 12px}
+main{padding:16px 14px 50px}.g2{grid-template-columns:1fr}h1{font-size:22px}
+}
+@media(max-width:520px){.grid2{grid-template-columns:1fr}.ln{grid-template-columns:1fr 80px 30px 28px}}
+</style>
+</head>
+<body>
+<div id="app"><aside id="side"></aside><main id="main"></main></div>
+<div id="modal" class="ov" hidden></div><div id="toast"></div>
+<script>
+const KEY='espuma-de-monte-inventario';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const r2=n=>Math.round(n*1e4)/1e4;
+const cop=n=>'$ '+Math.round(n||0).toLocaleString('es-CO');
+const nf=n=>(Math.round((n||0)*100)/100).toLocaleString('es-CO');
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const iso=o=>{const d=new Date();d.setDate(d.getDate()+o);return ymd(d)};
+const fd=s=>{if(!s)return'';const[a,b,c]=s.split('-');return c+'/'+b+'/'+a};
+let uidn=0;const uid=p=>p+Date.now().toString(36)+(uidn++);
+let S,V='dashboard',F={},MC=null,RD=null;
+const adm=()=>S.rol==='administración';
+const usr=()=>adm()?'Laura (Administración)':'Mateo (Producción)';
+
+function seed(){
+const P=[['Aceites del Valle S.A.S.','Marcela Ortiz','+57 300 555 0101','Cali',3],['Esencias La Colmena','Julián Restrepo','+57 300 555 0102','Medellín',2],['Química Natural Demo','Paola Mejía','+57 300 555 0103','Bogotá',4],['Empaques Eco Ltda.','Sergio Vargas','+57 300 555 0104','Bucaramanga',5],['Botánica Andina','Elena Duarte','+57 300 555 0105','Manizales',3]].map((p,i)=>({id:'p'+(i+1),nombre:p[0],contacto:p[1],telefono:p[2],ciudad:p[3],plazo:p[4]}));
+const A='Aceites y mantecas',E='Esencias',C='Colorantes naturales',D='Aditivos',SO='Soda cáustica',M='Moldes y empaques';
+const I=[['Aceite de oliva',A,'kg','p1',18,10,24000],['Aceite de coco',A,'kg','p1',6,8,15000],['Manteca de karité',A,'kg','p1',4,3,38000],['Manteca de cacao',A,'kg','p1',0,2,52000],['Aceite de ricino',A,'L','p1',5,2,21000],['Esencia de lavanda',E,'ml','p2',250,300,450],['Esencia de eucalipto',E,'ml','p2',800,300,380],['Esencia de naranja dulce',E,'ml','p2',600,300,350],['Esencia de menta',E,'ml','p2',120,250,500],['Arcilla verde',C,'g','p5',2500,1000,18],['Cúrcuma en polvo',C,'g','p5',900,500,25],['Carbón activado',C,'g','p5',700,400,40],['Avena molida',D,'g','p5',3000,1500,9],['Miel de abeja',D,'g','p5',1200,800,32],['Soda cáustica en perlas',SO,'kg','p3',9,5,9500],['Vitamina E',D,'ml','p3',150,100,600],['Moldes de cartón 100 g',M,'unidad','p4',40,30,700],['Cajas kraft con ventana',M,'unidad','p4',55,80,1500]].map((x,i)=>({id:'i'+(i+1),codigo:'INS-'+String(i+1).padStart(3,'0'),nombre:x[0],categoria:x[1],unidad:x[2],proveedor:x[3],stock:x[4],stock_minimo:x[5],costo_unitario:x[6]}));
+const L=(a)=>a.map(([i,c])=>({i:'i'+i,c}));
+const R=[['Jabón de lavanda',14000,L([[1,.04],[2,.02],[3,.01],[15,.012],[6,3],[17,1],[18,1]]),'Curado de 4 semanas.'],['Jabón de avena y miel',13000,L([[1,.05],[2,.02],[15,.013],[13,10],[14,5],[17,1],[18,1]]),'Agregar la avena en traza media.'],['Jabón de carbón activado',15000,L([[1,.045],[2,.025],[15,.013],[12,4],[9,2],[17,1],[18,1]]),'Disolver el carbón en aceite antes de mezclar.'],['Jabón de naranja y cúrcuma',13500,L([[1,.04],[2,.02],[5,.005],[15,.012],[8,3],[11,3],[18,1]]),'Cúrcuma en poca cantidad para no manchar.'],['Jabón de arcilla verde y eucalipto',14500,L([[1,.045],[3,.015],[15,.012],[10,5],[7,3],[18,1]]),'Moldear en caliente.'],['Jabón de cacao',16000,L([[1,.03],[4,.03],[15,.012],[16,1],[17,1],[18,1]]),'Temperatura baja para conservar aromas.']].map((r,i)=>({id:'r'+(i+1),producto:r[0],precio_venta:r[1],ing:r[2],notas:r[3]}));
+const cost=r=>r.ing.reduce((s,l)=>s+l.c*I.find(x=>x.id===l.i).costo_unitario,0);
+const resp=['Mateo Gil','Daniela Cruz'];
+const Lo=[[0,20,38],[1,15,31],[2,12,24],[3,18,17],[4,20,10],[0,15,6],[5,10,3],[1,12,1]].map((x,i)=>({id:'l'+(i+1),codigo:'L-'+String(i+1).padStart(3,'0'),receta:'r'+(x[0]+1),unidades:x[1],fecha:iso(-x[2]),responsable:resp[i%2],costo_total:Math.round(cost(R[x[0]])*x[1])}));
+const base={kg:[1,2,3],L:[1,1,2],ml:[60,90,150],g:[300,450,600],unidad:[5,10,20]};
+const Mv=[];
+for(let i=0;i<30;i++){const x=I[(i*7)%18],b=base[x.unidad][i%3],ent=i%4===0;const mo=ent?'Compra':['Producción','Merma','Uso manual','Producción'][i%4];
+Mv.push({id:'m'+(i+1),fecha:iso(-((i*1)%30)),insumo:x.id,tipo:ent?'Entrada':'Salida',cantidad:b,motivo:mo,nota:ent?'Compra a '+P.find(p=>p.id===x.proveedor).nombre:'',origen:mo==='Producción'?'Lote':'Manual',usuario:i%2?'Mateo (Producción)':'Laura (Administración)'})}
+const Pe=[['Tienda Brisa Verde','+57 310 555 0201',0,12,4,'Pendiente',3],['Spa Raíces (demo)','+57 310 555 0202',2,20,6,'Pendiente',2],['Hotel Cumbres Demo','+57 310 555 0203',2,8,9,'Pendiente',1],['Laura Gómez','+57 310 555 0204',4,6,2,'Pendiente',1],['Café Los Nogales','+57 310 555 0205',1,10,1,'Producido',6],['Boutique Aldea','+57 310 555 0206',5,3,3,'Producido',5],['Andrés Pineda','+57 310 555 0207',3,6,-5,'Entregado',14],['Mercado Sol Demo','+57 310 555 0208',0,15,-9,'Entregado',20],['Eco Regalos Demo','+57 310 555 0209',4,10,-3,'Entregado',12],['Clara Montoya','+57 310 555 0210',1,5,-1,'Cancelado',9]].map((x,i)=>({id:'o'+(i+1),numero:'P-'+String(i+1).padStart(3,'0'),cliente:x[0],telefono:x[1],producto:'r'+(x[2]+1),cantidad:x[3],fecha_entrega:iso(x[4]),estado:x[5],creado:iso(-x[6]),notas:'',total:x[3]*R[x[2]].precio_venta}));
+const Co=[{id:'c1',fecha:iso(-12),responsable:'Daniela Cruz',aplicado:true,items:[{i:'i1',s:18,c:17.5},{i:'i2',s:6,c:6.5},{i:'i6',s:250,c:240},{i:'i15',s:9,c:9},{i:'i17',s:40,c:38}]},{id:'c2',fecha:iso(-2),responsable:'Mateo Gil',aplicado:false,items:[{i:'i3',s:4,c:3.8},{i:'i7',s:800,c:820},{i:'i13',s:3000,c:2900},{i:'i18',s:55,c:52}]}];
+return{negocio:'Espuma de Monte',rol:'administración',cats:['Aceites y mantecas','Esencias','Colorantes naturales','Aditivos','Soda cáustica','Moldes y empaques'],unis:['g','kg','ml','L','unidad'],proveedores:P,insumos:I,movimientos:Mv,recetas:R,lotes:Lo,pedidos:Pe,terminado:{r1:24,r2:15,r3:6,r4:10,r5:18,r6:3},conteos:Co,lista:[],compras:{}}}
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const t=localStorage.getItem(KEY);if(t){const o=JSON.parse(t);if(o&&Array.isArray(o.insumos)&&Array.isArray(o.recetas)){S=o;return}}}catch(e){}S=seed()}
+function persist(){save();render()}
+function toast(m){const t=$('#toast');t.textContent=m;t.className='show';clearTimeout(toast.t);toast.t=setTimeout(()=>t.className='',2600)}
+
+const ins=id=>S.insumos.find(x=>x.id===id),rec=id=>S.recetas.find(x=>x.id===id),prv=id=>S.proveedores.find(x=>x.id===id);
+const est=i=>i.stock<=0?'agotado':i.stock<=i.stock_minimo?'bajo':'ok';
+const consumo=(id,d=30)=>{const c=iso(-d);return S.movimientos.filter(m=>m.insumo===id&&m.tipo==='Salida'&&m.motivo!=='Ajuste de conteo'&&m.fecha>=c).reduce((s,m)=>s+m.cantidad,0)};
+const rcost=r=>r.ing.reduce((s,l)=>s+l.c*(ins(l.i)?.costo_unitario||0),0);
+const reservado=rid=>S.pedidos.filter(p=>p.producto===rid&&(p.estado==='Pendiente'||p.estado==='Producido')).reduce((s,p)=>s+p.cantidad,0);
+const unit=id=>ins(id)?.unidad||'';
+const pname=id=>rec(id)?.producto||'(receta eliminada)';
+
+function addMov(o){const x=ins(o.insumo);if(!x)return'Insumo no encontrado.';
+if(o.tipo==='Salida'&&o.cantidad>x.stock+1e-9)return`Stock insuficiente: disponible ${nf(x.stock)} ${x.unidad}.`;
+x.stock=r2(x.stock+(o.tipo==='Entrada'?1:-1)*o.cantidad);
+S.movimientos.push({id:uid('m'),fecha:o.fecha||iso(0),insumo:o.insumo,tipo:o.tipo,cantidad:o.cantidad,motivo:o.motivo,nota:o.nota||'',origen:o.origen||'Manual',usuario:o.usuario||usr()})}
+
+const tb=(cols,data,empty)=>{cols=cols.filter(c=>!c[2]||adm());return data.length?`<div class="tw"><table><thead><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr></thead><tbody>${data.map(d=>`<tr>${cols.map(c=>`<td>${c[1](d)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:`<p class="empty">${empty||'Sin resultados.'}</p>`};
+const bt=(a,l,id='',cls='sm',x='')=>`<button type="button" class="btn ${cls}" data-a="${a}" data-id="${esc(id)}" ${x}>${l}</button>`;
+const opts=(arr,v)=>arr.map(x=>{const[a,b]=Array.isArray(x)?x:[x,x];return`<option value="${esc(a)}"${a==v?' selected':''}>${esc(b)}</option>`}).join('');
+function fld(f,v=''){let c;
+if(f.t==='select')c=`<select name="${f.k}">${opts(f.o||[],v)}</select>`;
+else if(f.t==='textarea')c=`<textarea name="${f.k}" rows="3">${esc(v)}</textarea>`;
+else{const n=f.t==='number'||f.t==='money';c=`<input name="${f.k}" type="${n?'number':f.t==='phone'?'tel':f.t}" ${n?'step="any" min="0"':''} value="${esc(v)}">`}
+return`<label class="fl ${f.w?'full':''}"><span>${f.l}${f.r?' *':''}</span>${c}</label>`}
+const chk=(o,fs)=>{const m=fs.find(f=>f.r&&String(o[f.k]??'').trim()==='');return m?'Completa el campo: '+m.l:''};
+
+function modal(title,body,cb,ok='Guardar',wide){MC=cb;const m=$('#modal');m.hidden=false;
+m.innerHTML=`<div class="dlg${wide?' wide':''}" role="dialog" aria-modal="true"><div class="dh"><h2>${title}</h2><button type="button" class="x" data-a="close" aria-label="Cerrar">×</button></div><form data-submit="modal" data-live="${wide==='rec'?'rec':''}" novalidate><div class="db">${body}<p class="err" id="merr"></p></div><div class="df"><button type="button" class="btn ghost" data-a="close">${ok?'Cancelar':'Cerrar'}</button>${ok?`<button class="btn${ok==='Eliminar'?' danger':''}">${ok}</button>`:''}</div></form></div>`}
+function closeM(){MC=null;const m=$('#modal');m.hidden=true;m.innerHTML=''}
+const askDel=(msg,fn)=>{if(!adm())return;modal('Confirmar eliminación',`<p>${msg}</p><p class="hint">Esta acción no se puede deshacer.</p>`,()=>{fn();toast('Registro eliminado')},'Eliminar')};
+
+const ICON={dashboard:'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z',insumos:'M4 7l8-4 8 4v10l-8 4-8-4zM4 7l8 4 8-4M12 11v10',movimientos:'M7 4v16M7 4L4 7M7 4l3 3M17 20V4M17 20l-3-3M17 20l3-3',recetas:'M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3zM9 8h6M9 12h6',produccion:'M3 20h18M5 20V9l5 3V9l5 3V6h4v14',terminado:'M4 8l8-4 8 4-8 4zM4 8v8l8 4 8-4V8',pedidos:'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6',compras:'M3 4h2l2 12h11l2-8H6M9 20h.01M17 20h.01',proveedores:'M3 21V9l9-5 9 5v12M9 21v-6h6v6',conteos:'M9 11l3 3 8-8M20 12v8H4V4h10',ajustes:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2'};
+const TITLES={dashboard:'Panel',insumos:'Insumos',movimientos:'Movimientos',recetas:'Recetas',produccion:'Producción',terminado:'Producto terminado',pedidos:'Pedidos',compras:'Lista de compras',proveedores:'Proveedores',conteos:'Conteos físicos',ajustes:'Ajustes'};
+const allowed=v=>adm()||!['compras','proveedores'].includes(v);
+function side(){return`<div class="brand"><div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M12 3c4 4 6 7 6 10a6 6 0 01-12 0c0-3 2-6 6-10zM12 21V12"/></svg></div><div><b>${esc(S.negocio)}</b><small>Inventario</small></div></div>`+Object.keys(TITLES).filter(allowed).map(k=>`<button class="nv${k===V?' on':''}" data-a="nav" data-id="${k}"><svg viewBox="0 0 24 24"><path d="${ICON[k]}"/></svg>${TITLES[k]}</button>`).join('')+`<div class="sf">Rol: <b>${esc(S.rol)}</b><br>Datos de ejemplo ficticios</div>`}
+
+function render(){if(!allowed(V))V='dashboard';
+$('#side').innerHTML=side();const vw=VIEWS[V];
+$('#main').innerHTML=`<div class="top"><h1>${TITLES[V]}</h1><span class="badge">Demo · datos de ejemplo ficticios · ${esc(S.rol)}</span></div>`+vw.shell();
+const r=$('#res');if(r&&vw.fill)r.innerHTML=vw.fill();if(vw.after)vw.after()}
+
+function events(){const e=[];
+S.movimientos.filter(m=>m.origen==='Manual').forEach(m=>e.push({f:m.fecha,k:m.tipo,u:m.usuario,d:`${m.tipo} de ${nf(m.cantidad)} ${unit(m.insumo)} · ${ins(m.insumo)?.nombre||'?'} (${m.motivo})`}));
+S.lotes.forEach(l=>e.push({f:l.fecha,k:'Lote',u:l.responsable,d:`Lote ${l.codigo}: ${l.unidades} u. de ${pname(l.receta)}`}));
+S.pedidos.forEach(p=>e.push({f:p.creado,k:'Pedido',u:'Ventas',d:`Pedido ${p.numero} de ${p.cliente}: ${p.cantidad} u. de ${pname(p.producto)} (${p.estado})`}));
+S.conteos.forEach(c=>e.push({f:c.fecha,k:'Conteo',u:c.responsable,d:`Conteo físico de ${c.items.length} insumos${c.aplicado?' (aplicado)':''}`}));
+return e.sort((a,b)=>b.f.localeCompare(a.f)).slice(0,10)}
+
+function chart(){const t=S.insumos.map(i=>({n:i.nombre,v:consumo(i.id),u:i.unidad})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,8);
+if(!t.length)return'<p class="empty">Aún no hay salidas en los últimos 30 días.</p>';
+const mx=t[0].v,H=t.length*32+8;
+return`<svg viewBox="0 0 600 ${H}" width="100%" role="img" aria-label="Insumos más consumidos en 30 días">${t.map((x,i)=>{const w=Math.max(3,x.v/mx*300),y=i*32+4;return`<text x="0" y="${y+17}" font-size="12" fill="#2f3a2e">${esc(x.n.length>24?x.n.slice(0,23)+'…':x.n)}</text><rect x="175" y="${y+3}" width="${w}" height="20" rx="6" fill="${i%2?'#7d9a7a':'#a47148'}"/><text x="${180+w}" y="${y+17}" font-size="12" fill="#2f3a2e">${nf(x.v)} ${x.u}</text>`}).join('')}</svg>`}
+
+const VIEWS={};
+VIEWS.dashboard={shell(){
+const lows=S.insumos.filter(i=>i.stock<=i.stock_minimo),val=S.insumos.reduce((s,i)=>s+i.stock*i.costo_unitario,0);
+const pend=S.pedidos.filter(p=>p.estado==='Pendiente').length,mes=ymd(new Date()).slice(0,7),lm=S.lotes.filter(l=>l.fecha.startsWith(mes)).length;
+const lc=S.conteos[S.conteos.length-1];let cdiff='—',csub='Sin conteos';
+if(lc){const d=lc.items.filter(x=>Math.abs(x.c-x.s)>1e-9);csub=`${d.length} insumos con diferencia`;cdiff=adm()?cop(lc.items.reduce((s,x)=>s+(x.c-x.s)*(ins(x.i)?.costo_unitario||0),0)):d.length+' dif.'}
+const k=(v,e,cl,l,b,s)=>`<button class="kc ${cl}" data-a="nav" data-id="${v}" data-e="${e}"><small>${l}</small><b>${b}</b><small>${s}</small></button>`;
+const top=S.insumos.filter(i=>i.stock<=i.stock_minimo);
+return`<div class="top" style="margin-top:-8px"><span class="hint">${esc(S.negocio)} · resumen de hoy, ${fd(iso(0))}</span><button class="btn wood" data-a="nav" data-id="produccion">Registrar lote de producción</button></div>
+<div class="kp">${k('insumos','alerta','r','Insumos en stock bajo',lows.length,'incluye agotados')}${adm()?k('insumos','','','Valor del inventario',cop(val),'a costo unitario actual'):''}${k('pedidos','Pendiente','w','Pedidos pendientes',pend,'por producir o entregar')}${k('produccion','','','Lotes producidos este mes',lm,'ver historial')}${k('conteos','','w','Diferencia del último conteo',cdiff,csub)}</div>
+<div class="g2"><div class="card"><h2>Alertas de stock bajo</h2>${top.length?`<ul class="l">${top.map(i=>`<li class="al"><div><b>${esc(i.nombre)}</b><small>${nf(i.stock)} / mín. ${nf(i.stock_minimo)} ${i.unidad}${adm()?' · '+esc(prv(i.proveedor)?.nombre):''}</small><div class="bar"><i style="width:${Math.min(100,i.stock/i.stock_minimo*100)}%;background:${est(i)==='agotado'?'var(--bad)':'var(--warn)'}"></i></div></div>${adm()?bt('addc',S.lista.includes(i.id)?'En la lista ✓':'Agregar a lista de compras',i.id):''}</li>`).join('')}</ul>`:'<p class="empty">Todo el inventario está por encima del mínimo.</p>'}</div>
+<div class="card"><h2>Lo que más sale en 30 días</h2>${chart()}</div></div>
+<div class="card"><h2>Actividad reciente</h2><ul class="tl">${events().map(e=>`<li class="${e.k}"><b>${e.k}</b> · ${esc(e.d)}<br><small>${fd(e.f)} · ${esc(e.u)}</small></li>`).join('')}</ul></div>`}};
+
+VIEWS.insumos={shell(){return`<div class="card"><div class="tb"><input data-f="iq" placeholder="Buscar por código o nombre" value="${esc(F.iq||'')}"><select data-f="ic"><option value="">Todas las categorías</option>${opts(S.cats,F.ic)}</select><select data-f="ie">${opts([['','Todos los estados'],['alerta','En alerta (bajo + agotado)'],['ok','Ok'],['bajo','Bajo'],['agotado','Agotado']],F.ie||'')}</select>${adm()?bt('ins-new','+ Nuevo insumo','','',''):''}</div><div id="res"></div></div>`},
+fill(){const q=(F.iq||'').toLowerCase(),d=S.insumos.filter(i=>(!q||(i.codigo+' '+i.nombre).toLowerCase().includes(q))&&(!F.ic||i.categoria===F.ic)&&(!F.ie||(F.ie==='alerta'?est(i)!=='ok':est(i)===F.ie)));
+return tb([['Código',i=>i.codigo],['Nombre',i=>bt('ins-view',esc(i.nombre),i.id,'lk')],['Categoría',i=>esc(i.categoria)],['Unidad',i=>i.unidad],['Proveedor',i=>esc(prv(i.proveedor)?.nombre||'—'),1],['Stock',i=>`<span class="dot ${est(i)}"></span>${nf(i.stock)}`],['Mínimo',i=>nf(i.stock_minimo)],['Costo unit.',i=>cop(i.costo_unitario),1],['',i=>bt('ins-view','Ver',i.id,'sm ghost')+(adm()?' '+bt('ins-edit','Editar',i.id,'sm ghost')+' '+bt('ins-del','Eliminar',i.id,'sm ghost'):'')]],d)}};
+
+function insForm(id){const x=id?ins(id):{};
+const fs=[{k:'codigo',l:'Código',t:'text',r:1},{k:'nombre',l:'Nombre',t:'text',r:1},{k:'categoria',l:'Categoría',t:'select',o:S.cats,r:1},{k:'unidad',l:'Unidad',t:'select',o:S.unis,r:1},{k:'proveedor',l:'Proveedor',t:'select',o:S.proveedores.map(p=>[p.id,p.nombre]),r:1},{k:'stock',l:'Stock actual',t:'number',r:1},{k:'stock_minimo',l:'Stock mínimo',t:'number',r:1},{k:'costo_unitario',l:'Costo unitario (COP)',t:'money',r:1}];
+modal(id?'Editar insumo':'Nuevo insumo',`<div class="grid2">${fs.map(f=>fld(f,x[f.k])).join('')}</div>`,o=>{
+const e=chk(o,fs);if(e)return e;
+if(S.insumos.some(i=>i.id!==id&&i.codigo.toLowerCase()===o.codigo.trim().toLowerCase()))return'Ya existe un insumo con ese código.';
+if(+o.stock<0||+o.stock_minimo<0||+o.costo_unitario<0)return'Los valores no pueden ser negativos.';
+const d={codigo:o.codigo.trim(),nombre:o.nombre.trim(),categoria:o.categoria,unidad:o.unidad,proveedor:o.proveedor,stock:+o.stock,stock_minimo:+o.stock_minimo,costo_unitario:+o.costo_unitario};
+if(id)Object.assign(x,d);else S.insumos.push({id:uid('i'),...d});persist();toast('Insumo guardado')})}
+
+function movFields(pre,tipo){return`<label class="fl"><span>Insumo *</span><select name="insumo">${opts(S.insumos.map(i=>[i.id,`${i.nombre} (${nf(i.stock)} ${i.unidad})`]),pre)}</select></label>
+<label class="fl"><span>Tipo *</span><select name="tipo">${opts(['Entrada','Salida'],tipo||'Entrada')}</select></label>
+<label class="fl"><span>Cantidad *</span><input name="cantidad" type="number" step="any" min="0"></label>
+<label class="fl"><span>Motivo *</span><select name="motivo">${opts(['Compra','Merma','Ajuste','Uso manual','Devolución'])}</select></label>
+<label class="fl full"><span>Nota</span><textarea name="nota" rows="2"></textarea></label>`}
+function regMov(o){const c=+o.cantidad;if(!(c>0))return'La cantidad debe ser mayor a 0.';
+const e=addMov({insumo:o.insumo,tipo:o.tipo,cantidad:c,motivo:o.motivo==='Ajuste'?'Ajuste de conteo':o.motivo,nota:o.nota});if(e)return e;persist();toast('Movimiento registrado')}
+function movModal(id,tipo){modal('Registrar '+tipo.toLowerCase(),`<div class="grid2">${movFields(id,tipo)}</div>`,regMov)}
+
+function ficha(id){const i=ins(id);if(!i)return;
+const ms=S.movimientos.filter(m=>m.insumo===id).slice(-8).reverse(),rs=S.recetas.filter(r=>r.ing.some(l=>l.i===id));
+modal(esc(i.nombre),`<p class="hint">${i.codigo} · ${esc(i.categoria)}${adm()?' · '+esc(prv(i.proveedor)?.nombre):''}</p>
+<div class="st"><div><small>Stock</small><b><span class="dot ${est(i)}"></span>${nf(i.stock)} ${i.unidad}</b></div><div><small>Mínimo</small><b>${nf(i.stock_minimo)}</b></div><div><small>Consumo 30 días</small><b>${nf(consumo(id))}</b></div>${adm()?`<div><small>Costo unitario</small><b>${cop(i.costo_unitario)}</b></div>`:''}</div>
+<p>${bt('mov-in','+ Entrada',id,'')} ${bt('mov-out','− Salida',id,'wood')}</p>
+<h3>Movimientos recientes</h3>${tb([['Fecha',m=>fd(m.fecha)],['Tipo',m=>`<span class="chip ${m.tipo}">${m.tipo}</span>`],['Cant.',m=>nf(m.cantidad)],['Motivo',m=>m.motivo],['Origen',m=>m.origen]],ms,'Sin movimientos.')}
+<h3 style="margin-top:14px">Recetas que lo usan</h3>${rs.length?rs.map(r=>`<span class="chip">${esc(r.producto)} · ${nf(r.ing.find(l=>l.i===id).c)} ${i.unidad}/u</span>`).join(' '):'<p class="hint">Ninguna receta lo usa.</p>'}`,null,'','wide')}
+
+VIEWS.movimientos={shell(){return`<div class="card"><h2>Registrar entrada o salida</h2><form data-submit="mov"><div class="grid2">${movFields('','Entrada')}</div><p class="err" id="movErr"></p><button class="btn">Guardar movimiento</button></form></div>
+<div class="card"><h2>Historial de movimientos</h2><div class="tb"><label class="hint">Desde <input type="date" data-f="md" value="${F.md||''}"></label><label class="hint">Hasta <input type="date" data-f="mh" value="${F.mh||''}"></label><select data-f="mt"><option value="">Entradas y salidas</option>${opts(['Entrada','Salida'],F.mt)}</select><select data-f="mm"><option value="">Todos los motivos</option>${opts(['Compra','Producción','Merma','Ajuste de conteo','Uso manual','Devolución'],F.mm)}</select></div><div id="res"></div></div>`},
+fill(){const d=S.movimientos.filter(m=>(!F.md||m.fecha>=F.md)&&(!F.mh||m.fecha<=F.mh)&&(!F.mt||m.tipo===F.mt)&&(!F.mm||m.motivo===F.mm)).slice().reverse().sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,200);
+return tb([['Fecha',m=>fd(m.fecha)],['Insumo',m=>esc(ins(m.insumo)?.nombre||'(eliminado)')],['Tipo',m=>`<span class="chip ${m.tipo}">${m.tipo}</span>`],['Cantidad',m=>nf(m.cantidad)+' '+unit(m.insumo)],['Motivo',m=>m.motivo],['Usuario',m=>esc(m.usuario)],['Origen',m=>m.origen]],d)}};
+
+VIEWS.recetas={shell(){return`<div class="card"><div class="tb"><h2 style="margin:0;flex:1">Recetas por producto</h2>${adm()?bt('rec-new','+ Nueva receta','','',''):''}</div>${S.recetas.length?`<div class="rg">${S.recetas.map(r=>`<div class="rc"><h3>${esc(r.producto)}</h3><p>${r.ing.length} insumos por unidad</p>${adm()?`<p>Costo estimado: <b style="color:var(--fg)">${cop(rcost(r))}</b> · Precio: <b style="color:var(--fg)">${cop(r.precio_venta)}</b></p>`:''}<p>${esc(r.notas||'')}</p><div class="acts">${bt('prod-for','Producir lote',r.id,'sm')}${adm()?bt('rec-edit','Editar',r.id,'sm ghost')+bt('rec-del','Eliminar',r.id,'sm ghost'):bt('rec-view','Ver insumos',r.id,'sm ghost')}</div></div>`).join('')}</div>`:'<p class="empty">No hay recetas.</p>'}</div>`}};
+
+function recBody(){const sel=S.insumos.map(i=>[i.id,i.nombre]);
+return`<div class="grid2"><label class="fl full"><span>Producto *</span><input name="producto" value="${esc(RD.producto)}"></label><label class="fl"><span>Precio de venta (COP) *</span><input name="precio" type="number" min="0" step="any" value="${esc(RD.precio)}"></label><label class="fl"><span>Notas de elaboración</span><input name="notas" value="${esc(RD.notas)}"></label></div>
+<h3 style="margin-top:14px">Insumos por unidad producida</h3>${RD.ing.map((l,n)=>`<div class="ln"><select name="i${n}">${opts(sel,l.i)}</select><input name="c${n}" type="number" min="0" step="any" value="${esc(l.c)}" placeholder="Cant."><span class="u">${unit(l.i)}</span>${bt('rl-del','✕',n,'sm ghost')}</div>`).join('')}
+${bt('rl-add','+ Agregar insumo','','sm ghost')}<div class="sum" id="rcost"></div>`}
+function syncRec(){const f=$('#modal form');if(!f)return;RD.producto=f.producto.value;RD.precio=f.precio.value;RD.notas=f.notas.value;RD.ing=RD.ing.map((l,n)=>({i:f.elements['i'+n].value,c:f.elements['c'+n].value}))}
+function updRec(){syncRec();document.querySelectorAll('.ln .u').forEach((e,n)=>e.textContent=unit(RD.ing[n].i));
+const c=RD.ing.reduce((s,l)=>s+(+l.c||0)*(ins(l.i)?.costo_unitario||0),0);
+$('#rcost').innerHTML=`Costo total por unidad: <b>${cop(c)}</b><br>Sugerencia de precio (margen ~55%): <b>${cop(Math.ceil(c/0.45/100)*100)}</b>`}
+function drawRec(){modal(RD.id?'Editar receta':'Nueva receta',recBody(),o=>{syncRec();
+if(!RD.producto.trim())return'Escribe el nombre del producto.';if(!(+RD.precio>0))return'Indica el precio de venta.';
+const ing=RD.ing.filter(l=>+l.c>0).map(l=>({i:l.i,c:+l.c}));if(!ing.length)return'Agrega al menos un insumo con cantidad.';
+const d={producto:RD.producto.trim(),precio_venta:+RD.precio,notas:RD.notas,ing};
+if(RD.id)Object.assign(rec(RD.id),d);else{const id=uid('r');S.recetas.push({id,...d});S.terminado[id]=0}
+persist();toast('Receta guardada')},'Guardar','rec');updRec()}
+
+VIEWS.produccion={shell(){const r0=F.lr||S.recetas[0]?.id;return`<div class="card"><h2>Registrar lote</h2><form data-submit="lote" data-live="lote"><div class="grid2"><label class="fl"><span>Receta *</span><select name="receta">${opts(S.recetas.map(r=>[r.id,r.producto]),r0)}</select></label><label class="fl"><span>Unidades *</span><input name="unidades" type="number" min="1" step="1" value="${F.lu||10}"></label><label class="fl"><span>Fecha *</span><input name="fecha" type="date" value="${iso(0)}"></label><label class="fl"><span>Responsable *</span><input name="responsable" value="${esc(adm()?'Daniela Cruz':'Mateo Gil')}"></label></div><div id="prev"></div><p class="err" id="lerr"></p><button class="btn wood" id="lbtn">Confirmar lote</button></form></div>
+<div class="card"><h2>Historial de lotes</h2><div id="res"></div></div>`},
+fill(){return tb([['Lote',l=>l.codigo],['Producto',l=>esc(pname(l.receta))],['Unidades',l=>l.unidades],['Costo total',l=>cop(l.costo_total),1],['Costo/unidad',l=>cop(l.costo_total/l.unidades),1],['Fecha',l=>fd(l.fecha)],['Responsable',l=>esc(l.responsable)]],S.lotes.slice().reverse())},
+after(){updLote($('form[data-live=lote]'))}};
+function lotePrev(rid,u){const r=rec(rid);if(!r||!(u>0))return null;const rows=r.ing.map(l=>{const x=ins(l.i),need=r2(l.c*u);return{x,need,ok:!!x&&x.stock+1e-9>=need}});return{r,rows,ok:rows.every(a=>a.ok),costo:rows.reduce((s,a)=>s+a.need*(a.x?.costo_unitario||0),0)}}
+function updLote(f){if(!f)return;F.lr=f.receta.value;F.lu=f.unidades.value;const p=lotePrev(f.receta.value,+f.unidades.value);
+$('#lbtn').disabled=!p||!p.ok;if(!p){$('#prev').innerHTML='<p class="hint">Elige receta y unidades para ver el consumo.</p>';return}
+$('#prev').innerHTML=`<h3 style="margin-top:12px">Insumos a consumir</h3>`+tb([['Insumo',a=>esc(a.x?.nombre||'?')],['Necesario',a=>nf(a.need)+' '+(a.x?.unidad||'')],['Disponible',a=>nf(a.x?.stock)],['Estado',a=>a.ok?'<span class="chip">Alcanza</span>':`<span class="chip Salida">Falta ${nf(a.need-(a.x?.stock||0))}</span>`]],p.rows)+(p.ok?`<div class="okbox">Stock suficiente.${adm()?` Costo del lote: <b>${cop(p.costo)}</b> (${cop(p.costo/+f.unidades.value)} por unidad).`:''}</div>`:'<div class="warnbox"><b>Lote bloqueado:</b> falta stock de uno o más insumos. Regístralos en Movimientos o revisa la lista de compras.</div>')}
+
+VIEWS.terminado={shell(){return`<div class="card"><h2>Existencias de producto terminado</h2><p class="hint">Reservadas = unidades de pedidos pendientes o producidos aún sin entregar.</p>${tb([['Producto',r=>esc(r.producto)],['Disponibles',r=>S.terminado[r.id]||0],['Reservadas',r=>reservado(r.id)],['Precio venta',r=>cop(r.precio_venta),1],['Disponibilidad real',r=>{const d=(S.terminado[r.id]||0)-reservado(r.id);return`<b class="${d<0?'neg':'pos'}">${d}</b>${d<0?' (faltan '+(-d)+')':''}`}],['',r=>bt('tf-adj','Ajustar',r.id,'sm ghost')]],S.recetas)}</div>`}};
+
+VIEWS.pedidos={shell(){return`<div class="card"><div class="tb"><input data-f="pq" placeholder="Buscar cliente o número" value="${esc(F.pq||'')}"><select data-f="pe"><option value="">Todos los estados</option>${opts(['Pendiente','Producido','Entregado','Cancelado'],F.pe)}</select>${bt('ped-new','+ Nuevo pedido','','','')}</div><div id="res"></div></div>`},
+fill(){const q=(F.pq||'').toLowerCase(),d=S.pedidos.filter(p=>(!q||(p.numero+' '+p.cliente).toLowerCase().includes(q))&&(!F.pe||p.estado===F.pe)).slice().reverse();
+return tb([['Número',p=>bt('ped-view',p.numero,p.id,'lk')],['Cliente',p=>esc(p.cliente)],['Producto',p=>esc(pname(p.producto))],['Cant.',p=>p.cantidad],['Entrega',p=>fd(p.fecha_entrega)],['Total',p=>cop(p.total),1],['Estado',p=>`<select data-chg="pest" data-id="${p.id}" style="width:auto;padding:4px 8px">${opts(['Pendiente','Producido','Entregado','Cancelado'],p.estado)}</select>`],['',p=>bt('ped-view','Detalle',p.id,'sm ghost')+(adm()?' '+bt('ped-del','Eliminar',p.id,'sm ghost'):'')]],d)}};
+function pedForm(id){const x=id?S.pedidos.find(p=>p.id===id):{};
+const fs=[{k:'cliente',l:'Cliente',t:'text',r:1},{k:'telefono',l:'Teléfono',t:'phone'},{k:'producto',l:'Producto',t:'select',o:S.recetas.map(r=>[r.id,r.producto]),r:1},{k:'cantidad',l:'Cantidad',t:'number',r:1},{k:'fecha_entrega',l:'Fecha de entrega',t:'date',r:1},{k:'notas',l:'Notas',t:'textarea',w:1}];
+modal(id?'Editar pedido':'Nuevo pedido',`<div class="grid2">${fs.map(f=>fld(f,f.k==='fecha_entrega'&&!id?iso(5):x[f.k])).join('')}</div>${adm()?'<div class="sum">Total: <b id="ptot">—</b></div>':''}`,o=>{
+const e=chk(o,fs);if(e)return e;const c=+o.cantidad;if(!(c>0))return'La cantidad debe ser mayor a 0.';
+const d={cliente:o.cliente.trim(),telefono:o.telefono,producto:o.producto,cantidad:c,fecha_entrega:o.fecha_entrega,notas:o.notas,total:c*(rec(o.producto)?.precio_venta||0)};
+if(id)Object.assign(x,d);else S.pedidos.push({id:uid('o'),numero:'P-'+String(Math.max(0,...S.pedidos.map(p=>parseInt(p.numero.slice(2))||0))+1).padStart(3,'0'),estado:'Pendiente',creado:iso(0),...d});
+persist();toast('Pedido guardado')});const f=$('#modal form');f.dataset.live='ped';LIVE.ped(f)}
+function pedState(p,n){const o=p.estado;if(o===n)return;
+if(n==='Entregado'){if((S.terminado[p.producto]||0)<p.cantidad){toast('No hay producto terminado suficiente para entregar.');render();return}S.terminado[p.producto]-=p.cantidad}
+if(o==='Entregado')S.terminado[p.producto]=(S.terminado[p.producto]||0)+p.cantidad;
+p.estado=n;persist();toast(`Pedido ${p.numero}: ${n}`)}
+function pedView(id){const p=S.pedidos.find(x=>x.id===id);if(!p)return;
+const act=p.estado==='Pendiente'||p.estado==='Producido',disp=(S.terminado[p.producto]||0)-reservado(p.producto)+(act?p.cantidad:0),falta=Math.max(0,p.cantidad-disp);
+modal('Pedido '+p.numero,`<p><b>${esc(p.cliente)}</b> · ${esc(p.telefono||'sin teléfono')}<br>${p.cantidad} u. de ${esc(pname(p.producto))} · entrega ${fd(p.fecha_entrega)}${adm()?' · '+cop(p.total):''}<br><span class="chip ${p.estado}">${p.estado}</span></p>${p.notas?`<p class="hint">Notas: ${esc(p.notas)}</p>`:''}
+${act?(falta?`<div class="warnbox">Faltan <b>${falta}</b> unidades (disponibles para este pedido: ${Math.max(0,disp)}). Se sugiere producir un lote de ${falta} unidades.<p>${bt('prod-for','Producir lote sugerido',p.producto,'sm','data-u="'+falta+'"')}</p></div>`:'<div class="okbox">Hay unidades suficientes en producto terminado.</div>'):''}
+<p class="hint">Entregado descuenta producto terminado; cancelado libera la reserva.</p><p>${['Pendiente','Producido','Entregado','Cancelado'].filter(s=>s!==p.estado).map(s=>bt('pest-set',s,p.id,'sm ghost','data-s="'+s+'"')).join(' ')} ${adm()||p.estado==='Pendiente'?bt('ped-edit','Editar',p.id,'sm'):''}</p>`,null,'')}
+
+VIEWS.compras={shell(){const its=S.insumos.filter(i=>i.stock<=i.stock_minimo||S.lista.includes(i.id));
+const sug=i=>S.compras[i.id]!=null?S.compras[i.id]:Math.max(0,Math.ceil(consumo(i.id)+i.stock_minimo-i.stock));
+const g={};its.forEach(i=>(g[i.proveedor]=g[i.proveedor]||[]).push(i));const ks=Object.keys(g);
+if(!ks.length)return'<div class="card"><p class="empty">No hay insumos bajo el mínimo. ¡Inventario al día!</p></div>';
+let h='<p class="hint">Cantidad sugerida = (consumo de 30 días + mínimo) − stock actual. Puedes editarla.</p>',w='<div class="card"><h2>Mensaje para WhatsApp</h2><div class="g2">';
+ks.forEach(k=>{const p=prv(k),a=g[k],tot=a.reduce((s,i)=>s+sug(i)*i.costo_unitario,0);
+h+=`<div class="card"><h3>${esc(p?.nombre||'Sin proveedor')} <span class="hint">· ${esc(p?.ciudad||'')} · entrega ${p?.plazo||'?'} días</span></h3>${tb([['Insumo',i=>esc(i.nombre)],['Stock / mín.',i=>`<span class="dot ${est(i)}"></span>${nf(i.stock)} / ${nf(i.stock_minimo)} ${i.unidad}`],['Consumo 30 d',i=>nf(consumo(i.id))],['Comprar',i=>`<input type="number" min="0" step="any" style="width:90px" data-chg="comp" data-id="${i.id}" value="${sug(i)}"> ${i.unidad}`],['Costo est.',i=>cop(sug(i)*i.costo_unitario)],['',i=>S.lista.includes(i.id)?bt('rmc','Quitar',i.id,'sm ghost'):'']],a)}<p style="text-align:right"><b>Total estimado: ${cop(tot)}</b></p></div>`;
+const lines=a.filter(i=>sug(i)>0).map(i=>`- ${i.nombre}: ${nf(sug(i))} ${i.unidad}`).join('\n');
+const txt=`Hola ${p?.contacto||''}, buen día. Te escribe ${S.negocio}. Quisiera hacer el siguiente pedido:\n${lines}\nPor favor confírmame disponibilidad y fecha de entrega. ¡Gracias!`;
+const tel=(p?.telefono||'').replace(/\D/g,'');
+w+=`<div><h3>${esc(p?.nombre||'')}</h3><textarea class="wa" id="wa_${k}" readonly>${esc(txt)}</textarea><p>${bt('copy','Copiar texto',k,'sm')} <a class="btn sm wood" target="_blank" rel="noopener" href="https://wa.me/${tel}?text=${encodeURIComponent(txt)}">Abrir WhatsApp</a></p></div>`});
+return h+w+'</div></div>'}};
+
+VIEWS.proveedores={shell(){return`<div class="card"><div class="tb"><h2 style="margin:0;flex:1">Proveedores</h2>${bt('prov-new','+ Nuevo proveedor','','','')}</div>${tb([['Nombre',p=>esc(p.nombre)],['Contacto',p=>esc(p.contacto)],['WhatsApp',p=>esc(p.telefono)],['Ciudad',p=>esc(p.ciudad)],['Plazo',p=>(p.plazo||'—')+' días'],['Insumos que surte',p=>{const n=S.insumos.filter(i=>i.proveedor===p.id);return n.length+(n.length?': '+esc(n.slice(0,3).map(i=>i.nombre).join(', ')+(n.length>3?'…':'')):'')}],['',p=>bt('prov-edit','Editar',p.id,'sm ghost')+' '+bt('prov-del','Eliminar',p.id,'sm ghost')]],S.proveedores)}</div>`}};
+function provForm(id){const x=id?prv(id):{};const fs=[{k:'nombre',l:'Nombre',t:'text',r:1},{k:'contacto',l:'Persona de contacto',t:'text'},{k:'telefono',l:'WhatsApp',t:'phone',r:1},{k:'ciudad',l:'Ciudad',t:'text'},{k:'plazo',l:'Plazo de entrega (días)',t:'number'}];
+modal(id?'Editar proveedor':'Nuevo proveedor',`<div class="grid2">${fs.map(f=>fld(f,x[f.k])).join('')}</div>`,o=>{const e=chk(o,fs);if(e)return e;
+const d={nombre:o.nombre.trim(),contacto:o.contacto,telefono:o.telefono,ciudad:o.ciudad,plazo:+o.plazo||0};
+if(id)Object.assign(x,d);else S.proveedores.push({id:uid('p'),...d});persist();toast('Proveedor guardado')})}
+
+VIEWS.conteos={shell(){return`<div class="card"><h2>Nuevo conteo</h2><form data-submit="cont" data-live="cont"><div class="tb"><label class="hint">Responsable <input name="resp" value="${esc(adm()?'Daniela Cruz':'Mateo Gil')}"></label></div>${tb([['Insumo',i=>esc(i.nombre)],['Sistema',i=>nf(i.stock)+' '+i.unidad],['Contado',i=>`<input type="number" min="0" step="any" name="c_${i.id}" style="width:100px">`],['Diferencia',i=>`<span id="d_${i.id}">—</span>`]],S.insumos)}<div class="sum" id="ctot">Ingresa cantidades contadas para ver las diferencias.</div><p class="err" id="cerr"></p><button class="btn">Guardar conteo</button></form></div>
+<div class="card"><h2>Historial de conteos</h2><div id="res"></div></div>`},
+fill(){const dif=c=>c.items.filter(x=>Math.abs(x.c-x.s)>1e-9);return tb([['Fecha',c=>fd(c.fecha)],['Responsable',c=>esc(c.responsable)],['Contados',c=>c.items.length],['Diferencias',c=>dif(c).length],['Valor',c=>{const v=c.items.reduce((s,x)=>s+(x.c-x.s)*(ins(x.i)?.costo_unitario||0),0);return`<span class="${v<0?'neg':'pos'}">${cop(v)}</span>`},1],['Estado',c=>c.aplicado?'<span class="chip">Aplicado</span>':'<span class="chip warn">Pendiente</span>'],['',c=>bt('cont-view','Ver',c.id,'sm ghost')+(c.aplicado?'':' '+bt('cont-apply','Aplicar ajustes',c.id,'sm'))]],S.conteos.slice().reverse())}};
+
+VIEWS.ajustes={shell(){const a=adm();return`<div class="card"><h2>Rol y negocio</h2><div class="grid2"><label class="fl"><span>Rol activo</span><select data-chg="rol">${opts(['administración','producción'],S.rol)}</select></label>${a?`<label class="fl"><span>Nombre del negocio</span><input id="neg" value="${esc(S.negocio)}"></label>`:''}</div><p class="hint">Producción no ve costos, precios ni proveedores, y no puede eliminar registros.</p>${a?bt('neg-save','Guardar nombre','','','')+' ':''}</div>
+${a?`<div class="card"><h2>Categorías y unidades</h2><div class="grid2"><label class="fl"><span>Categorías (separadas por coma)</span><textarea id="cats" rows="3">${esc(S.cats.join(', '))}</textarea></label><label class="fl"><span>Unidades (separadas por coma)</span><textarea id="unis" rows="3">${esc(S.unis.join(', '))}</textarea></label></div><p>${bt('cats-save','Guardar listas','','','')}</p></div>
+<div class="card"><h2>Datos</h2><p>${bt('exp','Exportar datos','','','')} ${bt('reset','Restablecer datos de ejemplo','','ghost','')}</p><label class="fl"><span>Exportar (JSON)</span><textarea id="ex" rows="5" readonly placeholder="Pulsa «Exportar datos»"></textarea></label><label class="fl" style="margin-top:10px"><span>Importar (pega un JSON exportado)</span><textarea id="im" rows="4"></textarea></label><p>${bt('imp','Importar','','','')}</p><p class="err" id="ierr"></p></div>`:''}`}};
+
+const LIVE={
+lote:updLote,rec:updRec,
+ped(f){const t=$('#ptot');if(t)t.textContent=cop((+f.cantidad.value||0)*(rec(f.producto.value)?.precio_venta||0))},
+cont(f){let n=0,v=0,any=0;S.insumos.forEach(i=>{const e=f.elements['c_'+i.id],c=$('#d_'+i.id);if(!e||!c)return;if(e.value===''){c.textContent='—';c.className='';return}any++;const d=r2(+e.value-i.stock);c.textContent=(d>0?'+':'')+nf(d)+' '+i.unidad;c.className=d<0?'neg':d>0?'pos':'';if(d){n++;v+=d*i.costo_unitario}});
+$('#ctot').innerHTML=any?`${any} contados · <b>${n}</b> con diferencia${adm()?` · valor neto <b class="${v<0?'neg':'pos'}">${cop(v)}</b>`:''}`:'Ingresa cantidades contadas para ver las diferencias.'}};
+
+const SUB={
+mov(o,f){const e=regMov(o);$('#movErr').textContent=e||''},
+lote(o){const p=lotePrev(o.receta,+o.unidades);if(!p||!p.ok){$('#lerr').textContent='No alcanza el stock para este lote.';return}
+if(!o.responsable.trim()||!o.fecha){$('#lerr').textContent='Completa fecha y responsable.';return}
+const u=+o.unidades,cod='L-'+String(Math.max(0,...S.lotes.map(l=>parseInt(l.codigo.slice(2))||0))+1).padStart(3,'0');
+p.rows.forEach((a,n)=>addMov({insumo:a.x.id,tipo:'Salida',cantidad:a.need,motivo:'Producción',nota:'Lote '+cod,origen:'Lote',fecha:o.fecha,usuario:o.responsable}));
+S.terminado[o.receta]=(S.terminado[o.receta]||0)+u;S.lotes.push({id:uid('l'),codigo:cod,receta:o.receta,unidades:u,fecha:o.fecha,responsable:o.responsable.trim(),costo_total:Math.round(p.costo)});
+persist();toast(`Lote ${cod} registrado: +${u} u. de ${p.r.producto}`)},
+cont(o,f){const items=S.insumos.filter(i=>o['c_'+i.id]!==''&&o['c_'+i.id]!==undefined).map(i=>({i:i.id,s:i.stock,c:+o['c_'+i.id]}));
+if(!items.length){$('#cerr').textContent='Ingresa al menos una cantidad contada.';return}
+S.conteos.push({id:uid('c'),fecha:iso(0),responsable:o.resp||usr(),aplicado:false,items});persist();toast('Conteo guardado. Aplica los ajustes desde el historial.')}};
+
+const A={
+nav(b){V=b.dataset.id;F.ie=b.dataset.e!==undefined?b.dataset.e:F.ie;if(V==='pedidos'&&b.dataset.e)F.pe=b.dataset.e;render();scrollTo(0,0)},
+close:closeM,
+addc(b){if(!S.lista.includes(b.dataset.id))S.lista.push(b.dataset.id);persist();toast('Agregado a la lista de compras')},
+rmc(b){S.lista=S.lista.filter(x=>x!==b.dataset.id);persist()},
+'ins-new'(){insForm()},'ins-edit'(b){insForm(b.dataset.id)},'ins-view'(b){ficha(b.dataset.id)},
+'ins-del'(b){const i=ins(b.dataset.id);if(S.recetas.some(r=>r.ing.some(l=>l.i===i.id)))return toast('No se puede eliminar: lo usa una receta.');askDel(`¿Eliminar el insumo <b>${esc(i.nombre)}</b>?`,()=>{S.insumos=S.insumos.filter(x=>x!==i);S.lista=S.lista.filter(x=>x!==i.id);persist()})},
+'mov-in'(b){movModal(b.dataset.id,'Entrada')},'mov-out'(b){movModal(b.dataset.id,'Salida')},
+'rec-new'(){RD={id:null,producto:'',precio:'',notas:'',ing:[{i:S.insumos[0].id,c:''}]};drawRec()},
+'rec-edit'(b){const r=rec(b.dataset.id);RD={id:r.id,producto:r.producto,precio:r.precio_venta,notas:r.notas||'',ing:r.ing.map(l=>({...l}))};drawRec()},
+'rec-view'(b){const r=rec(b.dataset.id);modal(esc(r.producto),tb([['Insumo',l=>esc(ins(l.i)?.nombre)],['Cantidad por unidad',l=>nf(l.c)+' '+unit(l.i)]],r.ing)+`<p class="hint">${esc(r.notas||'')}</p>`,null,'')},
+'rec-del'(b){const r=rec(b.dataset.id);if(S.lotes.some(l=>l.receta===r.id)||S.pedidos.some(p=>p.producto===r.id))return toast('No se puede eliminar: tiene lotes o pedidos asociados.');askDel(`¿Eliminar la receta <b>${esc(r.producto)}</b>?`,()=>{S.recetas=S.recetas.filter(x=>x!==r);delete S.terminado[r.id];persist()})},
+'rl-add'(){syncRec();RD.ing.push({i:S.insumos[0].id,c:''});drawRec()},
+'rl-del'(b){syncRec();if(RD.ing.length>1)RD.ing.splice(+b.dataset.id,1);drawRec()},
+'prod-for'(b){F.lr=b.dataset.id;F.lu=b.dataset.u||10;closeM();V='produccion';render();scrollTo(0,0)},
+'tf-adj'(b){const r=rec(b.dataset.id);modal('Ajustar existencias · '+esc(r.producto),`<div class="grid2"><label class="fl"><span>Tipo</span><select name="t">${opts(['Sumar','Restar'])}</select></label><label class="fl"><span>Unidades *</span><input name="n" type="number" min="1" step="1"></label><label class="fl full"><span>Motivo *</span><select name="m">${opts(['Conteo físico','Merma o daño','Muestras o regalos','Corrección de registro'])}</select></label></div>`,o=>{const n=+o.n;if(!(n>0))return'Indica las unidades.';const d=o.t==='Sumar'?n:-n,nv=(S.terminado[r.id]||0)+d;if(nv<0)return'El ajuste deja el stock en negativo.';S.terminado[r.id]=nv;persist();toast('Existencias ajustadas ('+o.m+')')})},
+'ped-new'(){pedForm()},'ped-edit'(b){closeM();pedForm(b.dataset.id)},'ped-view'(b){pedView(b.dataset.id)},
+'pest-set'(b){const p=S.pedidos.find(x=>x.id===b.dataset.id);closeM();pedState(p,b.dataset.s)},
+'ped-del'(b){const p=S.pedidos.find(x=>x.id===b.dataset.id);askDel(`¿Eliminar el pedido <b>${p.numero}</b> de ${esc(p.cliente)}?`,()=>{if(p.estado==='Entregado')S.terminado[p.producto]=(S.terminado[p.producto]||0)+p.cantidad;S.pedidos=S.pedidos.filter(x=>x!==p);persist()})},
+'prov-new'(){provForm()},'prov-edit'(b){provForm(b.dataset.id)},
+'prov-del'(b){const p=prv(b.dataset.id);if(S.insumos.some(i=>i.proveedor===p.id))return toast('No se puede eliminar: surte insumos del catálogo.');askDel(`¿Eliminar al proveedor <b>${esc(p.nombre)}</b>?`,()=>{S.proveedores=S.proveedores.filter(x=>x!==p);persist()})},
+copy(b){const t=$('#wa_'+b.dataset.id);t.select();let ok=false;try{navigator.clipboard.writeText(t.value);ok=true}catch(e){}if(!ok)try{ok=document.execCommand('copy')}catch(e){}toast(ok?'Texto copiado':'Selecciona el texto y cópialo manualmente')},
+'cont-view'(b){const c=S.conteos.find(x=>x.id===b.dataset.id);modal('Conteo del '+fd(c.fecha),tb([['Insumo',x=>esc(ins(x.i)?.nombre||'?')],['Sistema',x=>nf(x.s)],['Contado',x=>nf(x.c)],['Diferencia',x=>{const d=r2(x.c-x.s);return`<span class="${d<0?'neg':d>0?'pos':''}">${d>0?'+':''}${nf(d)}</span>`}],['Valor',x=>cop((x.c-x.s)*(ins(x.i)?.costo_unitario||0)),1]],c.items)+`<p class="hint">Responsable: ${esc(c.responsable)}</p>`,null,'','wide')},
+'cont-apply'(b){const c=S.conteos.find(x=>x.id===b.dataset.id);if(c.aplicado)return;let n=0;
+c.items.forEach(x=>{const i=ins(x.i);if(!i)return;const d=r2(x.c-x.s);if(!d)return;const q=d>0?d:Math.min(-d,i.stock);if(q<=0)return;addMov({insumo:i.id,tipo:d>0?'Entrada':'Salida',cantidad:q,motivo:'Ajuste de conteo',nota:'Conteo del '+fd(c.fecha),origen:'Conteo',usuario:c.responsable});n++});
+c.aplicado=true;persist();toast(n+' ajustes aplicados al stock')},
+'neg-save'(){const v=$('#neg').value.trim();if(!v)return toast('Escribe un nombre');S.negocio=v;persist();toast('Nombre actualizado')},
+'cats-save'(){const l=s=>$(s).value.split(',').map(x=>x.trim()).filter(Boolean);const c=l('#cats'),u=l('#unis');if(!c.length||!u.length)return toast('Las listas no pueden quedar vacías');S.cats=c;S.unis=u;persist();toast('Listas guardadas')},
+exp(){$('#ex').value=JSON.stringify(S,null,1);$('#ex').select()},
+imp(){try{const o=JSON.parse($('#im').value);['insumos','recetas','proveedores','movimientos','lotes','pedidos','conteos'].forEach(k=>{if(!Array.isArray(o[k]))throw 0});o.terminado=o.terminado||{};o.lista=o.lista||[];o.compras=o.compras||{};o.cats=o.cats||S.cats;o.unis=o.unis||S.unis;o.negocio=o.negocio||S.negocio;o.rol=o.rol||'administración';S=o;persist();toast('Datos importados')}catch(e){$('#ierr').textContent='JSON no válido o con estructura incorrecta.'}},
+reset(){modal('Restablecer datos',`<p>Se reemplazarán todos los datos por los registros de ejemplo.</p>`,()=>{const r=S.rol;S=seed();S.rol=r;F={};persist();toast('Datos de ejemplo restablecidos')},'Restablecer')}};
+
+const C={
+rol(el){S.rol=el.value;persist();toast('Rol: '+S.rol)},
+pest(el){pedState(S.pedidos.find(p=>p.id===el.dataset.id),el.value)},
+comp(el){const v=+el.value;S.compras[el.dataset.id]=v>=0?v:0;persist()}};
+
+document.addEventListener('click',e=>{if(e.target.id==='modal')return closeM();const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b)});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.chg&&C[t.dataset.chg])C[t.dataset.chg](t)});
+document.addEventListener('input',e=>{const t=e.target;
+if(t.dataset.f){F[t.dataset.f]=t.value;const r=$('#res');if(r)r.innerHTML=VIEWS[V].fill()}
+const lv=t.closest('[data-live]');if(lv&&LIVE[lv.dataset.live])LIVE[lv.dataset.live](lv)});
+document.addEventListener('submit',e=>{e.preventDefault();const f=e.target,k=f.dataset.submit,o=Object.fromEntries(new FormData(f));
+if(k==='modal'){const r=MC&&MC(o,f);if(r)$('#merr').textContent=r;else closeM()}else if(SUB[k])SUB[k](o,f)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#modal').hidden)closeM()});
+
+load();render();
+</script>
+</body>
+</html>
