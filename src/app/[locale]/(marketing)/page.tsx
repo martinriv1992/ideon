@@ -12,7 +12,6 @@ import {
   UseCases,
 } from "@/components/marketing/sections";
 import { BusinessPackages, TwoPaths } from "@/components/marketing/business";
-import { DomainSection } from "@/components/marketing/domain-section";
 
 export default async function HomePage({
   params,
@@ -33,7 +32,6 @@ export default async function HomePage({
       <Benefits />
       <UseCases />
       <Pricing />
-      <DomainSection />
       <Faq />
       <FinalCta />
     </>

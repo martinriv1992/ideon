@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import type { ProjectDetail } from "@/features/projects/queries";
 import { cn } from "@/lib/utils";
 import { money } from "@/lib/money";
+import { clearPendingDomain, readPendingDomain } from "@/features/domains/pending-domain";
 
 interface Quote { items: { key: string; label: string; amount: number }[]; total: number; currency: string; renewal: number }
 interface LaunchInfo { quote: Quote; pendingPrice: boolean; paid: boolean; freeChanges: number; freeChangesUsed: number; paymentsConfigured: boolean; domainsConfigured: boolean }
@@ -61,12 +62,22 @@ function DomainPicker({ initialQuery, picked, onPick, contact, onContact }: {
   const [searching, setSearching] = useState(false);
   const [results, setResults] = useState<DomainResult[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  async function search() {
+  async function search(q = query, preselect?: string) {
     setSearching(true); setError(null); onPick(null);
-    try { const r = await api<{ results: DomainResult[] }>(`/api/domains/search?q=${encodeURIComponent(query)}`); setResults(r.results); }
+    try {
+      const r = await api<{ results: DomainResult[] }>(`/api/domains/search?q=${encodeURIComponent(q)}`); setResults(r.results);
+      const pre = preselect && r.results.find((x) => x.domain === preselect && x.available);
+      if (pre) onPick(pre);
+    }
     catch (e) { setError((e as Error).message); setResults(null); }
     finally { setSearching(false); }
   }
+  // Dominio elegido en la portada antes de registrarse: se busca y se deja seleccionado.
+  useEffect(() => {
+    const pending = readPendingDomain();
+    if (pending) { setQuery(pending); void search(pending, pending); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const field = (k: keyof Contact, opts: { type?: string; placeholder?: string; span?: boolean } = {}) => (
     <label className={cn("block", opts.span && "col-span-2")}>
       <span className="text-[11px] text-fg-subtle">{t(`contact.${k}`)}</span>
@@ -76,7 +87,7 @@ function DomainPicker({ initialQuery, picked, onPick, contact, onContact }: {
   );
   return (
     <>
-      <form className="flex gap-1.5" onSubmit={(e) => { e.preventDefault(); void search(); }}>
+      <form className="flex gap-1.5" onSubmit={(e) => { e.preventDefault(); void search(query); }}>
         <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="minegocio" className="h-9" aria-label={t("searchLabel")} />
         <Button size="sm" type="submit" variant="secondary" loading={searching} disabled={query.trim().length < 2}><Search className="size-4" /> {t("search")}</Button>
       </form>
@@ -144,6 +155,7 @@ export function LaunchPanel({ detail }: { detail: ProjectDetail }) {
       const r = await api<{ checkout: Checkout }>(`/api/projects/${project.id}/launch`, {
         method: "POST", body: JSON.stringify({ domain, contact: domain ? { ...contact, phone: cleanPhone(contact.phone) } : undefined, locale }),
       });
+      clearPendingDomain();
       await openEpayco(r.checkout);
     } catch (e) { setError((e as Error).message); }
     finally { setPaying(false); }
@@ -267,6 +279,7 @@ export function BuyDomainCard({ detail }: { detail: ProjectDetail }) {
   const t = useTranslations("app.launch");
   const locale = useLocale();
   const [open, setOpen] = useState(false);
+  useEffect(() => { if (readPendingDomain()) setOpen(true); }, []);
   const [picked, setPicked] = useState<DomainResult | null>(null);
   const [contact, setContact] = useState(EMPTY_CONTACT);
   const [paying, setPaying] = useState(false);
@@ -282,6 +295,7 @@ export function BuyDomainCard({ detail }: { detail: ProjectDetail }) {
       const r = await api<{ checkout: Checkout }>(`/api/projects/${detail.project.id}/domain/buy`, {
         method: "POST", body: JSON.stringify({ domain: picked.domain, contact: { ...contact, phone: cleanPhone(contact.phone) }, locale }),
       });
+      clearPendingDomain();
       await openEpayco(r.checkout);
     } catch (e) { setError((e as Error).message); }
     finally { setPaying(false); }
