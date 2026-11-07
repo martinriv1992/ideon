@@ -6,7 +6,7 @@ import {
   extractJson, isAppKind, isCompleteHtml, modifySystem, modifyUser, normalizeConsultant, parseModifyOutput,
   type ConsultantOutput, type DocRef, type FileRef, type ImageRef, type TranscriptMessage,
 } from "./prompts";
-import { runQa, qaSummary } from "./qa";
+import { jsSyntaxErrors, runQa, qaSummary } from "./qa";
 import { buildProposal, type SpecLike } from "@/features/proposals/generate";
 import { billingFromSettings } from "@/features/billing/pricing";
 import type { AgentType, Json, Project, ProjectStatus } from "@/types/database.types";
@@ -209,8 +209,15 @@ export async function runBuild(projectId: string, label: string) {
   if (!spec) throw new OrchestratorError("invalid_state", "No hay especificación");
 
   await setStatus(db, project, "in_development");
-  const res = await callModel(db, project, conversation.id, "developer", "developer", developerSystem(project.kind), developerUser({ spec, images, docs, files }));
-  const html = cleanHtml(res.text);
+  const user = developerUser({ spec, images, docs, files });
+  let res = await callModel(db, project, conversation.id, "developer", "developer", developerSystem(project.kind), user);
+  let html = cleanHtml(res.text);
+  // JavaScript con error de sintaxis = aplicación en blanco: un reintento antes de entregarla.
+  const jsErr = isCompleteHtml(html) && !res.truncated ? jsSyntaxErrors(html) : [];
+  if (jsErr.length) {
+    res = await callModel(db, project, conversation.id, "developer", "developer", developerSystem(project.kind), user + `\n\nIMPORTANTE: un intento anterior produjo JavaScript con un error de sintaxis (${jsErr[0]}). Genera de nuevo el HTML completo y revisa que todo el JavaScript sea válido (paréntesis, llaves y comillas equilibrados).`);
+    html = cleanHtml(res.text);
+  }
   if (!isCompleteHtml(html) || res.truncated) {
     await setStatus(db, project, "approved");
     await postAssistant(db, conversation.id, "La generación se cortó antes de completar el producto. Pulsa «Reintentar construcción» o pide una versión más sencilla.", "developer", { retry: "build" });
@@ -247,9 +254,14 @@ export async function runModify(projectId: string, instruction: string) {
   const { data: file } = await db.from("project_files").select("content").eq("version_id", version!.id).eq("path", "index.html").single();
 
   const recent = transcript(messages).slice(-9, -1);
-  const res = await callModel(db, project, conversation.id, "modify", "developer", modifySystem(project.kind),
-    modifyUser({ recent, instruction, html: file!.content, versionNumber: version!.number, images, docs, files }));
-  const { reply, html } = parseModifyOutput(res.text);
+  const mUser = modifyUser({ recent, instruction, html: file!.content, versionNumber: version!.number, images, docs, files });
+  let res = await callModel(db, project, conversation.id, "modify", "developer", modifySystem(project.kind), mUser);
+  let { reply, html } = parseModifyOutput(res.text);
+  // Si el cambio rompe el JavaScript de una versión que funcionaba, se reintenta una vez.
+  if (html && isCompleteHtml(html) && !res.truncated && jsSyntaxErrors(html).length && !jsSyntaxErrors(file!.content).length) {
+    res = await callModel(db, project, conversation.id, "modify", "developer", modifySystem(project.kind), mUser + `\n\nIMPORTANTE: un intento anterior de este cambio produjo JavaScript con un error de sintaxis (${jsSyntaxErrors(html)[0]}). Aplica el cambio de nuevo y revisa que todo el JavaScript sea válido.`);
+    ({ reply, html } = parseModifyOutput(res.text));
+  }
   if (html) {
     if (!isCompleteHtml(html) || res.truncated) {
       await postAssistant(db, conversation.id, "El cambio no pudo completarse (la respuesta se cortó). Pide un cambio más acotado.", "developer");

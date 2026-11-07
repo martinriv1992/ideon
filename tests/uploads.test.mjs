@@ -89,3 +89,15 @@ test("fileCatalog y QA validan los enlaces {{FILE:id}}", () => {
   const ok = runQa(html.replace('<a href="{{FILE:zz}}">Otro</a>', ""), { app: false, imageIds: [], fileIds: ["f1"] }).find((c) => /Archivos del cliente enlazados/.test(c.text));
   assert.equal(ok?.level, "ok");
 });
+
+test("QA detecta errores de sintaxis de JavaScript y no da falsos positivos en apps generadas por JS", async () => {
+  const { jsSyntaxErrors } = await import("../dist-tests/features/agents/qa.js");
+  assert.deepEqual(jsSyntaxErrors("<script>const a = 1; function f(){ return a; }</script>"), []);
+  assert.equal(jsSyntaxErrors("<script>const a = (1;</script>").length, 1);
+  assert.deepEqual(jsSyntaxErrors('<script type="application/json">{not js}</script><script src="x.js"></script>'), []);
+  const app = '<!DOCTYPE html><html lang="es"><head><meta name="viewport" content="width=device-width"><title>A</title><style>@media(max-width:600px){}</style></head><body><div id=app></div><script>document.getElementById("app").innerHTML = `<h1>Panel</h1><table></table><form><input></form>`;</script></body></html>';
+  const checks = runQa(app, { app: true, imageIds: [] });
+  assert.equal(checks.filter((c) => c.level === "bad").length, 0, JSON.stringify(checks.filter((c) => c.level === "bad")));
+  const broken = runQa(app.replace("innerHTML =", "innerHTML = ("), { app: true, imageIds: [] });
+  assert.ok(broken.some((c) => c.level === "bad" && /sintaxis/.test(c.text)));
+});

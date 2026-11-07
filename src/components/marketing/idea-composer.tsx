@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
@@ -21,6 +21,14 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
   const [submitting, setSubmitting] = useState(false);
   const [kind, setKind] = useState<string>("web");
   const [files, setFiles] = useState<File[]>([]);
+
+  // «Crear algo así» desde la página de ejemplos: ?kind=crm&idea=… rellena el compositor.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const k = q.get("kind"); const i = q.get("idea");
+    if (k && (PROJECT_KINDS as readonly string[]).includes(k)) setKind(k);
+    if (i) { setValue(i.slice(0, MAX)); requestAnimationFrame(() => textareaRef.current && autoGrow(textareaRef.current)); }
+  }, []);
   const tk = useTranslations("app.workspace.kinds");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const examples = t.raw("examples") as { title: string; prompt: string }[];

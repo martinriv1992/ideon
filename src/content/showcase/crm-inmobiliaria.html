@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Habitar CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F8F9;--fg:#12292F;--ac:#0F6B78;--ac2:#0b525c;--mut:#5f7a80;--bd:#dbe6e9;--w:#fff;--ok:#2a8a5a;--bad:#c2453d;--warn:#c98a1b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:14px}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:flex;min-height:100vh}
+aside{width:230px;background:var(--w);border-right:1px solid var(--bd);padding:18px 12px;position:fixed;top:0;bottom:0;display:flex;flex-direction:column;gap:4px;z-index:5}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px;color:var(--ac);padding:4px 8px 16px}
+aside a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:8px;cursor:pointer;color:var(--fg);font-weight:500}
+aside a:hover{background:var(--bg)}aside a.on{background:var(--ac);color:#fff}
+.who{margin-top:auto;font-size:12px;color:var(--mut);padding:8px}
+main{margin-left:230px;flex:1;padding:28px;min-width:0;max-width:1300px}
+h1{margin:0 0 4px;font-size:24px}h2{font-size:16px;margin:0 0 12px}
+.sub{color:var(--mut);margin-bottom:20px}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.btn{background:var(--ac);color:#fff;border:0;padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ac2)}
+.btn.s{background:var(--w);color:var(--ac);border:1px solid var(--bd)}.btn.s:hover{background:var(--bg)}
+.btn.d{background:var(--bad)}.btn.sm{padding:5px 9px;font-size:12px}
+.card{background:var(--w);border:1px solid var(--bd);border-radius:12px;padding:18px;margin-bottom:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--w);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.kpi b{display:block;font-size:22px;color:var(--ac);margin-top:4px}.kpi span{font-size:12px;color:var(--mut)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+input,select,textarea{border:1px solid var(--bd);border-radius:8px;padding:8px 10px;background:#fff;width:100%}
+.filters input,.filters select{width:auto;min-width:130px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{font-size:12px;color:var(--mut);font-weight:600}
+td.wr{white-space:normal}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;background:#e3f0f2;color:var(--ac2)}
+.tag.g{background:#e0f3e8;color:var(--ok)}.tag.r{background:#f8e4e2;color:var(--bad)}.tag.y{background:#fbf0d9;color:var(--warn)}
+.modal{position:fixed;inset:0;background:rgba(18,41,47,.5);display:flex;align-items:center;justify-content:center;z-index:20;padding:14px}
+.box{background:#fff;border-radius:14px;padding:22px;width:560px;max-width:100%;max-height:92vh;overflow:auto}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fg .f{grid-column:span 1}.fg .full{grid-column:span 2}
+label{font-size:12px;font-weight:600;color:var(--mut);display:block;margin-bottom:4px}
+.err{color:var(--bad);font-size:12px;margin-top:8px}
+.acts{display:flex;gap:6px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:230px;gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:#e9f1f3;border-radius:10px;padding:10px;min-height:150px}
+.col h3{font-size:13px;margin:0 0 8px;display:flex;justify-content:space-between}
+.dc{background:#fff;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid var(--bd);cursor:grab;font-size:13px}
+.dc small{color:var(--mut);display:block}
+.bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer}
+.bar .l{width:100px;font-size:12px}.bar .t{flex:1;background:var(--bg);border-radius:6px;height:22px}
+.bar .t i{display:block;height:100%;background:var(--ac);border-radius:6px}.bar .v{font-size:12px;width:120px;text-align:right}
+.day{font-weight:600;margin:14px 0 6px;color:var(--ac)}
+.vi{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px;border:1px solid var(--bd);border-radius:8px;margin-bottom:6px;flex-wrap:wrap}
+.demo{background:#fbf0d9;color:#7a5410;padding:6px 12px;border-radius:8px;font-size:12px;margin-bottom:14px;display:inline-block}
+.mb{display:none}
+textarea.ex{height:200px;font-family:monospace;font-size:12px}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--fg);color:#fff;padding:10px 16px;border-radius:8px;z-index:30}
+@media(max-width:800px){aside{position:static;width:auto;flex-direction:row;overflow-x:auto;padding:8px;border:0;border-bottom:1px solid var(--bd)}
+.app{flex-direction:column}.logo,.who{display:none}aside a{white-space:nowrap;padding:8px 10px}main{margin:0;padding:16px}.grid2{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.fg .full{grid-column:span 1}aside{position:sticky;top:0}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside id="nav"></aside>
+<main id="main"></main>
+</div>
+<div id="layer"></div>
+<script>
+const KEY='habitar-crm';
+const ASES=['Laura Gómez','Andrés Ruiz','Camila Torres'];
+const ETAPAS=['Contacto','Visita','Propuesta','Negociación','Cerrado ganado','Cerrado perdido'];
+const ENT={
+clientes:{label:'Cliente',fields:[['nombre','Nombre completo','text',1],['email','Correo','email'],['telefono','Teléfono','text',1],['interes','Interés','select',1,['Compra','Arriendo']],['presupuesto','Presupuesto máximo','number'],['zona','Zona de preferencia','text'],['origen','Origen','select',0,['Referido','Portal web','Redes sociales','Llamada','Visita a oficina']],['estado','Estado','select',1,['Nuevo','En seguimiento','Calificado','Inactivo']],['asesor','Asesor','select',1,ASES],['notas','Notas','textarea']]},
+propiedades:{label:'Propiedad',fields:[['codigo','Código','text',1],['titulo','Título','text',1],['tipo','Tipo','select',1,['Casa','Apartamento','Local','Lote']],['operacion','Operación','select',1,['Venta','Arriendo']],['precio','Precio','number',1],['zona','Zona','text',1],['direccion','Dirección','text'],['habitaciones','Habitaciones','number'],['banos','Baños','number'],['area','Área (m²)','number'],['estado','Estado','select',1,['Disponible','Reservada','Vendida','Arrendada']],['descripcion','Descripción','textarea']]},
+visitas:{label:'Visita',fields:[['cliente','Cliente','ref:clientes',1],['propiedad','Propiedad','ref:propiedades',1],['asesor','Asesor','select',1,ASES],['fecha','Fecha','date',1],['hora','Hora','time',1],['estado','Estado','select',1,['Programada','Realizada','Cancelada','Reprogramada']],['resultado','Resultado','select',0,['Pendiente','Interesado','No interesado','Requiere segunda visita']],['notas','Notas','textarea']]},
+negocios:{label:'Negocio',fields:[['cliente','Cliente','ref:clientes',1],['propiedad','Propiedad','ref:propiedades',1],['operacion','Operación','select',1,['Venta','Arriendo']],['valor','Valor estimado','number',1],['etapa','Etapa','select',1,ETAPAS],['probabilidad','Probabilidad (%)','number'],['fechaCierre','Fecha estimada de cierre','date'],['asesor','Asesor','select',1,ASES],['motivoPerdida','Motivo de pérdida','textarea']]}
+};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=n=>'$'+Number(n||0).toLocaleString('es-CO');
+const dstr=d=>d.toISOString().slice(0,10);
+function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return dstr(d)}
+function seed(){
+const nm=['Marta Olivares','Julián Prada','Sofía Beltrán','Ricardo Mena','Valeria Cuesta','Tomás Aldana','Daniela Rojas','Esteban Lara','Paula Quintero','Hugo Serrano'];
+const zs=['Los Pinos','Altamira','Centro Vivo','Lomas Verdes','Río Claro'];
+const or=ENT.clientes.fields[6][4],es=['Nuevo','En seguimiento','Calificado','Inactivo'];
+const clientes=nm.map((n,i)=>({id:i+1,nombre:n,email:n.split(' ')[0].toLowerCase()+'@ejemplo.test',telefono:'555-01'+(10+i),interes:i%3==1?'Arriendo':'Compra',presupuesto:(i%3==1?2:250)*1000000/(i%3==1?1:1)*(1+i%4)/(i%3==1?1:1),zona:zs[i%5],origen:or[i%5],estado:es[i%4],asesor:ASES[i%3],notas:i%2?'Prefiere contacto por la tarde.':''}));
+const tp=['Casa','Apartamento','Local','Lote'],ep=['Disponible','Reservada','Vendida','Arrendada'];
+const propiedades=Array.from({length:10},(_,i)=>{const arr=i%3==1;return{id:i+1,codigo:'HB-'+(100+i),titulo:tp[i%4]+' en '+zs[i%5],tipo:tp[i%4],operacion:arr?'Arriendo':'Venta',precio:arr?1500000+i*150000:180000000+i*35000000,zona:zs[i%5],direccion:'Calle '+(10+i)+' # '+(5+i)+'-'+(20+i)+' (ficticia)',habitaciones:i%4==3?0:2+i%3,banos:1+i%3,area:60+i*18,estado:i<6?'Disponible':ep[i%4],descripcion:'Inmueble de ejemplo con buena iluminación y acceso.'}});
+const hh=['09:00','10:30','11:00','14:00','15:30'];
+const visitas=Array.from({length:10},(_,i)=>({id:i+1,cliente:i+1,propiedad:(i%10)+1,asesor:ASES[i%3],fecha:addDays(i<7?i-1:i-9),hora:hh[i%5],estado:i<2?'Realizada':i==9?'Cancelada':'Programada',resultado:i<2?['Interesado','Requiere segunda visita'][i]:'Pendiente',notas:''}));
+const ev=['Contacto','Visita','Propuesta','Negociación','Cerrado ganado','Cerrado perdido'];
+const negocios=Array.from({length:12},(_,i)=>{const p=propiedades[i%10],e=ev[i%6];return{id:i+1,cliente:(i%10)+1,propiedad:p.id,operacion:p.operacion,valor:p.precio,etapa:e,probabilidad:[10,30,50,75,100,0][i%6],fechaCierre:addDays(10+i*4-(e=='Cerrado ganado'?(i*2+3):0)),asesor:ASES[i%3],motivoPerdida:e=='Cerrado perdido'?'Precio fuera del presupuesto':'',creado:addDays(-30-i*3)}});
+return{clientes,propiedades,visitas,negocios,metas:{'Laura Gómez':3,'Andrés Ruiz':3,'Camila Torres':2},rol:'gerente',usuario:'Laura Gómez',seq:100,ejemplo:true}}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.clientes)S=seed();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let view='dashboard',F={},periodo='mes',detail=null;
+const VIEWS=[['dashboard','Panel'],['clientes','Clientes'],['propiedades','Propiedades'],['visitas','Agenda de visitas'],['negocios','Negocios'],['configuracion','Configuración']];
+const isG=()=>S.rol=='gerente';
+const mine=(arr)=>isG()?arr:arr.filter(x=>x.asesor==S.usuario);
+const byId=(k,id)=>S[k].find(x=>x.id==id);
+const cn=id=>(byId('clientes',id)||{}).nombre||'—';
+const pn=id=>{const p=byId('propiedades',id);return p?p.codigo+' · '+p.titulo:'—'};
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+function go(v,f){view=v;detail=null;if(f)F[v]=f;render()}
+function nav(){$('#nav').innerHTML='<div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0F6B78" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>Habitar CRM</div>'+VIEWS.map(v=>`<a class="${v[0]==view?'on':''}" onclick="go('${v[0]}')">${v[1]}</a>`).join('')+`<div class="who">${esc(S.usuario)} · ${S.rol}</div>`}
+function render(){nav();const m=$('#main');({dashboard:dash,clientes:()=>list('clientes'),propiedades:()=>list('propiedades'),visitas:visitasV,negocios:negV,configuracion:conf})[view]();window.scrollTo(0,0)}
+function inPeriod(d){if(!d)return false;const n=new Date(),x=new Date(d);if(periodo=='anio')return x.getFullYear()==n.getFullYear();if(periodo=='trim')return x.getFullYear()==n.getFullYear()&&Math.floor(x.getMonth()/3)==Math.floor(n.getMonth()/3);return x.getFullYear()==n.getFullYear()&&x.getMonth()==n.getMonth()}
+function dash(){
+const N=mine(S.negocios),ab=N.filter(n=>n.etapa<'Z'&&!/^Cerrado/.test(n.etapa));
+const gan=N.filter(n=>n.etapa=='Cerrado ganado'),per=N.filter(n=>n.etapa=='Cerrado perdido');
+const ganP=gan.filter(n=>inPeriod(n.fechaCierre));
+const tasa=gan.length+per.length?Math.round(gan.length*100/(gan.length+per.length)):0;
+const wk=dstr(new Date()),we=addDays(7);
+const vs=mine(S.visitas).filter(v=>v.fecha>=addDays(-new Date().getDay())&&v.fecha<=addDays(6-new Date().getDay()));
+const tp=gan.length?Math.round(gan.reduce((a,n)=>a+Math.max(1,(new Date(n.fechaCierre)-new Date(n.creado||n.fechaCierre))/864e5),0)/gan.length):0;
+const metaT=isG()?Object.values(S.metas).reduce((a,b)=>a+b,0):(S.metas[S.usuario]||0);
+const cum=metaT?Math.round(ganP.length*100/metaT):0;
+const K=[['Negocios abiertos',ab.length],['Valor del embudo',money(ab.reduce((a,n)=>a+Number(n.valor),0))],['Cierres del periodo',ganP.length],['Tasa de cierre',tasa+'%'],['Visitas de la semana',vs.length],['Tiempo prom. de cierre',tp+' días'],['Cumplimiento de meta',cum+'%']];
+const emb=ETAPAS.map(e=>{const l=N.filter(n=>n.etapa==e);return{e,c:l.length,v:l.reduce((a,n)=>a+Number(n.valor),0)}});
+const mx=Math.max(1,...emb.map(x=>x.c));
+const meses=[];for(let i=5;i>=0;i--){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);meses.push(d)}
+const filtA=F.dashAse||'';
+const NM=(filtA?S.negocios.filter(n=>n.asesor==filtA):N).filter(n=>n.etapa=='Cerrado ganado');
+const data=meses.map(d=>{const k=d.toISOString().slice(0,7);const l=NM.filter(n=>(n.fechaCierre||'').slice(0,7)==k);return{l:d.toLocaleDateString('es',{month:'short'}),v:l.filter(n=>n.operacion=='Venta').length,a:l.filter(n=>n.operacion=='Arriendo').length}});
+const mm=Math.max(2,...data.map(d=>d.v+d.a));
+const bw=40,H=150;
+const svg=`<svg viewBox="0 0 ${data.length*60+20} ${H+30}" style="width:100%;max-height:220px">`+data.map((d,i)=>{const x=20+i*60,hv=d.v/mm*H,ha=d.a/mm*H;return`<rect x="${x}" y="${H-hv}" width="${bw}" height="${hv}" fill="#0F6B78" rx="3"/><rect x="${x}" y="${H-hv-ha}" width="${bw}" height="${ha}" fill="#7fc0c9" rx="3"/><text x="${x+bw/2}" y="${H+16}" font-size="11" text-anchor="middle" fill="#5f7a80">${d.l}</text><text x="${x+bw/2}" y="${H-hv-ha-4}" font-size="11" text-anchor="middle">${d.v+d.a||''}</text>`}).join('')+'</svg>';
+const prox=mine(S.visitas).filter(v=>v.estado=='Programada'||v.estado=='Reprogramada').sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora)).slice(0,5);
+$('#main').innerHTML=`<div class="top"><div><h1>Panel</h1><div class="sub">${isG()?'Total de la agencia':'Tus cifras, '+esc(S.usuario)}</div></div>
+<select style="width:auto" onchange="periodo=this.value;dash()"><option value="mes" ${periodo=='mes'?'selected':''}>Mes actual</option><option value="trim" ${periodo=='trim'?'selected':''}>Trimestre</option><option value="anio" ${periodo=='anio'?'selected':''}>Año</option></select></div>
+<span class="demo">Datos de ejemplo ficticios</span>
+<div class="kpis">${K.map(k=>`<div class="kpi"><span>${k[0]}</span><b>${k[1]}</b></div>`).join('')}</div>
+<div class="grid2"><div class="card"><h2>Embudo por etapas</h2>${emb.map(x=>`<div class="bar" onclick="go('negocios',{etapa:'${x.e}'})"><div class="l">${x.e}</div><div class="t"><i style="width:${x.c/mx*100}%"></i></div><div class="v">${x.c} · ${money(x.v)}</div></div>`).join('')}</div>
+<div class="card"><div class="top" style="margin:0 0 8px"><h2 style="margin:0">Cierres por mes</h2>${isG()?`<select style="width:auto" onchange="F.dashAse=this.value;dash()"><option value="">Todos</option>${ASES.map(a=>`<option ${a==filtA?'selected':''}>${a}</option>`).join('')}</select>`:''}</div>${svg}<div style="font-size:12px;color:var(--mut)"><span style="color:#0F6B78">■</span> Ventas <span style="color:#7fc0c9">■</span> Arriendos</div></div></div>
+<div class="card"><h2>Próximas visitas</h2>${prox.map(v=>`<div class="vi"><div><b>${v.fecha} ${v.hora}</b> · ${esc(cn(v.cliente))}<br><small>${esc(pn(v.propiedad))}</small></div><div><span class="tag">${v.estado}</span> <button class="btn sm s" onclick="realizar(${v.id})">Realizada</button> <button class="btn sm s" onclick="go('visitas')">Detalle</button></div></div>`).join('')||'<p>Sin visitas próximas.</p>'}</div>`}
+function cellVal(k,f,r){const v=r[f[0]];if(f[2].startsWith('ref'))return esc(f[0]=='cliente'?cn(v):pn(v));if(f[0]=='precio'||f[0]=='valor'||f[0]=='presupuesto')return money(v);return esc(v)}
+const COLS={clientes:['nombre','telefono','interes','estado','asesor'],propiedades:['codigo','titulo','operacion','precio','zona','estado'],negocios:['cliente','propiedad','operacion','valor','etapa','asesor'],visitas:['fecha','hora','cliente','propiedad','asesor','estado','resultado']};
+function fld(e,k){return ENT[e].fields.find(f=>f[0]==k)}
+function tagc(v){return /Cerrado ganado|Realizada|Disponible|Calificado/.test(v)?'g':/perdido|Cancelada|Inactivo|No interesado/.test(v)?'r':/Reservada|Negociación|Programada|Nuevo/.test(v)?'y':''}
+function tbl(e,rows,extra){const cols=COLS[e];return`<div class="tw"><table><tr>${cols.map(c=>`<th>${fld(e,c)[1]}</th>`).join('')}<th></th></tr>${rows.map(r=>`<tr>${cols.map(c=>{const f=fld(e,c);const t=cellVal(c,f,r);return`<td>${c=='estado'||c=='etapa'||c=='resultado'?`<span class="tag ${tagc(r[c])}">${t}</span>`:t}</td>`}).join('')}<td style="text-align:right">${extra?extra(r):''}<button class="btn sm s" onclick="form('${e}',${r.id})">Editar</button> <button class="btn sm d" onclick="confirmDel('${e}',${r.id})">Eliminar</button></td></tr>`).join('')||`<tr><td colspan="9">Sin resultados.</td></tr>`}</table></div>`}
+function sel(id,opts,val,all){return`<select id="${id}" onchange="setF('${id}',this.value)">${all?`<option value="">${all}</option>`:''}${opts.map(o=>`<option ${o==val?'selected':''}>${o}</option>`).join('')}</select>`}
+function setF(k,v){F[k]=v;render()}
+function sInp(id,ph){return`<input id="${id}" placeholder="${ph}" value="${esc(F[id]||'')}" oninput="F['${id}']=this.value;clearTimeout(window.tm);window.tm=setTimeout(()=>{render();const i=document.getElementById('${id}');i.focus();i.setSelectionRange(99,99)},250)">`}
+function list(e){
+if(detail)return ficha(e);
+let rows=e=='clientes'||e=='propiedades'?(e=='clientes'?mine(S.clientes):S.propiedades):[];
+const q=(F[e+'q']||'').toLowerCase();let fl='';
+if(e=='clientes'){rows=rows.filter(r=>(r.nombre+r.email+r.telefono).toLowerCase().includes(q)&&(!F.ci||r.interes==F.ci)&&(!F.ce||r.estado==F.ce)&&(!F.co||r.origen==F.co)&&(!F.ca||r.asesor==F.ca));
+fl=sInp('clientesq','Buscar nombre, correo o teléfono')+sel('ci',['Compra','Arriendo'],F.ci,'Todo interés')+sel('ce',ENT.clientes.fields[7][4],F.ce,'Todo estado')+sel('co',ENT.clientes.fields[6][4],F.co,'Todo origen')+(isG()?sel('ca',ASES,F.ca,'Todo asesor'):'')}
+else{rows=rows.filter(r=>(r.codigo+r.direccion+r.titulo).toLowerCase().includes(q)&&(!F.pt||r.tipo==F.pt)&&(!F.po||r.operacion==F.po)&&(!F.pe||r.estado==F.pe)&&(!F.pz||r.zona.toLowerCase().includes(F.pz.toLowerCase()))&&(!F.pmin||r.precio>=F.pmin*1)&&(!F.pmax||r.precio<=F.pmax*1));
+fl=sInp('propiedadesq','Código o dirección')+sel('pt',ENT.propiedades.fields[2][4],F.pt,'Todo tipo')+sel('po',['Venta','Arriendo'],F.po,'Operación')+sel('pe',ENT.propiedades.fields[10][4],F.pe,'Todo estado')+sInp('pz','Zona')+`<input type="number" placeholder="Precio mín" value="${F.pmin||''}" onchange="F.pmin=this.value;render()"><input type="number" placeholder="Precio máx" value="${F.pmax||''}" onchange="F.pmax=this.value;render()">`}
+$('#main').innerHTML=`<div class="top"><div><h1>${e=='clientes'?'Clientes':'Propiedades'}</h1><div class="sub">${rows.length} registros · datos de ejemplo</div></div><button class="btn" onclick="form('${e}')">Nuevo ${ENT[e].label.toLowerCase()}</button></div><div class="card"><div class="filters">${fl}</div>${tbl(e,rows,r=>`<button class="btn sm" onclick="detail=[${r.id}];render()">Ficha</button> `)}</div>`}
+function ficha(e){const r=byId(e,detail[0]);if(!r){detail=null;return render()}
+let h='';
+if(e=='clientes'){const vs=S.visitas.filter(v=>v.cliente==r.id),ns=S.negocios.filter(n=>n.cliente==r.id);
+h=`<p>${esc(r.email)} · ${esc(r.telefono)}<br>${r.interes} · Presupuesto ${money(r.presupuesto)} · Zona ${esc(r.zona)}<br>Origen: ${esc(r.origen)} · Asesor: ${esc(r.asesor)} · <span class="tag ${tagc(r.estado)}">${r.estado}</span></p><p><b>Notas:</b> ${esc(r.notas)||'—'}</p>
+<div class="acts" style="justify-content:flex-start;margin:0 0 14px"><button class="btn" onclick="form('visitas',null,{cliente:${r.id},asesor:'${r.asesor}'})">Agendar visita</button><button class="btn s" onclick="form('negocios',null,{cliente:${r.id},asesor:'${r.asesor}'})">Crear negocio</button></div>
+<h2>Visitas</h2>${vs.map(v=>`<div class="vi">${v.fecha} ${v.hora} · ${esc(pn(v.propiedad))} <span class="tag">${v.estado}</span></div>`).join('')||'<p>Sin visitas.</p>'}<h2>Negocios</h2>${ns.map(n=>`<div class="vi">${esc(pn(n.propiedad))} · ${money(n.valor)} <span class="tag">${n.etapa}</span></div>`).join('')||'<p>Sin negocios.</p>'}`}
+else{const vs=S.visitas.filter(v=>v.propiedad==r.id),ns=S.negocios.filter(n=>n.propiedad==r.id);
+h=`<p>${esc(r.titulo)} · ${r.tipo} en ${r.operacion}<br><b>${money(r.precio)}</b> · ${esc(r.zona)} · ${esc(r.direccion)}<br>${r.habitaciones} hab · ${r.banos} baños · ${r.area} m² · <span class="tag ${tagc(r.estado)}">${r.estado}</span></p><p>${esc(r.descripcion)}</p><h2>Visitas</h2>${vs.map(v=>`<div class="vi">${v.fecha} ${v.hora} · ${esc(cn(v.cliente))} <span class="tag">${v.estado}</span></div>`).join('')||'<p>Sin visitas.</p>'}<h2>Negocios</h2>${ns.map(n=>`<div class="vi">${esc(cn(n.cliente))} · ${money(n.valor)} <span class="tag">${n.etapa}</span></div>`).join('')||'<p>Sin negocios.</p>'}`}
+$('#main').innerHTML=`<div class="top"><h1>${esc(r.nombre||r.codigo)}</h1><button class="btn s" onclick="detail=null;render()">← Volver</button></div><div class="card">${h}</div>`}
+function visitasV(){
+let rows=mine(S.visitas).filter(v=>(!F.va||v.asesor==F.va)&&(!F.ve||v.estado==F.ve)).sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));
+const g={};rows.forEach(v=>(g[v.fecha]=g[v.fecha]||[]).push(v));
+$('#main').innerHTML=`<div class="top"><div><h1>Agenda de visitas</h1><div class="sub">Datos de ejemplo</div></div><button class="btn" onclick="form('visitas')">Agendar visita</button></div>
+<div class="card"><div class="filters">${isG()?sel('va',ASES,F.va,'Todo asesor'):''}${sel('ve',ENT.visitas.fields[5][4],F.ve,'Todo estado')}</div>
+${Object.keys(g).map(d=>`<div class="day">${new Date(d+'T12:00').toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'})}</div>${g[d].map(v=>`<div class="vi"><div><b>${v.hora}</b> · ${esc(cn(v.cliente))}<br><small>${esc(pn(v.propiedad))} · ${v.asesor}</small></div><div><span class="tag ${tagc(v.estado)}">${v.estado}</span> ${v.estado=='Programada'||v.estado=='Reprogramada'?`<button class="btn sm" onclick="realizar(${v.id})">Realizada</button> <button class="btn sm s" onclick="form('visitas',${v.id})">Reprogramar</button> <button class="btn sm s" onclick="cancelar(${v.id})">Cancelar</button>`:''}</div></div>`).join('')}`).join('')||'<p>Sin visitas.</p>'}</div>
+<div class="card"><h2>Historial de visitas</h2>${tbl('visitas',rows)}</div>`}
+function cancelar(id){const v=byId('visitas',id);v.estado='Cancelada';save();toast('Visita cancelada');render()}
+function realizar(id){const v=byId('visitas',id);
+modal(`<h2>Visita realizada</h2><label>Resultado</label><select id="res"><option>Interesado</option><option>No interesado</option><option>Requiere segunda visita</option></select><label style="margin-top:10px">Comentarios</label><textarea id="com"></textarea><div class="acts"><button class="btn s" onclick="closeM()">Cerrar</button><button class="btn" onclick="doReal(${id})">Guardar</button></div>`)}
+function doReal(id){const v=byId('visitas',id);v.estado='Realizada';v.resultado=$('#res').value;v.notas=$('#com').value;save();
+const n=S.negocios.find(n=>n.cliente==v.cliente&&n.propiedad==v.propiedad&&!/^Cerrado/.test(n.etapa));
+if(n&&v.resultado=='Interesado'&&n.etapa=='Visita'){n.etapa='Propuesta';save();toast('Negocio avanzado a Propuesta')}
+else if(!n&&v.resultado=='Interesado'){closeM();modal(`<h2>Sugerencia</h2><p>El cliente está interesado. ¿Crear un negocio para esta propiedad?</p><div class="acts"><button class="btn s" onclick="closeM();render()">Ahora no</button><button class="btn" onclick="closeM();form('negocios',null,{cliente:${v.cliente},propiedad:${v.propiedad},asesor:'${v.asesor}',etapa:'Propuesta'})">Crear negocio</button></div>`);return}
+else toast('Visita registrada');closeM();render()}
+function negV(){
+const q=(F.nq||'').toLowerCase();
+let rows=mine(S.negocios);
+const filt=rows.filter(n=>(cn(n.cliente)+pn(n.propiedad)).toLowerCase().includes(q)&&(!F.etapa||n.etapa==F.etapa)&&(!F.no||n.operacion==F.no)&&(!F.na||n.asesor==F.na)&&(!F.vmin||n.valor>=F.vmin*1)&&(!F.vmax||n.valor<=F.vmax*1));
+$('#main').innerHTML=`<div class="top"><div><h1>Negocios</h1><div class="sub">Arrastra las tarjetas entre etapas · datos de ejemplo</div></div><button class="btn" onclick="form('negocios')">Nuevo negocio</button></div>
+<div class="board">${ETAPAS.map(e=>{const l=rows.filter(n=>n.etapa==e);return`<div class="col" ondragover="event.preventDefault()" ondrop="drop(event,'${e}')"><h3>${e}<span>${l.length}</span></h3>${l.map(n=>{const i=ETAPAS.indexOf(n.etapa);return`<div class="dc" draggable="true" ondragstart="event.dataTransfer.setData('t',${n.id})"><b>${esc(cn(n.cliente))}</b><small>${esc(pn(n.propiedad))}</small><small>${money(n.valor)} · ${n.asesor}</small><div style="margin-top:6px">${i>0?`<button class="btn sm s" onclick="mover(${n.id},'${ETAPAS[i-1]}')">←</button> `:''}${i<5?`<button class="btn sm s" onclick="mover(${n.id},'${ETAPAS[i+1]}')">→</button>`:''}</div></div>`}).join('')}</div>`}).join('')}</div>
+<div class="card" style="margin-top:18px"><h2>Tabla de negocios</h2><div class="filters">${sInp('nq','Buscar cliente o propiedad')}${sel('etapa',ETAPAS,F.etapa,'Toda etapa')}${sel('no',['Venta','Arriendo'],F.no,'Operación')}${isG()?sel('na',ASES,F.na,'Todo asesor'):''}<input type="number" placeholder="Valor mín" value="${F.vmin||''}" onchange="F.vmin=this.value;render()"><input type="number" placeholder="Valor máx" value="${F.vmax||''}" onchange="F.vmax=this.value;render()"></div>${tbl('negocios',filt)}</div>`}
+function drop(ev,e){ev.preventDefault();mover(+ev.dataTransfer.getData('t'),e)}
+function mover(id,e){const n=byId('negocios',id);if(n.etapa==e)return;
+if(e=='Cerrado perdido'){modal(`<h2>Motivo de pérdida</h2><textarea id="mot" placeholder="¿Por qué se perdió el negocio?"></textarea><div class="err" id="er"></div><div class="acts"><button class="btn s" onclick="closeM()">Cancelar</button><button class="btn" onclick="(function(){const m=$('#mot').value.trim();if(!m){$('#er').textContent='El motivo es obligatorio';return}const n=byId('negocios',${id});n.etapa='Cerrado perdido';n.motivoPerdida=m;n.probabilidad=0;save();closeM();render()})()">Confirmar</button></div>`);return}
+aplicar(n,e);save();render()}
+function aplicar(n,e){n.etapa=e;const p=byId('propiedades',n.propiedad),c=byId('clientes',n.cliente);
+if(e=='Cerrado ganado'){n.probabilidad=100;if(p)p.estado=n.operacion=='Venta'?'Vendida':'Arrendada';if(c)c.estado='Calificado';toast('Negocio ganado: propiedad y cliente actualizados')}
+if(e=='Negociación'&&p&&p.estado=='Disponible'){p.estado='Reservada';toast('Propiedad reservada')}}
+function modal(h){$('#layer').innerHTML=`<div class="modal" onmousedown="if(event.target==this)closeM()"><div class="box">${h}</div></div>`}
+function closeM(){$('#layer').innerHTML=''}
+function confirmDel(e,id){modal(`<h2>¿Eliminar registro?</h2><p>Esta acción no se puede deshacer.</p><div class="acts"><button class="btn s" onclick="closeM()">Cancelar</button><button class="btn d" onclick="del('${e}',${id})">Eliminar</button></div>`)}
+function del(e,id){S[e]=S[e].filter(x=>x.id!=id);save();closeM();toast('Eliminado');render()}
+function form(e,id,pre){
+const r=id?byId(e,id):Object.assign({},pre||{});
+if(!id){if(e=='clientes'){r.estado='Nuevo';r.asesor=isG()?ASES[0]:S.usuario}
+if(e=='visitas'){r.estado='Programada';r.resultado='Pendiente';r.asesor=r.asesor||(isG()?ASES[0]:S.usuario);r.fecha=addDays(1)}
+if(e=='negocios'){r.etapa=r.etapa||'Contacto';r.operacion='Venta';r.probabilidad=10;r.asesor=r.asesor||(isG()?ASES[0]:S.usuario)}
+if(e=='propiedades'){r.estado='Disponible'}}
+const h=ENT[e].fields.map(f=>{const k=f[0],t=f[2],v=r[k]==null?'':r[k];let inp;
+if(t.startsWith('ref')){const src=t.split(':')[1],arr=src=='clientes'?mine(S.clientes):S.propiedades;inp=`<select name="${k}"><option value="">Seleccionar…</option>${arr.map(x=>`<option value="${x.id}" ${x.id==v?'selected':''}>${esc(src=='clientes'?x.nombre:x.codigo+' · '+x.titulo)}</option>`).join('')}</select>`}
+else if(t=='select'){const o=(e!='clientes'&&k=='asesor'&&!isG())?[S.usuario]:f[4];inp=`<select name="${k}">${f[3]?'':'<option value=""></option>'}${o.map(x=>`<option ${x==v?'selected':''}>${x}</option>`).join('')}</select>`}
+else if(t=='textarea')inp=`<textarea name="${k}" rows="3">${esc(v)}</textarea>`;
+else inp=`<input name="${k}" type="${t}" value="${esc(v)}">`;
+return`<div class="f ${t=='textarea'?'full':''}"><label>${f[1]}${f[3]?' *':''}</label>${inp}</div>`}).join('');
+modal(`<h2>${id?'Editar':'Nuevo'} ${ENT[e].label.toLowerCase()}</h2><form id="fm" onsubmit="saveF(event,'${e}',${id||0})"><div class="fg">${h}</div><div class="err" id="er"></div><div class="acts"><button type="button" class="btn s" onclick="closeM()">Cancelar</button><button class="btn">Guardar</button></div></form>`)}
+function saveF(ev,e,id){ev.preventDefault();const fd=new FormData($('#fm')),o={};let er='';
+ENT[e].fields.forEach(f=>{let v=fd.get(f[0]);if(v==null)v='';v=v.trim?v.trim():v;if(f[3]&&!v)er='Completa: '+f[1];
+if(f[2]=='number'||f[2].startsWith('ref'))v=v===''?'':Number(v);o[f[0]]=v});
+if(!er&&e=='visitas'){const c=S.visitas.find(v=>v.id!=id&&v.asesor==o.asesor&&v.fecha==o.fecha&&v.hora==o.hora&&v.estado!='Cancelada');if(c)er='El asesor ya tiene una visita a esa hora.'}
+if(!er&&e=='negocios'&&o.etapa=='Cerrado perdido'&&!o.motivoPerdida)er='Indica el motivo de pérdida.';
+if(er){$('#er').textContent=er;return}
+let rec;if(id){rec=byId(e,id);const prev=rec.etapa;Object.assign(rec,o);if(e=='negocios'&&prev!=o.etapa){const t=o.etapa;rec.etapa=prev;aplicar(rec,t)}}
+else{rec=Object.assign({id:++S.seq},o);S[e].push(rec);
+if(e=='visitas'){const n=S.negocios.find(n=>n.cliente==rec.cliente&&n.propiedad==rec.propiedad&&n.etapa=='Contacto');if(n){n.etapa='Visita';toast('Negocio movido a Visita')}}
+if(e=='negocios'){rec.creado=dstr(new Date());if(rec.etapa!='Contacto'){const t=rec.etapa;rec.etapa='Contacto';aplicar(rec,t)}}}
+if(e=='visitas'&&id&&o.estado=='Programada'){const old=rec;}
+save();closeM();render()}
+function conf(){
+$('#main').innerHTML=`<h1>Configuración</h1><div class="sub">Equipo y preferencias</div>
+<div class="card"><h2>Perfil y rol (demostración)</h2><div class="fg"><div class="f"><label>Usuario</label><select onchange="S.usuario=this.value;save();render()">${ASES.map(a=>`<option ${a==S.usuario?'selected':''}>${a}</option>`).join('')}</select></div><div class="f"><label>Rol</label><select onchange="S.rol=this.value;save();render()"><option value="asesor" ${S.rol=='asesor'?'selected':''}>Asesor</option><option value="gerente" ${S.rol=='gerente'?'selected':''}>Gerente</option></select></div></div></div>
+<div class="card"><h2>Metas mensuales de cierre</h2>${isG()?`<div class="fg">${ASES.map(a=>`<div class="f"><label>${a}</label><input type="number" min="0" value="${S.metas[a]}" onchange="S.metas['${a}']=+this.value;save();toast('Meta guardada')"></div>`).join('')}</div><p style="color:var(--mut)">Etapas del embudo: ${ETAPAS.join(' → ')}</p>`:'<p>Solo el gerente puede editar metas. Meta tuya: '+(S.metas[S.usuario]||0)+' cierres.</p>'}</div>
+<div class="card"><h2>Reasignar clientes</h2>${isG()?`<div class="fg"><div class="f"><label>Cliente</label><select id="rc">${S.clientes.map(c=>`<option value="${c.id}">${esc(c.nombre)} (${c.asesor})</option>`).join('')}</select></div><div class="f"><label>Nuevo asesor</label><select id="ra">${ASES.map(a=>`<option>${a}</option>`).join('')}</select></div></div><div class="acts"><button class="btn" onclick="(function(){const c=byId('clientes',$('#rc').value),a=$('#ra').value;c.asesor=a;S.negocios.filter(n=>n.cliente==c.id).forEach(n=>n.asesor=a);S.visitas.filter(v=>v.cliente==c.id&&v.estado=='Programada').forEach(v=>v.asesor=a);save();toast('Cliente reasignado');render()})()">Reasignar</button></div>`:'<p>Solo disponible para el gerente.</p>'}</div>
+<div class="card"><h2>Datos</h2><div class="acts" style="justify-content:flex-start;margin:0 0 10px"><button class="btn" onclick="$('#ex').value=JSON.stringify(S,null,1)">Exportar datos</button><button class="btn s" onclick="imp()">Importar</button><button class="btn s" onclick="reset()">Restaurar ejemplos</button></div><textarea id="ex" class="ex" placeholder="JSON de exportación / pega aquí para importar"></textarea><div class="err" id="er"></div></div>`}
+function imp(){try{const o=JSON.parse($('#ex').value);if(!o.clientes||!o.propiedades||!o.visitas||!o.negocios)throw 0;S=o;save();toast('Datos importados');render()}catch(e){$('#er').textContent='JSON no válido'}}
+function reset(){S=seed();save();toast('Datos de ejemplo restaurados');render()}
+render();
+</script>
+</body>
+</html>

@@ -12,7 +12,8 @@
     "login": "Iniciar sesión",
     "start": "Comenzar proyecto",
     "dashboard": "Ir al panel",
-    "language": "Idioma"
+    "language": "Idioma",
+    "examples": "Ejemplos"
   },
   "hero": {
     "badge": "Estudio de software impulsado por IA",
@@ -136,7 +137,8 @@
         "sector": "Startups y SaaS",
         "text": "MVPs funcionales con autenticación, suscripciones, paneles de administración y analítica."
       }
-    ]
+    ],
+    "seeExamples": "Ver ejemplos funcionando"
   },
   "pricing": {
     "eyebrow": "Planes",
@@ -837,5 +839,15 @@
     "tooLarge": "«{name}» supera los 10 MB",
     "tooMany": "Máximo {max} adjuntos",
     "remove": "Quitar {name}"
+  },
+  "examples": {
+    "metaTitle": "Ejemplos · Ideon",
+    "eyebrow": "Hecho con Ideon",
+    "title": "Mira lo que puedes crear",
+    "subtitle": "Webs, CRM, paneles, portales y apps de gestión generados por los mismos agentes de Ideon que trabajarán en tu proyecto. Ábrelos y pruébalos: todo funciona.",
+    "openDemo": "Abrir la demo de {name}",
+    "tryDemo": "Probar demo",
+    "createLike": "Crear algo así",
+    "note": "Las demos usan datos ficticios y guardan los cambios solo en tu navegador. Cada una se generó a partir de una descripción breve, sin retoques manuales; tu proyecto se adapta a tu negocio con el cuestionario del consultor y los cambios que pidas por chat."
   }
 }

@@ -1,0 +1,117 @@
+[
+  {
+    "slug": "restaurante",
+    "kind": "web",
+    "title": {
+      "es": "Web de restaurante",
+      "en": "Restaurant website"
+    },
+    "summary": {
+      "es": "Landing con carta, reservas por WhatsApp, horarios y galería.",
+      "en": "Landing page with menu, WhatsApp bookings, opening hours and gallery."
+    },
+    "idea": "Web para La Huerta, restaurante de cocina mediterránea con terraza en Medellín.",
+    "name": "La Huerta",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 12,
+      "warn": 0,
+      "bad": 0,
+      "total": 12
+    },
+    "costUsd": 0.1344,
+    "generatedAt": "2026-11-07T16:42:41.263Z"
+  },
+  {
+    "slug": "crm-inmobiliaria",
+    "kind": "crm",
+    "title": {
+      "es": "CRM inmobiliario",
+      "en": "Real-estate CRM"
+    },
+    "summary": {
+      "es": "Clientes, propiedades, visitas y embudo de ventas con indicadores.",
+      "en": "Clients, properties, viewings and a sales pipeline with KPIs."
+    },
+    "idea": "CRM para una agencia inmobiliaria pequeña: clientes interesados, propiedades, visitas agendadas y negocios por etapa.",
+    "name": "Habitar CRM",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 11,
+      "warn": 1,
+      "bad": 2,
+      "total": 14
+    },
+    "costUsd": 0.221,
+    "generatedAt": "2026-11-07T16:43:18.900Z"
+  },
+  {
+    "slug": "dashboard-ventas",
+    "kind": "dashboard",
+    "title": {
+      "es": "Dashboard de ventas",
+      "en": "Sales dashboard"
+    },
+    "summary": {
+      "es": "Ventas por día, canal y producto con gráficos y metas mensuales.",
+      "en": "Sales by day, channel and product with charts and monthly goals."
+    },
+    "idea": "Dashboard de ventas para una tienda online de café: ventas diarias, por canal, productos más vendidos y cumplimiento de metas.",
+    "name": "Café Altura · Ventas",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 11,
+      "warn": 1,
+      "bad": 2,
+      "total": 14
+    },
+    "costUsd": 0.2045,
+    "generatedAt": "2026-11-07T16:43:13.451Z"
+  },
+  {
+    "slug": "portal-clientes",
+    "kind": "portal",
+    "title": {
+      "es": "Portal de clientes",
+      "en": "Client portal"
+    },
+    "summary": {
+      "es": "Documentos, solicitudes y estado de trámites para clientes de un estudio contable.",
+      "en": "Documents, requests and case status for an accounting firm's clients."
+    },
+    "idea": "Portal de clientes para un estudio contable: cada cliente ve sus trámites, documentos pendientes, vencimientos tributarios y puede enviar solicitudes.",
+    "name": "Contaplus · Portal",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 11,
+      "warn": 1,
+      "bad": 2,
+      "total": 14
+    },
+    "costUsd": 0.2196,
+    "generatedAt": "2026-11-07T16:43:17.989Z"
+  },
+  {
+    "slug": "app-gimnasio",
+    "kind": "app",
+    "title": {
+      "es": "App de gimnasio",
+      "en": "Gym admin app"
+    },
+    "summary": {
+      "es": "Socios, planes, pagos y asistencia a clases con recordatorios de vencimiento.",
+      "en": "Members, plans, payments and class attendance with expiry reminders."
+    },
+    "idea": "App administrativa para un gimnasio: socios, planes de membresía, pagos, clases y asistencia.",
+    "name": "Pulso Gym",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 12,
+      "warn": 1,
+      "bad": 1,
+      "total": 14
+    },
+    "costUsd": 0.1947,
+    "generatedAt": "2026-11-07T16:43:05.667Z"
+  }
+]

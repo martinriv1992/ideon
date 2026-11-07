@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Menu, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/ui/logo";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean }) {
   const t = useTranslations("nav");
+  const locale = useLocale();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -21,11 +22,13 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Enlaces absolutos: funcionan también desde páginas que no son la portada (p. ej. Ejemplos).
   const links = [
-    { href: "#process", label: t("process") },
-    { href: "#solutions", label: t("solutions") },
-    { href: "#pricing", label: t("pricing") },
-    { href: "#faq", label: t("faq") },
+    { href: `/${locale}#process`, label: t("process") },
+    { href: `/${locale}/examples`, label: t("examples") },
+    { href: `/${locale}#solutions`, label: t("solutions") },
+    { href: `/${locale}#pricing`, label: t("pricing") },
+    { href: `/${locale}#faq`, label: t("faq") },
   ];
 
   return (
@@ -67,7 +70,7 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
                   {t("login")}
                 </Button>
               </Link>
-              <a href="#start">
+              <a href={`/${locale}#start`}>
                 <Button size="sm">{t("start")}</Button>
               </a>
             </>
@@ -111,7 +114,7 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
                       {t("login")}
                     </Button>
                   </Link>
-                  <a href="#start" className="flex-1" onClick={() => setOpen(false)}>
+                  <a href={`/${locale}#start`} className="flex-1" onClick={() => setOpen(false)}>
                     <Button className="w-full">{t("start")}</Button>
                   </a>
                 </>
