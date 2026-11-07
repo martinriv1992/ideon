@@ -34,7 +34,7 @@ export default async function ExamplesPage({ params }: { params: Promise<{ local
           <article key={d.slug} className="group rounded-[20px] border border-border bg-surface overflow-hidden flex flex-col">
             <a href={`/demo/${d.slug}`} target="_blank" rel="noreferrer" className="block aspect-[16/10] bg-surface-2 overflow-hidden border-b border-border" aria-label={t("openDemo", { name: d.title[lang] })}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/showcase/${d.slug}.png`} alt="" loading="lazy" className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]" />
+              <img src={`/showcase/${d.slug}.jpg`} alt="" loading="lazy" className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]" />
             </a>
             <div className="p-5 flex-1 flex flex-col">
               <p className="text-[12px] uppercase tracking-wide text-fg-subtle">{tk(d.kind)}</p>

@@ -8,6 +8,20 @@ import { parse } from "node-html-parser";
 export type QaLevel = "ok" | "warn" | "bad";
 export interface QaCheck { level: QaLevel; text: string }
 
+/**
+ * Errores de sintaxis de los scripts en línea (se compilan sin ejecutarse). Un
+ * error aquí deja la aplicación en blanco aunque el HTML sea correcto.
+ */
+export function jsSyntaxErrors(html: string): string[] {
+  const errors: string[] = [];
+  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    const attrs = m[1]; const code = m[2];
+    if (/type\s*=\s*["']?(module|application\/(ld\+)?json|text\/template)/i.test(attrs) || !code.trim()) continue;
+    try { new Function(code); } catch (e) { if (e instanceof SyntaxError) errors.push(e.message); }
+  }
+  return errors;
+}
+
 export function runQa(html: string, opts: { app: boolean; imageIds: string[]; fileIds?: string[] }): QaCheck[] {
   const out: QaCheck[] = [];
   const ok = (t: string) => out.push({ level: "ok", text: t });
@@ -21,8 +35,9 @@ export function runQa(html: string, opts: { app: boolean; imageIds: string[]; fi
   title ? ok(`Título definido: «${title}»`) : bad("Falta <title>.");
   doc.querySelector('meta[name="viewport"]') ? ok("Meta viewport presente (responsive).") : bad("Falta la meta viewport.");
   doc.querySelector("html")?.getAttribute("lang") ? ok("Idioma declarado en <html lang>.") : warn("No se declara el idioma del documento.");
-  const h1 = doc.querySelectorAll("h1").length;
-  h1 === 1 ? ok("Un único H1.") : h1 === 0 ? bad("No hay H1.") : warn(`Hay ${h1} H1; se recomienda uno.`);
+  // Las aplicaciones generan parte de su interfaz con JavaScript: se busca también en los scripts.
+  const h1 = opts.app ? Math.max(doc.querySelectorAll("h1").length, (html.match(/<h1[\s>]/gi) ?? []).length) : doc.querySelectorAll("h1").length;
+  h1 === 1 ? ok("Un único H1.") : h1 === 0 ? (opts.app ? warn("No se detecta un H1.") : bad("No hay H1.")) : warn(`Hay ${h1} H1; se recomienda uno.`);
 
   const ext = doc.querySelectorAll("script[src],img[src],link[href],iframe[src]")
     .map((e) => e.getAttribute("src") || e.getAttribute("href") || "")
@@ -59,10 +74,12 @@ export function runQa(html: string, opts: { app: boolean; imageIds: string[]; fi
 
   if (opts.app) {
     doc.querySelectorAll("script").length ? ok("Lógica de aplicación presente (JavaScript).") : bad("La aplicación no tiene JavaScript.");
-    doc.querySelectorAll("form, input, select").length ? ok("Formularios y campos de captura presentes.") : bad("No hay formularios de captura.");
-    doc.querySelectorAll("table, [role=table]").length ? ok("Listados en tabla presentes.") : warn("No se detectan tablas de listado.");
+    doc.querySelectorAll("form, input, select").length || /<(form|input|select)[\s>]/i.test(html) ? ok("Formularios y campos de captura presentes.") : bad("No hay formularios de captura.");
+    doc.querySelectorAll("table, [role=table]").length || /<table[\s>]/i.test(html) ? ok("Listados en tabla presentes.") : warn("No se detectan tablas de listado.");
     /\bconfirm\(|\balert\(|\bprompt\(/.test(html) ? warn("Usa diálogos nativos (alert/confirm).") : ok("Sin diálogos nativos del navegador.");
   }
+  const jsErrors = jsSyntaxErrors(html);
+  if (doc.querySelectorAll("script").length) jsErrors.length ? bad(`Error de sintaxis en JavaScript: ${jsErrors[0]}`) : ok("JavaScript sin errores de sintaxis.");
   const noAlt = doc.querySelectorAll("img").filter((i) => !i.getAttribute("alt")).length;
   noAlt ? warn(`${noAlt} imágenes sin texto alternativo.`) : ok("Imágenes con texto alternativo.");
   return out;
