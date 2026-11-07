@@ -60,12 +60,16 @@ export const getCurrentContext = cache(async (): Promise<CurrentContext | null> 
   // Crear organización personal
   const baseName = profile.full_name || user.email?.split("@")[0] || "workspace";
   const slug = `${slugify(baseName) || "workspace"}-${user.id.slice(0, 8)}`;
-  const { data: org, error: orgError } = await supabase
+  // Sin .select() en el insert: la política de lectura exige ser miembro y la
+  // membresía la crea un trigger AFTER INSERT, así que el RETURNING lo rechazaría
+  // RLS. Se genera el id aquí y se lee la fila después.
+  const orgId = crypto.randomUUID();
+  const { error: insertError } = await supabase
     .from("organizations")
-    .insert({ name: baseName, slug, type: "personal", created_by: user.id, billing_email: user.email ?? null })
-    .select("*")
-    .single();
-  if (orgError || !org) throw new Error(`No se pudo crear la organización: ${orgError?.message}`);
+    .insert({ id: orgId, name: baseName, slug, type: "personal", created_by: user.id, billing_email: user.email ?? null });
+  if (insertError) throw new Error(`No se pudo crear la organización: ${insertError.message}`);
+  const { data: org, error: orgError } = await supabase.from("organizations").select("*").eq("id", orgId).single();
+  if (orgError || !org) throw new Error(`No se pudo leer la organización: ${orgError?.message}`);
 
   return { user, profile, organization: org, role: "owner" };
 });
