@@ -56,6 +56,7 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
       .from("pricing_plans")
       .select("*")
       .eq("is_active", true)
+      .not("key", "like", "pkg_%") // los paquetes empresariales tienen su propia sección
       .order("sort_order");
     if (error || !data?.length) return FALLBACK_PLANS;
     return data;

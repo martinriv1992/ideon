@@ -47,3 +47,15 @@ export async function checkAndRecordSignup(): Promise<"ok" | "too_many"> {
   await db.from("signup_attempts").insert({ ip_hash: ipHash });
   return "ok";
 }
+
+/** Límite genérico por conexión para endpoints públicos. Devuelve false si se superó. */
+export async function rateLimit(bucket: string, max: number, windowMs: number): Promise<boolean> {
+  const ipHash = await clientIpHash();
+  if (!ipHash) return true;
+  const db = createAdminClient();
+  const since = new Date(Date.now() - windowMs).toISOString();
+  const { count } = await db.from("rate_limits").select("id", { count: "exact", head: true }).eq("bucket", bucket).eq("ip_hash", ipHash).gte("created_at", since);
+  if ((count ?? 0) >= max) return false;
+  await db.from("rate_limits").insert({ bucket, ip_hash: ipHash });
+  return true;
+}

@@ -3,12 +3,15 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { DEFAULT_POLICIES, estimateCostUsd, getProvider, type AgentTask, type ModelPolicy, type PolicyKey } from "@/lib/ai/provider";
 import {
   architectSystem, architectUser, cleanHtml, consultantSystem, consultantUser, developerSystem, developerUser,
-  extractJson, isAppKind, isCompleteHtml, modifySystem, modifyUser, normalizeConsultant, parseModifyOutput,
+  extractJson, isAppKind, withPackage, isCompleteHtml, modifySystem, modifyUser, normalizeConsultant, parseModifyOutput,
   type ConsultantOutput, type DocRef, type FileRef, type ImageRef, type TranscriptMessage,
 } from "./prompts";
 import { jsSyntaxErrors, runQa, qaSummary } from "./qa";
 import { buildProposal, type SpecLike } from "@/features/proposals/generate";
 import { billingFromSettings } from "@/features/billing/pricing";
+import { getPackage, packagePrice, packagePromptBlock } from "@/features/packages/catalog";
+
+const pkgBlock = (project: Pick<Project, "package_key">) => { const p = getPackage(project.package_key); return p ? packagePromptBlock(p) : null; };
 import type { AgentType, Json, Project, ProjectStatus } from "@/types/database.types";
 
 /**
@@ -133,7 +136,7 @@ export async function runConsultant(projectId: string) {
   if (project.status === "draft") await setStatus(db, project, "discovery");
 
   const { value } = await callJson<unknown>(db, project, conversation.id, "consultant", "consultant",
-    consultantSystem(project.kind),
+    withPackage(consultantSystem(project.kind), pkgBlock(project), "consultant"),
     consultantUser({ kind: project.kind, idea: project.initial_idea, brief: project.brief, messages: transcript(messages), images, docs, files }));
   const out: ConsultantOutput | null = normalizeConsultant(value);
   if (!out) throw new OrchestratorError("invalid_json", "Respuesta del consultor no válida");
@@ -157,7 +160,7 @@ export async function runConsultant(projectId: string) {
 async function runArchitectAndProposal(db: Admin, project: Project, conversationId: string, refs: { images: ImageRef[]; docs: DocRef[]; files: FileRef[] }) {
   await setStatus(db, project, "specification");
   const { value: spec, runId } = await callJson<SpecLike>(db, project, conversationId, "architect", "architect",
-    architectSystem(project.kind), architectUser({ brief: project.brief, idea: project.initial_idea, ...refs }));
+    withPackage(architectSystem(project.kind), pkgBlock(project), "architect"), architectUser({ brief: project.brief, idea: project.initial_idea, ...refs }));
   if (!spec || !spec.pages) throw new OrchestratorError("invalid_json", "Especificación no válida");
 
   const { data: prev } = await db.from("specifications").select("version").eq("project_id", project.id).order("version", { ascending: false }).limit(1);
@@ -168,6 +171,14 @@ async function runArchitectAndProposal(db: Admin, project: Project, conversation
   const { data: plans } = await db.from("pricing_plans").select("*").eq("is_active", true);
   const currency = await getSetting<string>(db, "default_currency", "USD");
   const draft = buildProposal(spec, plans ?? [], currency);
+  // Proyecto que parte de un paquete empresarial: precio cerrado del paquete.
+  const pkg = getPackage(project.package_key);
+  if (pkg) {
+    const { price, currency: pc } = packagePrice(pkg, plans ?? []);
+    Object.assign(draft, { price, currency: pc, plan_key: pkg.planKey, title: `${pkg.name} · ${spec.name ?? project.name}` });
+    draft.external_costs = draft.external_costs.map((c) => ({ ...c, currency: pc }));
+    if (draft.maintenance_option) draft.maintenance_option.currency = pc;
+  }
   await db.from("proposals").update({ status: "expired" }).eq("project_id", project.id).eq("status", "sent");
   const { data: proposal } = await db.from("proposals").insert({
     project_id: project.id, specification_id: specRow!.id, plan_key: draft.plan_key, complexity: draft.complexity, title: draft.title, summary: draft.summary,
@@ -210,12 +221,12 @@ export async function runBuild(projectId: string, label: string) {
 
   await setStatus(db, project, "in_development");
   const user = developerUser({ spec, images, docs, files });
-  let res = await callModel(db, project, conversation.id, "developer", "developer", developerSystem(project.kind), user);
+  let res = await callModel(db, project, conversation.id, "developer", "developer", withPackage(developerSystem(project.kind), pkgBlock(project), "developer"), user);
   let html = cleanHtml(res.text);
   // JavaScript con error de sintaxis = aplicación en blanco: un reintento antes de entregarla.
   const jsErr = isCompleteHtml(html) && !res.truncated ? jsSyntaxErrors(html) : [];
   if (jsErr.length) {
-    res = await callModel(db, project, conversation.id, "developer", "developer", developerSystem(project.kind), user + `\n\nIMPORTANTE: un intento anterior produjo JavaScript con un error de sintaxis (${jsErr[0]}). Genera de nuevo el HTML completo y revisa que todo el JavaScript sea válido (paréntesis, llaves y comillas equilibrados).`);
+    res = await callModel(db, project, conversation.id, "developer", "developer", withPackage(developerSystem(project.kind), pkgBlock(project), "developer"), user + `\n\nIMPORTANTE: un intento anterior produjo JavaScript con un error de sintaxis (${jsErr[0]}). Genera de nuevo el HTML completo y revisa que todo el JavaScript sea válido (paréntesis, llaves y comillas equilibrados).`);
     html = cleanHtml(res.text);
   }
   if (!isCompleteHtml(html) || res.truncated) {

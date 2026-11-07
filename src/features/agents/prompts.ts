@@ -246,3 +246,15 @@ export function normalizeConsultant(raw: unknown): ConsultantOutput | null {
     brief: o.brief && typeof o.brief === "object" ? (o.brief as Record<string, unknown>) : undefined,
   };
 }
+
+// ----------------------------------------------------------------- paquetes empresariales
+/** Añade al prompt de sistema el paquete empresarial del que parte el proyecto (si lo hay). */
+export function withPackage(system: string, pkgBlock: string | null, role: "consultant" | "architect" | "developer") {
+  if (!pkgBlock) return system;
+  const extra = role === "consultant"
+    ? "En el cuestionario NO preguntes por las funcionalidades base (ya están incluidas): pregunta por lo que hace único al negocio (sector y nombre, productos o servicios y sus datos propios, roles del equipo, flujos especiales, marca y estilo). Entre 3 y 5 preguntas."
+    : role === "architect"
+      ? "La especificación debe cubrir TODOS los módulos base como entidades y vistas (puedes usar hasta 9 entidades), adaptados al negocio, más lo que el cliente pidió. \"complexity\": pro."
+      : "Todos los módulos base deben estar implementados y conectados entre sí (los movimientos actualizan existencias, las ventas descuentan stock, etc.).";
+  return `${system}\n\n${pkgBlock}\n${extra}`;
+}

@@ -5,26 +5,15 @@ import { getBilling, type PaymentMeta } from "@/features/billing/fulfil";
 import { epaycoCheckout, epaycoConfigured } from "@/features/billing/epayco";
 import { domainCostUsd, domainSalePrice, launchQuote, parseDomainQuery } from "@/features/billing/pricing";
 import * as registrar from "@/features/domains/registrar";
+import { domainContactSchema } from "@/features/domains/contact";
 import type { Json } from "@/types/database.types";
 
 export const dynamic = "force-dynamic";
 
-const contactSchema = z.object({
-  firstName: z.string().trim().min(1).max(60),
-  lastName: z.string().trim().min(1).max(60),
-  email: z.string().trim().email().max(120),
-  phone: z.string().trim().regex(/^\+[1-9]\d{6,14}$/, "Teléfono en formato internacional, p. ej. +573001234567"),
-  address1: z.string().trim().min(3).max(120),
-  city: z.string().trim().min(1).max(60),
-  state: z.string().trim().min(1).max(60),
-  zip: z.string().trim().min(1).max(20),
-  country: z.string().trim().length(2).transform((c) => c.toUpperCase()),
-  companyName: z.string().trim().max(100).optional().transform((v) => v || undefined),
-});
 
 const bodySchema = z.object({
   domain: z.string().trim().max(253).nullable().optional(),
-  contact: contactSchema.optional(),
+  contact: domainContactSchema.optional(),
   locale: z.enum(["es", "en"]).default("es"),
 });
 
@@ -114,6 +103,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     paymentId: payment.id, projectId: id, locale, amount: quote.total, currency: quote.currency,
     name: `Ideon · ${project.name}`, description: quote.items.map((i) => i.label).join(" + "),
     email: contact?.email ?? user.email, buyerName: contact ? `${contact.firstName} ${contact.lastName}` : null,
+    phone: contact?.phone, address: contact ? `${contact.address1}, ${contact.city}` : null,
   });
   return json({ quote, checkout });
 }

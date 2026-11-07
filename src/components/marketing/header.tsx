@@ -24,10 +24,11 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
 
   // Enlaces absolutos: funcionan también desde páginas que no son la portada (p. ej. Ejemplos).
   const links = [
-    { href: `/${locale}#process`, label: t("process") },
+    { href: `/${locale}/business`, label: t("business") },
+    { href: `/${locale}#start`, label: t("custom") },
     { href: `/${locale}/examples`, label: t("examples") },
-    { href: `/${locale}#solutions`, label: t("solutions") },
     { href: `/${locale}#pricing`, label: t("pricing") },
+    { href: `/${locale}#domains`, label: t("domains") },
     { href: `/${locale}#faq`, label: t("faq") },
   ];
 

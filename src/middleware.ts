@@ -65,7 +65,9 @@ export default async function middleware(request: NextRequest) {
   if (isProtected && !user) {
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}/login`;
-    url.searchParams.set("next", rest);
+    // Se conserva la query (p. ej. /projects/new?package=crm) para volver tal cual.
+    url.search = "";
+    url.searchParams.set("next", rest + request.nextUrl.search);
     return NextResponse.redirect(url);
   }
 

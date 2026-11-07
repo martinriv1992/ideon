@@ -1,5 +1,77 @@
 [
   {
+    "slug": "ideon-suite",
+    "kind": "erp",
+    "title": {
+      "es": "Ideon Business Suite",
+      "en": "Ideon Business Suite"
+    },
+    "summary": {
+      "es": "Ventas, facturas, inventario, clientes, compras, gastos y finanzas en un solo sistema.",
+      "en": "Sales, invoices, inventory, clients, purchases, expenses and finances in one system."
+    },
+    "idea": "Ideon Business Suite: sistema de gestión integrado para una pyme (ventas, inventario, clientes, compras y finanzas).",
+    "name": "Ideon Business Suite · Comercializadora Norte",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 15,
+      "warn": 0,
+      "bad": 0,
+      "total": 15
+    },
+    "calls": 2,
+    "costUsd": 0.64,
+    "generatedAt": "2026-11-07T18:40:29.950Z"
+  },
+  {
+    "slug": "ideon-crm",
+    "kind": "crm",
+    "title": {
+      "es": "Ideon CRM",
+      "en": "Ideon CRM"
+    },
+    "summary": {
+      "es": "Clientes, oportunidades, embudo por vendedor, tareas, cotizaciones, metas y reportes.",
+      "en": "Clients, opportunities, per-rep pipeline, tasks, quotes, targets and reports."
+    },
+    "idea": "Ideon CRM: CRM comercial completo para una empresa B2B con equipo de vendedores.",
+    "name": "Ideon CRM · Soluciones Atlas",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 15,
+      "warn": 0,
+      "bad": 0,
+      "total": 15
+    },
+    "calls": 2,
+    "costUsd": 0.5391,
+    "generatedAt": "2026-11-07T18:39:25.057Z"
+  },
+  {
+    "slug": "ideon-inventory",
+    "kind": "inventory",
+    "title": {
+      "es": "Ideon Inventory",
+      "en": "Ideon Inventory"
+    },
+    "summary": {
+      "es": "Productos, bodegas, entradas y salidas, kardex, alertas, compras a proveedores y reportes.",
+      "en": "Products, warehouses, stock in/out, kardex, alerts, purchase orders and reports."
+    },
+    "idea": "Ideon Inventory: sistema de inventario completo para una pyme comercial con varias bodegas.",
+    "name": "Ideon Inventory · Distribuidora Andina",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 14,
+      "warn": 1,
+      "bad": 0,
+      "total": 15
+    },
+    "calls": 2,
+    "costUsd": 0.6132,
+    "generatedAt": "2026-11-07T18:40:08.644Z"
+  },
+  {
     "slug": "crm-ventas",
     "kind": "crm",
     "title": {

@@ -11,12 +11,13 @@ import type { DomainOrder, Json, Project } from "@/types/database.types";
  * la confirmación varias veces).
  *   · lanzamiento → proyecto activado, paquete anual, sitio publicado y compra del dominio.
  *   · renovación  → el paquete anual se extiende un año y se renueva el dominio.
+ *   · dominio     → compra de un dominio para un proyecto ya activado; se suma a la renovación.
  */
 
 type Admin = ReturnType<typeof createAdminClient>;
 
 export interface PaymentMeta {
-  type: "launch" | "renewal" | "changes";
+  type: "launch" | "renewal" | "changes" | "domain";
   /** Paquete de cambios comprado (type = "changes"). */
   pack_qty?: number;
   user_id: string;
@@ -54,6 +55,7 @@ export async function fulfilPayment(paymentId: string, providerData: Record<stri
     // Reintento tras un fallo a mitad: el pago ya consta como pagado pero el proyecto no se activó.
     const { data: paid } = await db.from("payments").select("*").eq("id", paymentId).eq("status", "paid").maybeSingle();
     const m = paid?.metadata as unknown as PaymentMeta | undefined;
+    if (paid?.project_id && m?.type === "domain" && m.domain_order_id) await purchaseDomain(m.domain_order_id);
     if (paid?.project_id && m?.type === "launch") {
       const { data: pr } = await db.from("projects").select("paid_at").eq("id", paid.project_id).single();
       if (pr && !pr.paid_at) await fulfilLaunch(db, paid.project_id, paid.organization_id, paid.amount, paid.currency, m);
@@ -69,6 +71,7 @@ export async function fulfilPayment(paymentId: string, providerData: Record<stri
 
   if (meta.type === "launch") await fulfilLaunch(db, payment.project_id, payment.organization_id, payment.amount, payment.currency, meta);
   else if (meta.type === "renewal") await fulfilRenewal(db, payment.project_id, meta);
+  else if (meta.type === "domain") await fulfilDomain(db, payment.project_id, meta);
   else if (meta.type === "changes" && meta.subscription_id && meta.pack_qty) {
     const { data: sub } = await db.from("subscriptions").select("extra_changes").eq("id", meta.subscription_id).single();
     if (sub) await db.from("subscriptions").update({ extra_changes: sub.extra_changes + meta.pack_qty }).eq("id", meta.subscription_id);
@@ -98,6 +101,18 @@ async function fulfilLaunch(db: Admin, projectId: string, orgId: string, _amount
   catch (e) { await event(db, projectId, "deploy.failed", { message: e instanceof Error ? e.message : String(e) }); }
 
   if (meta.domain_order_id) await purchaseDomain(meta.domain_order_id);
+}
+
+async function fulfilDomain(db: Admin, projectId: string, meta: PaymentMeta) {
+  if (!meta.subscription_id || !meta.domain || !meta.domain_order_id) return;
+  const { data: sub } = await db.from("subscriptions").select("id,domain,renewal_amount,amount").eq("id", meta.subscription_id).single();
+  // Desde ahora el dominio se renueva junto con el plan anual.
+  if (sub && !sub.domain) {
+    const renewal = Number(sub.renewal_amount ?? sub.amount) + meta.renewal;
+    await db.from("subscriptions").update({ domain: meta.domain, renewal_amount: renewal, amount: renewal }).eq("id", sub.id);
+  }
+  await event(db, projectId, "domain.paid", { domain: meta.domain });
+  await purchaseDomain(meta.domain_order_id);
 }
 
 async function fulfilRenewal(db: Admin, projectId: string, meta: PaymentMeta) {
