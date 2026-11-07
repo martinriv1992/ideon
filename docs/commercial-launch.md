@@ -78,9 +78,9 @@ Todas existen en `/es/...` y `/en/...`. Una ruta sin prefijo (p. ej. `/inventory
 | Demo NOVA Distribution (ES y EN) | COMPLETED AND TESTED. 14 y 12 comprobaciones de flujo: crear y editar producto, entradas, salidas rechazadas por stock, alertas con sugerencia de reposición, pedido bloqueado por stock, total con IVA, despacho que descuenta stock, reportes y panel coherentes, móvil sin desbordamiento. |
 | Aislamiento de la demo | COMPLETED AND TESTED: HTML estático en iframe `sandbox` sin `allow-same-origin`; datos ficticios solo en el navegador; sin acceso a la base de datos. |
 | Estado de las demos CRM y Business Management | COMPLETED (probadas en la versión anterior: todas las vistas, altas y una venta en el punto de venta). Solo en español. |
-| Formulario de leads: validación en cliente y servidor, antispam, origen y UTM | IMPLEMENTED; la validación, el antispam y el 403 del CSV están probados. **El guardado requiere aplicar la migración 0009** (pendiente de autorización). |
-| Aviso al fundador por correo | IMPLEMENTED BUT NOT VERIFIED: necesita `RESEND_API_KEY` en Vercel; sin ella, el lead se guarda y aparece en `/admin/leads`. |
-| Gestión comercial del fundador (embudo NEW→WON/LOST, valor, último contacto, próximo seguimiento, notas, vencidos, origen, CSV) | IMPLEMENTED; se verificará con la tabla creada. |
+| Formulario de leads: validación en cliente y servidor, antispam, origen y UTM | COMPLETED AND TESTED en producción: lead real guardado con consentimiento, UTM, página de entrada y hash de IP; el spam se descarta; el CSV sin sesión devuelve 403. |
+| Aviso al fundador por correo | COMPLETED AND TESTED: Resend aceptó el envío (`notified_at` registrado) a los administradores de la plataforma. Falta confirmar que llega a la bandeja de entrada. |
+| Gestión comercial del fundador (embudo NEW→WON/LOST, valor, último contacto, próximo seguimiento, notas, vencidos, origen, CSV) | IMPLEMENTED BUT NOT VERIFIED en el navegador: requiere iniciar sesión como administrador (cuenta del fundador). Compila y está protegido (sin sesión → login; CSV → 403). |
 | Agenda de consulta de 20 min | BLOCKED (sin proveedor). Punto de integración: `NEXT_PUBLIC_BOOKING_URL` (Cal.com o Calendly). Mientras tanto, la casilla «Quiero agendar» y WhatsApp. No se simulan reservas. `meeting_booked` no se emite sin proveedor. |
 | Eventos de analítica | COMPLETED AND TESTED en `dataLayer`: page_view, language_selected, solution_viewed, inventory_demo_opened, demo_interaction, lead_form_started, lead_form_submitted, meeting_cta_clicked y proposal_requested. Sin datos personales. |
 | GA4 y Search Console | BLOCKED (credenciales). Con `NEXT_PUBLIC_GA_ID`, GA4 se carga solo tras aceptar cookies (aparece el aviso). Search Console: verificar ideonapp.com y enviar `/sitemap.xml`. |
@@ -92,8 +92,8 @@ Todas existen en `/es/...` y `/en/...`. Una ruta sin prefijo (p. ej. `/inventory
 
 ## 5. Configuración pendiente (credenciales)
 
-1. **Migración 0009** (`supabase/migrations/0009_leads.sql`): crea la tabla `leads`. Es aditiva.
-2. **`RESEND_API_KEY`** en Vercel (opcional: `LEADS_NOTIFY_EMAIL`, por defecto los administradores; y `LEADS_FROM_EMAIL`, por defecto `no-reply@ideonapp.com`, ya verificado).
+1. ~~Migración 0009~~: aplicada el 07/11/2026.
+2. ~~`RESEND_API_KEY`~~: configurada en producción. Opcionales: `LEADS_NOTIFY_EMAIL` (por defecto, los administradores) y `LEADS_FROM_EMAIL` (por defecto `no-reply@ideonapp.com`).
 3. **`NEXT_PUBLIC_BOOKING_URL`**: enlace de Cal.com o Calendly de 20 minutos.
 4. **`NEXT_PUBLIC_GA_ID`**: ID de GA4 (G-XXXX). Además, verificar el dominio en Search Console y enviar el sitemap.
 5. Redes sociales: no hay cuentas configuradas, así que el footer no muestra enlaces.
@@ -104,6 +104,6 @@ PR a `main` → Vercel despliega producción automáticamente. Orden: **migraci�
 
 ## 7. Rollback
 
-- **Código:** en Vercel → Deployments, «Instant Rollback» al despliegue anterior (`dpl_AbKR7ErDTTSj2v7pxAnLSjtb27ZP`, commit `125efe7`). También se puede hacer `git revert` del merge.
+- **Código:** en Vercel → Deployments, «Instant Rollback» al despliegue anterior al lanzamiento (`dpl_AbKR7ErDTTSj2v7pxAnLSjtb27ZP`, commit `125efe7`). El lanzamiento se desplegó como `dpl_74SL2KbECeChcNCXbWNjwkeX7hHX` (commit `de68add`). También se puede hacer `git revert` del merge.
 - **Base de datos:** `drop table public.leads;` (solo si se quiere eliminar; la tabla no afecta a nada más).
 - **Variables:** quitar las añadidas (`RESEND_API_KEY`, `NEXT_PUBLIC_*`); no se modificó ninguna existente.

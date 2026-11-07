@@ -11,8 +11,12 @@ export function pageMetadata({ locale, path, title, description }: { locale: str
     title: { absolute: title.includes("Ideonapp") ? title : `${title} · Ideonapp` },
     description,
     alternates: { canonical: `${SITE_URL}/${locale}${p}`, languages: { ...languages, "x-default": `${SITE_URL}/${routing.defaultLocale}${p}` } },
-    openGraph: { title, description, url: `${SITE_URL}/${locale}${p}`, siteName: "Ideonapp", locale: locale === "en" ? "en_US" : "es_CO", type: "website" },
-    twitter: { card: "summary_large_image", title, description },
+    openGraph: {
+      title, description, url: `${SITE_URL}/${locale}${p}`, siteName: "Ideonapp", locale: locale === "en" ? "en_US" : "es_CO", type: "website",
+      // Imagen generada por src/app/[locale]/opengraph-image.tsx (hay que declararla: el openGraph de la página reemplaza al heredado).
+      images: [{ url: `${SITE_URL}/${locale}/opengraph-image`, width: 1200, height: 630, alt: "Ideonapp · AI Software Studio" }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [`${SITE_URL}/${locale}/opengraph-image`] },
   };
 }
 
