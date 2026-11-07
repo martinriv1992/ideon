@@ -5,7 +5,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { savePendingIdea } from "@/features/projects/pending-idea";
+import { clearPendingFiles, savePendingFiles, savePendingIdea } from "@/features/projects/pending-idea";
+import { AttachmentPicker } from "@/components/app/attachment-picker";
 import { PROJECT_KINDS } from "@/features/projects/kinds";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [kind, setKind] = useState<string>("web");
+  const [files, setFiles] = useState<File[]>([]);
   const tk = useTranslations("app.workspace.kinds");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const examples = t.raw("examples") as { title: string; prompt: string }[];
@@ -39,7 +41,7 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
     });
   }
 
-  function submit() {
+  async function submit() {
     const idea = value.trim();
     if (idea.length < 10) {
       setError(t("errorEmpty"));
@@ -47,6 +49,8 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
     }
     setSubmitting(true);
     savePendingIdea(idea, locale, kind);
+    // Los adjuntos esperan en el navegador hasta que exista el proyecto.
+    await (files.length ? savePendingFiles(files) : clearPendingFiles());
     router.push(
       isAuthenticated ? "/projects/new" : { pathname: "/register", query: { next: "/projects/new" } },
     );
@@ -84,16 +88,19 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
             autoGrow(e.target);
           }}
           onKeyDown={(e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") submit();
+            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") void submit();
           }}
           placeholder={t("placeholder")}
           className="w-full bg-transparent resize-none outline-none px-5 pt-5 pb-2 text-[15px] sm:text-base leading-relaxed text-fg placeholder:text-fg-subtle min-h-[112px]"
         />
-        <div className="flex items-center justify-between gap-3 px-3 pb-3">
-          <span className="pl-2 text-[12px] tabular-nums text-fg-subtle">
-            {t("charCount", { count: value.length, max: MAX })}
-          </span>
-          <Button size="lg" onClick={submit} loading={submitting} className="group">
+        <div className="flex items-end justify-between gap-3 px-3 pb-3">
+          <div className="flex flex-col gap-1.5 pl-1 min-w-0">
+            <AttachmentPicker files={files} onChange={setFiles} compact />
+            <span className="pl-1 text-[12px] tabular-nums text-fg-subtle">
+              {t("charCount", { count: value.length, max: MAX })}
+            </span>
+          </div>
+          <Button size="lg" onClick={() => void submit()} loading={submitting} className="group">
             {t("cta")}
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </Button>

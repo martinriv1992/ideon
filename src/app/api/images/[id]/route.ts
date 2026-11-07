@@ -16,5 +16,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!img) return fail("not_found", "No encontrado", 404);
   const { data: blob, error } = await db.storage.from("project-images").download(img.storage_path);
   if (error || !blob) return fail("not_found", "No encontrado", 404);
-  return new Response(blob, { headers: { "Content-Type": blob.type || "image/jpeg", "Cache-Control": "public, max-age=86400, immutable" } });
+  const type = blob.type || "image/jpeg";
+  return new Response(blob, {
+    headers: {
+      "Content-Type": type,
+      "Cache-Control": "public, max-age=86400, immutable",
+      "X-Content-Type-Options": "nosniff",
+      // Un SVG abierto directamente no puede ejecutar scripts en el dominio de la plataforma.
+      ...(type === "image/svg+xml" ? { "Content-Security-Policy": "default-src 'none'; img-src data:; style-src 'unsafe-inline'; sandbox" } : {}),
+    },
+  });
 }

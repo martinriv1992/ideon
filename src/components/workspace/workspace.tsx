@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import {
-  Archive, ArchiveRestore, Bot, Check, ChevronLeft, Download, ExternalLink, Globe, History, ImagePlus, Loader2, MessageSquare,
+  Archive, ArchiveRestore, Bot, Check, ChevronLeft, Download, ExternalLink, FilePlus, Globe, History, ImagePlus, Loader2, MessageSquare,
   Monitor, MonitorOff, RefreshCw, Rocket, Send, Smartphone, Trash2, User, X,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -17,9 +17,11 @@ import { setCurrentVersionAction, setProjectArchivedAction } from "@/features/pr
 import type { ProjectDetail } from "@/features/projects/queries";
 import type { Json, Message } from "@/types/database.types";
 import { cn, formatDate } from "@/lib/utils";
+import { uploadToProject } from "@/lib/upload-client";
+import { ASSET_ACCEPT, IMAGE_ACCEPT, MAX_ASSETS, MAX_IMAGES, assetTypeFor, classifyUpload, estimateTokens } from "@/lib/uploads";
 
 type LeftTab = "conversation" | "history";
-type RightTab = "overview" | "proposal" | "spec" | "versions" | "images" | "qa" | "publish";
+type RightTab = "overview" | "proposal" | "spec" | "versions" | "images" | "files" | "qa" | "publish";
 type Device = "desktop" | "mobile";
 
 interface Question { text: string; options: string[]; multi: boolean }
@@ -169,6 +171,7 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
             { key: "spec", label: t("structure") },
             { key: "versions", label: t("versions") },
             { key: "images", label: t("images") },
+            { key: "files", label: t("files") },
             { key: "qa", label: "QA" },
             { key: "publish", label: t("publish"), dot: Boolean(currentVersion && !site) },
           ]} />
@@ -178,6 +181,7 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
             {rightTab === "spec" && <SpecPanel detail={detail} />}
             {rightTab === "versions" && <VersionsPanel detail={detail} previewVersion={previewing?.id ?? null} onPreview={(id) => { setPreviewVersion(id); setFrameKey((k) => k + 1); }} />}
             {rightTab === "images" && <ImagesPanel detail={detail} />}
+            {rightTab === "files" && <FilesPanel detail={detail} />}
             {rightTab === "qa" && <QaPanel detail={detail} version={previewing} />}
             {rightTab === "publish" && <PublishPanel detail={detail} />}
           </div>
@@ -449,21 +453,20 @@ function ImagesPanel({ detail }: { detail: ProjectDetail }) {
   const t = useTranslations("app.workspace");
   const router = useRouter();
   const [status, setStatus] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { images, project } = detail;
 
   async function upload(files: FileList | null) {
     if (!files?.length) return;
-    setStatus(t("processing"));
-    for (const f of Array.from(files).slice(0, 12 - images.length)) {
-      try {
-        const { blob, w, h } = await downsize(f);
-        const fd = new FormData(); fd.append("file", blob, f.name.replace(/\.[^.]+$/, "") + ".jpg"); fd.append("label", f.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").slice(0, 60)); fd.append("width", String(w)); fd.append("height", String(h));
-        const res = await fetch(`/api/projects/${project.id}/images`, { method: "POST", body: fd });
-        if (!res.ok) { const b = await res.json().catch(() => ({})); setStatus(b?.error?.message || t("uploadFailed")); }
-      } catch { setStatus(t("uploadFailed")); }
+    setError(null);
+    const list = Array.from(files).slice(0, MAX_IMAGES - images.length);
+    for (const [i, f] of list.entries()) {
+      setStatus(t("uploadingN", { n: i + 1, total: list.length }));
+      try { await uploadToProject(project.id, f); }
+      catch (e) { setError(e instanceof Error ? e.message : t("uploadFailed")); }
     }
-    setStatus(null); router.refresh();
+    setStatus(null); if (inputRef.current) inputRef.current.value = ""; router.refresh();
   }
   async function remove(id: string) { await api(`/api/projects/${project.id}/images`, { method: "DELETE", body: JSON.stringify({ imageId: id }) }).catch(() => null); router.refresh(); }
   async function rename(id: string, label: string) { await api(`/api/projects/${project.id}/images`, { method: "PATCH", body: JSON.stringify({ imageId: id, label }) }).catch(() => null); }
@@ -471,11 +474,12 @@ function ImagesPanel({ detail }: { detail: ProjectDetail }) {
   return (
     <div className="space-y-4">
       <p className="text-fg-muted leading-relaxed">{t("imagesHelp")}</p>
-      <input ref={inputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => upload(e.target.files)} />
+      <input ref={inputRef} type="file" accept={IMAGE_ACCEPT} multiple className="hidden" onChange={(e) => upload(e.target.files)} />
       <div className="flex items-center gap-2">
-        <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()} disabled={images.length >= 12 || Boolean(status)}><ImagePlus className="size-4" /> {t("uploadPhotos")}</Button>
-        <span className="text-[12px] text-fg-subtle">{status ?? `${images.length}/12`}</span>
+        <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()} disabled={images.length >= MAX_IMAGES || Boolean(status)}>{status ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />} {t("uploadPhotos")}</Button>
+        <span className="text-[12px] text-fg-subtle">{status ?? `${images.length}/${MAX_IMAGES} · ${t("imageFormats")}`}</span>
       </div>
+      {error && <p className="text-[12px] text-danger" role="alert">{error}</p>}
       <div className="space-y-2">
         {images.map((img) => (
           <div key={img.id} className="grid grid-cols-[56px_1fr_auto] gap-2 items-center rounded-[10px] border border-border bg-surface p-2">
@@ -483,7 +487,7 @@ function ImagesPanel({ detail }: { detail: ProjectDetail }) {
             <img src={`/api/images/${img.id}`} alt="" className="w-14 h-11 object-cover rounded-md bg-surface-2" />
             <div className="min-w-0">
               <Input defaultValue={img.label} maxLength={80} className="h-8 text-[13px]" onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== img.label && rename(img.id, e.target.value.trim())} aria-label={t("photoName")} />
-              <p className="text-[11px] text-fg-subtle mt-1">{img.width ?? "?"}×{img.height ?? "?"} · {Math.round((img.size ?? 0) / 1024)} KB</p>
+              <p className="text-[11px] text-fg-subtle mt-1">{img.width ? `${img.width}×${img.height} · ` : ""}{Math.round((img.size ?? 0) / 1024)} KB</p>
             </div>
             <Button size="sm" variant="ghost" onClick={() => remove(img.id)} aria-label={t("remove")}><Trash2 className="size-4" /></Button>
           </div>
@@ -494,19 +498,97 @@ function ImagesPanel({ detail }: { detail: ProjectDetail }) {
   );
 }
 
-function downsize(file: File): Promise<{ blob: Blob; w: number; h: number }> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file); const im = new Image();
-    im.onload = () => {
-      URL.revokeObjectURL(url);
-      const max = 1600; const sc = Math.min(1, max / Math.max(im.width, im.height));
-      const w = Math.round(im.width * sc), h = Math.round(im.height * sc);
-      const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d")!.drawImage(im, 0, 0, w, h);
-      c.toBlob((b) => (b ? resolve({ blob: b, w, h }) : reject(new Error("canvas"))), "image/jpeg", 0.85);
-    };
-    im.onerror = () => { URL.revokeObjectURL(url); reject(new Error("image")); };
-    im.src = url;
-  });
+function FilesPanel({ detail }: { detail: ProjectDetail }) {
+  const t = useTranslations("app.workspace");
+  const router = useRouter();
+  const [status, setStatus] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { assets, project } = detail;
+  // Cambios de casillas aplicados al instante; se descartan si el servidor los rechaza.
+  const [flags, setFlags] = useState<Record<string, { useReference?: boolean; useSite?: boolean }>>({});
+  const flag = (a: (typeof assets)[number], k: "useReference" | "useSite") => flags[a.id]?.[k] ?? (k === "useReference" ? a.use_reference : a.use_site);
+  const refTokens = estimateTokens(assets.filter((a) => flag(a, "useReference")).reduce((n, a) => n + a.text_chars, 0));
+
+  async function upload(files: FileList | null) {
+    if (!files?.length) return;
+    setError(null);
+    const list = Array.from(files).slice(0, MAX_ASSETS - assets.length);
+    for (const [i, f] of list.entries()) {
+      setStatus(t("uploadingN", { n: i + 1, total: list.length }));
+      try {
+        if (classifyUpload(f) !== "asset") throw new Error(t("filesUnsupported", { name: f.name }));
+        await uploadToProject(project.id, f);
+      } catch (e) { setError(e instanceof Error ? e.message : t("uploadFailed")); }
+    }
+    setStatus(null); if (inputRef.current) inputRef.current.value = ""; router.refresh();
+  }
+  async function patch(assetId: string, body: { label?: string; useReference?: boolean; useSite?: boolean }) {
+    setError(null);
+    const toggles = { ...(body.useReference !== undefined && { useReference: body.useReference }), ...(body.useSite !== undefined && { useSite: body.useSite }) };
+    if (Object.keys(toggles).length) setFlags((f) => ({ ...f, [assetId]: { ...f[assetId], ...toggles } }));
+    try { await api(`/api/projects/${project.id}/assets`, { method: "PATCH", body: JSON.stringify({ assetId, ...body }) }); router.refresh(); }
+    catch (e) {
+      setFlags((f) => { const n = { ...f }; delete n[assetId]; return n; });
+      setError(e instanceof Error ? e.message : t("uploadFailed"));
+    }
+  }
+  async function remove(assetId: string) { await api(`/api/projects/${project.id}/assets`, { method: "DELETE", body: JSON.stringify({ assetId }) }).catch(() => null); router.refresh(); }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-fg-muted leading-relaxed">{t("filesHelp")}</p>
+      <input ref={inputRef} type="file" accept={ASSET_ACCEPT} multiple className="hidden" onChange={(e) => upload(e.target.files)} />
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()} disabled={assets.length >= MAX_ASSETS || Boolean(status)}>{status ? <Loader2 className="size-4 animate-spin" /> : <FilePlus className="size-4" />} {t("uploadFiles")}</Button>
+        <span className="text-[12px] text-fg-subtle">{status ?? `${assets.length}/${MAX_ASSETS} · ${t("fileFormats")}`}</span>
+      </div>
+      {error && <p className="text-[12px] text-danger" role="alert">{error}</p>}
+      {refTokens > 0 && <p className="text-[12px] text-fg-subtle">{t("filesTokens", { tokens: refTokens.toLocaleString() })}</p>}
+      <div className="space-y-2">
+        {assets.map((a) => {
+          const type = assetTypeFor(a.name);
+          return (
+            <div key={a.id} className="rounded-[10px] border border-border bg-surface p-2.5 space-y-2">
+              <div className="grid grid-cols-[auto_1fr_auto] gap-2 items-center">
+                <span className="w-11 h-9 rounded-md bg-surface-2 flex items-center justify-center font-mono text-[10px] uppercase text-fg-muted">{type?.ext ?? "?"}</span>
+                <div className="min-w-0">
+                  <Input defaultValue={a.label} maxLength={80} className="h-8 text-[13px]" aria-label={t("fileName")}
+                    onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== a.label && patch(a.id, { label: e.target.value.trim() })} />
+                  <p className="text-[11px] text-fg-subtle mt-1 truncate">{a.name} · {Math.max(1, Math.round(a.size / 1024))} KB · {extractLabel(a, t)}</p>
+                </div>
+                <Button size="sm" variant="ghost" onClick={() => remove(a.id)} aria-label={t("remove")}><Trash2 className="size-4" /></Button>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 pl-1">
+                {type?.reference && (
+                  <label className={cn("inline-flex items-center gap-1.5 text-[12px]", a.extract_status !== "ok" && "opacity-50")}>
+                    <input type="checkbox" checked={flag(a, "useReference")} disabled={a.extract_status !== "ok"} onChange={(e) => patch(a.id, { useReference: e.target.checked })} />
+                    {t("useReference")}
+                  </label>
+                )}
+                {type?.site && (
+                  <label className="inline-flex items-center gap-1.5 text-[12px]">
+                    <input type="checkbox" checked={flag(a, "useSite")} onChange={(e) => patch(a.id, { useSite: e.target.checked })} />
+                    {t("useSite")}
+                  </label>
+                )}
+              </div>
+            </div>
+          );
+        })}
+        {!assets.length && <p className="text-fg-subtle">{t("noFiles")}</p>}
+      </div>
+    </div>
+  );
+}
+
+function extractLabel(a: ProjectDetail["assets"][number], t: ReturnType<typeof useTranslations>) {
+  switch (a.extract_status) {
+    case "ok": return t("extractOk", { tokens: estimateTokens(a.text_chars).toLocaleString() });
+    case "empty": return t("extractEmpty");
+    case "failed": return t("extractFailed");
+    default: return t("extractNone");
+  }
 }
 
 function QaPanel({ detail, version }: { detail: ProjectDetail; version: ProjectDetail["versions"][number] | null }) {

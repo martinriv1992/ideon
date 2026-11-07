@@ -4,7 +4,7 @@ import { DEFAULT_POLICIES, estimateCostUsd, getProvider, type AgentTask, type Mo
 import {
   architectSystem, architectUser, cleanHtml, consultantSystem, consultantUser, developerSystem, developerUser,
   extractJson, isAppKind, isCompleteHtml, modifySystem, modifyUser, normalizeConsultant, parseModifyOutput,
-  type ConsultantOutput, type ImageRef, type TranscriptMessage,
+  type ConsultantOutput, type DocRef, type FileRef, type ImageRef, type TranscriptMessage,
 } from "./prompts";
 import { runQa, qaSummary } from "./qa";
 import { buildProposal, type SpecLike } from "@/features/proposals/generate";
@@ -45,7 +45,10 @@ async function loadProject(db: Admin, projectId: string) {
   }
   const { data: messages } = await db.from("messages").select("*").eq("conversation_id", conversation.id).order("created_at").limit(200);
   const { data: images } = await db.from("project_images").select("id,label,width,height").eq("project_id", projectId).order("created_at");
-  return { project, conversation, messages: messages ?? [], images: (images ?? []) as ImageRef[] };
+  const { data: assets } = await db.from("project_assets").select("id,label,name,mime,size,use_reference,use_site,text_content").eq("project_id", projectId).order("created_at");
+  const docs: DocRef[] = (assets ?? []).filter((a) => a.use_reference && a.text_content).map((a) => ({ id: a.id, label: a.label, name: a.name, text: a.text_content! }));
+  const files: FileRef[] = (assets ?? []).filter((a) => a.use_site).map((a) => ({ id: a.id, label: a.label, name: a.name, mime: a.mime, size: a.size }));
+  return { project, conversation, messages: messages ?? [], images: (images ?? []) as ImageRef[], docs, files };
 }
 
 function transcript(messages: { role: string; content: string; content_json: Json | null }[]): TranscriptMessage[] {
@@ -106,12 +109,12 @@ async function callJson<T>(db: Admin, project: Project, conversationId: string, 
 // ----------------------------------------------------------------- consultor
 export async function runConsultant(projectId: string) {
   const db = createAdminClient();
-  const { project, conversation, messages, images } = await loadProject(db, projectId);
+  const { project, conversation, messages, images, docs, files } = await loadProject(db, projectId);
   if (project.status === "draft") await setStatus(db, project, "discovery");
 
   const { value } = await callJson<unknown>(db, project, conversation.id, "consultant", "consultant",
     consultantSystem(project.kind),
-    consultantUser({ kind: project.kind, idea: project.initial_idea, brief: project.brief, messages: transcript(messages), images }));
+    consultantUser({ kind: project.kind, idea: project.initial_idea, brief: project.brief, messages: transcript(messages), images, docs, files }));
   const out: ConsultantOutput | null = normalizeConsultant(value);
   if (!out) throw new OrchestratorError("invalid_json", "Respuesta del consultor no válida");
 
@@ -125,16 +128,16 @@ export async function runConsultant(projectId: string) {
 
   if (out.ready) {
     project.brief = brief;
-    await runArchitectAndProposal(db, project, conversation.id, images);
+    await runArchitectAndProposal(db, project, conversation.id, { images, docs, files });
   }
   return { ready: out.ready };
 }
 
 // ----------------------------------------------------------------- arquitecto + propuesta
-async function runArchitectAndProposal(db: Admin, project: Project, conversationId: string, images: ImageRef[]) {
+async function runArchitectAndProposal(db: Admin, project: Project, conversationId: string, refs: { images: ImageRef[]; docs: DocRef[]; files: FileRef[] }) {
   await setStatus(db, project, "specification");
   const { value: spec, runId } = await callJson<SpecLike>(db, project, conversationId, "architect", "architect",
-    architectSystem(project.kind), architectUser({ brief: project.brief, idea: project.initial_idea, images }));
+    architectSystem(project.kind), architectUser({ brief: project.brief, idea: project.initial_idea, ...refs }));
   if (!spec || !spec.pages) throw new OrchestratorError("invalid_json", "Especificación no válida");
 
   const { data: prev } = await db.from("specifications").select("version").eq("project_id", project.id).order("version", { ascending: false }).limit(1);
@@ -180,24 +183,24 @@ export async function approveProposal(projectId: string, proposalId: string, use
 
 export async function runBuild(projectId: string, label: string) {
   const db = createAdminClient();
-  const { project, conversation, images } = await loadProject(db, projectId);
+  const { project, conversation, images, docs, files } = await loadProject(db, projectId);
   const { data: specs } = await db.from("specifications").select("*").eq("project_id", projectId).order("version", { ascending: false }).limit(1);
   const spec = specs?.[0]?.content as SpecLike | undefined;
   if (!spec) throw new OrchestratorError("invalid_state", "No hay especificación");
 
   await setStatus(db, project, "in_development");
-  const res = await callModel(db, project, conversation.id, "developer", "developer", developerSystem(project.kind), developerUser({ spec, images }));
+  const res = await callModel(db, project, conversation.id, "developer", "developer", developerSystem(project.kind), developerUser({ spec, images, docs, files }));
   const html = cleanHtml(res.text);
   if (!isCompleteHtml(html) || res.truncated) {
     await setStatus(db, project, "approved");
     await postAssistant(db, conversation.id, "La generación se cortó antes de completar el producto. Pulsa «Reintentar construcción» o pide una versión más sencilla.", "developer", { retry: "build" });
     throw new OrchestratorError("truncated", "HTML incompleto");
   }
-  await commitVersion(db, project, conversation.id, html, label, res.runId, images.map((i) => i.id));
+  await commitVersion(db, project, conversation.id, html, label, res.runId, { imageIds: images.map((i) => i.id), fileIds: files.map((f) => f.id) });
 }
 
-async function commitVersion(db: Admin, project: Project, conversationId: string, html: string, summary: string, runId: string, imageIds: string[]) {
-  const qa = runQa(html, { app: isAppKind(project.kind), imageIds });
+async function commitVersion(db: Admin, project: Project, conversationId: string, html: string, summary: string, runId: string, refs: { imageIds: string[]; fileIds: string[] }) {
+  const qa = runQa(html, { app: isAppKind(project.kind), ...refs });
   const s = qaSummary(qa);
   await db.from("agent_runs").insert({ project_id: project.id, conversation_id: conversationId, agent_type: "qa", step: "qa", provider: "ideon", status: "succeeded", started_at: new Date().toISOString(), finished_at: new Date().toISOString(), output: s as unknown as Json });
 
@@ -218,14 +221,14 @@ async function commitVersion(db: Admin, project: Project, conversationId: string
 // ----------------------------------------------------------------- modificaciones
 export async function runModify(projectId: string, instruction: string) {
   const db = createAdminClient();
-  const { project, conversation, messages, images } = await loadProject(db, projectId);
+  const { project, conversation, messages, images, docs, files } = await loadProject(db, projectId);
   if (!project.current_version_id) throw new OrchestratorError("invalid_state", "No hay versión que modificar");
   const { data: version } = await db.from("project_versions").select("*").eq("id", project.current_version_id).single();
   const { data: file } = await db.from("project_files").select("content").eq("version_id", version!.id).eq("path", "index.html").single();
 
   const recent = transcript(messages).slice(-9, -1);
   const res = await callModel(db, project, conversation.id, "modify", "developer", modifySystem(project.kind),
-    modifyUser({ recent, instruction, html: file!.content, versionNumber: version!.number, images }));
+    modifyUser({ recent, instruction, html: file!.content, versionNumber: version!.number, images, docs, files }));
   const { reply, html } = parseModifyOutput(res.text);
   if (html) {
     if (!isCompleteHtml(html) || res.truncated) {
@@ -233,7 +236,7 @@ export async function runModify(projectId: string, instruction: string) {
       throw new OrchestratorError("truncated", "HTML incompleto");
     }
     await postAssistant(db, conversation.id, reply, "developer");
-    await commitVersion(db, project, conversation.id, html, instruction.slice(0, 80), res.runId, images.map((i) => i.id));
+    await commitVersion(db, project, conversation.id, html, instruction.slice(0, 80), res.runId, { imageIds: images.map((i) => i.id), fileIds: files.map((f) => f.id) });
   } else {
     await postAssistant(db, conversation.id, reply, "developer");
   }

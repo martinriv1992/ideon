@@ -22,6 +22,15 @@ export async function requireProjectAccess(projectId: string) {
   return { user, project, supabase };
 }
 
+/** Como requireProjectAccess, pero exige rol 'member' o superior (para escribir). */
+export async function requireProjectMember(projectId: string) {
+  const access = await requireProjectAccess(projectId);
+  if ("error" in access) return access;
+  const { data: ok } = await access.supabase.rpc("is_org_member", { org_id: access.project.organization_id, min_role: "member" });
+  if (!ok) return { error: fail("forbidden", "No tienes permiso para modificar este proyecto", 403) };
+  return access;
+}
+
 export function errorResponse(e: unknown) {
   const code = (e as { code?: string })?.code ?? "error";
   const message = e instanceof Error ? e.message : String(e);
