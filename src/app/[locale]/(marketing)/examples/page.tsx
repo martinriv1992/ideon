@@ -5,7 +5,8 @@ import data from "@/content/showcase/index.json";
 import type { ShowcaseDemo } from "@/content/showcase/types";
 
 type Demo = ShowcaseDemo;
-const showcase = data as Demo[];
+// Las versiones en inglés de una demo (slug «-en») se enlazan desde las páginas en inglés, no se listan aquí.
+const showcase = (data as Demo[]).filter((d) => !d.slug.endsWith("-en"));
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;

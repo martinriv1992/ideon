@@ -25,7 +25,7 @@ export async function isDisposableEmail(email: string) {
   return false;
 }
 
-async function clientIpHash() {
+export async function clientIpHash() {
   const h = await headers();
   const ip = h.get("x-real-ip") || h.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
   if (!ip) return null;

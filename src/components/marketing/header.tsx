@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean }) {
   const t = useTranslations("nav");
+  const ts = useTranslations("site.nav");
   const locale = useLocale();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -24,12 +25,13 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
 
   // Enlaces absolutos: funcionan también desde páginas que no son la portada (p. ej. Ejemplos).
   const links = [
-    { href: `/${locale}/business`, label: t("business") },
-    { href: `/${locale}#start`, label: t("custom") },
-    { href: `/${locale}/examples`, label: t("examples") },
-    { href: `/${locale}#pricing`, label: t("pricing") },
-    { href: `/${locale}#domains`, label: t("domains") },
-    { href: `/${locale}#faq`, label: t("faq") },
+    { href: `/${locale}#solutions`, label: ts("solutions") },
+    { href: `/${locale}/inventory`, label: ts("inventory") },
+    { href: `/${locale}/crm`, label: ts("crm") },
+    { href: `/${locale}/custom-software`, label: ts("custom") },
+    { href: `/${locale}/portfolio`, label: ts("portfolio") },
+    { href: `/${locale}#pricing`, label: ts("pricing") },
+    { href: `/${locale}/contact`, label: ts("contact") },
   ];
 
   return (
@@ -46,19 +48,19 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
           <Logo />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1" aria-label="Main">
+        <nav className="hidden lg:flex items-center gap-0.5" aria-label="Main">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="px-3 py-2 text-sm text-fg-muted hover:text-fg transition-colors rounded-md"
+              className="px-2.5 py-2 text-[13.5px] text-fg-muted hover:text-fg transition-colors rounded-md whitespace-nowrap"
             >
               {l.label}
             </a>
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           <LocaleSwitcher />
           {isAuthenticated ? (
             <Link href="/dashboard">
@@ -71,8 +73,8 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
                   {t("login")}
                 </Button>
               </Link>
-              <a href={`/${locale}#start`}>
-                <Button size="sm">{t("start")}</Button>
+              <a href={`/${locale}/contact?intent=meeting`} data-track="meeting_cta_clicked" data-track-label="header">
+                <Button size="sm">{ts("consult")}</Button>
               </a>
             </>
           )}
@@ -80,7 +82,7 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
 
         <button
           type="button"
-          className="md:hidden inline-flex size-9 items-center justify-center rounded-md text-fg-muted hover:text-fg hover:bg-white/5"
+          className="lg:hidden inline-flex size-9 items-center justify-center rounded-md text-fg-muted hover:text-fg hover:bg-white/5"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label="Menu"
@@ -90,7 +92,7 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-border bg-bg/95 backdrop-blur-xl">
+        <div className="lg:hidden border-t border-border bg-bg/95 backdrop-blur-xl">
           <div className="px-5 py-4 flex flex-col gap-1">
             {links.map((l) => (
               <a
@@ -115,8 +117,8 @@ export function MarketingHeader({ isAuthenticated }: { isAuthenticated: boolean 
                       {t("login")}
                     </Button>
                   </Link>
-                  <a href={`/${locale}#start`} className="flex-1" onClick={() => setOpen(false)}>
-                    <Button className="w-full">{t("start")}</Button>
+                  <a href={`/${locale}/contact?intent=meeting`} className="flex-1" onClick={() => setOpen(false)} data-track="meeting_cta_clicked" data-track-label="header_mobile">
+                    <Button className="w-full">{ts("consult")}</Button>
                   </a>
                 </>
               )}

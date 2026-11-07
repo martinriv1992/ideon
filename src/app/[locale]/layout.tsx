@@ -23,7 +23,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
   return {
-    title: { default: t("title"), template: "%s · Ideon" },
+    title: { default: t("title"), template: "%s · Ideonapp" },
     description: t("description"),
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
     alternates: { languages: { es: "/es", en: "/en" } },

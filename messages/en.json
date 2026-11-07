@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Ideon — Your idea. Our intelligence. Your next business.",
-    "description": "Describe what you need. Our artificial intelligence designs, builds and turns your ideas into real digital solutions."
+    "title": "Ideonapp · AI Software Studio",
+    "description": "An AI-powered software studio: custom software development, inventory management software, custom CRM development and business management software."
   },
   "nav": {
     "product": "Product",
@@ -214,7 +214,7 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "contact": "Contact",
-    "rights": "© {year} Ideon. All rights reserved."
+    "rights": "© {year} Ideonapp. All rights reserved."
   },
   "auth": {
     "loginTitle": "Welcome back",
@@ -710,7 +710,8 @@
       "pricing": "Plans & pricing",
       "deployments": "Deployments",
       "tickets": "Tickets",
-      "settings": "Settings"
+      "settings": "Settings",
+      "leads": "Leads"
     },
     "overview": {
       "title": "Business overview",
@@ -846,6 +847,60 @@
       "maxSignups": "Maximum new accounts per connection in 24 hours.",
       "includedChanges": "Chat changes included per year in the annual plan.",
       "changePacks": "Extra change packs: JSON list of objects with qty (changes) and price (billing currency)."
+    },
+    "leads": {
+      "title": "Sales leads",
+      "export": "Export CSV",
+      "tableMissing": "The leads table doesn't exist yet: apply migration 0009.",
+      "emailNotConfigured": "Email notifications aren't configured (RESEND_API_KEY). Leads are still stored here.",
+      "total": "Leads",
+      "newCount": "{n} new",
+      "open": "Open",
+      "noValue": "no estimated value",
+      "overdue": "Overdue follow-ups",
+      "won": "Won",
+      "rate": "{pct}% close rate",
+      "all": "All",
+      "writeEmail": "Send email",
+      "contact": "Contact",
+      "country": "Country",
+      "website": "Website",
+      "solution": "Solution",
+      "budget": "Budget",
+      "timeframe": "Timeframe",
+      "meeting": "Wants meeting",
+      "yes": "Yes",
+      "no": "No",
+      "source": "Source",
+      "direct": "direct",
+      "landing": "Landing page",
+      "referrer": "Referrer",
+      "received": "Received",
+      "language": "Language",
+      "company": "Company",
+      "stage": "Stage",
+      "value": "Estimated value",
+      "currency": "Currency",
+      "lastContact": "Last contact",
+      "nextFollowUp": "Next follow-up",
+      "notes": "Notes",
+      "save": "Save",
+      "saved": "Saved.",
+      "manage": "Manage",
+      "none": "No leads yet.",
+      "bySource": "Lead sources",
+      "leadsCol": "Leads",
+      "stages": {
+        "new": "New",
+        "researched": "Researched",
+        "contacted": "Contacted",
+        "interested": "Interested",
+        "meeting": "Meeting",
+        "proposal": "Proposal",
+        "negotiation": "Negotiation",
+        "won": "Won",
+        "lost": "Lost"
+      }
     }
   },
   "attachments": {
@@ -944,5 +999,446 @@
     "how": "Pick your domain and tell us what you want to build. We register it in your name when you activate your project, and it renews with your annual plan.",
     "cta": "Create my project",
     "choose": "I want it"
+  },
+  "site": {
+    "meta": {
+      "homeTitle": "Ideonapp · AI software studio: custom software for businesses",
+      "homeDescription": "An AI-powered software studio: custom software development, inventory management software, custom CRM development and business management software.",
+      "inventoryTitle": "Custom inventory management software for distributors and SMBs",
+      "inventoryDescription": "Stock control, orders, customers, replenishment alerts and reports. Try the interactive Ideon Inventory demo.",
+      "crmTitle": "Custom CRM development for sales teams",
+      "crmDescription": "Clients, deal pipeline, quotes, tasks and per-rep targets. A CRM shaped around your sales process.",
+      "customTitle": "Custom software development and AI applications",
+      "customDescription": "Business software, AI-powered applications, web platforms and workflow automation, with clear scope and budgets.",
+      "portfolioTitle": "Portfolio: product demos",
+      "portfolioDescription": "Working demos of inventory, CRM and business management software built by Ideonapp.",
+      "contactTitle": "Contact: book a free consultation",
+      "contactDescription": "Tell us what your business needs and we'll reply with a scoped proposal. Free 20-minute consultation."
+    },
+    "nav": {
+      "solutions": "Solutions",
+      "inventory": "Inventory",
+      "crm": "CRM",
+      "custom": "Custom software",
+      "portfolio": "Portfolio",
+      "pricing": "Pricing",
+      "contact": "Contact",
+      "consult": "Book a consultation",
+      "app": "Build with AI"
+    },
+    "hero": {
+      "badge": "AI Software Studio",
+      "title": "We build the software your business actually needs.",
+      "subtitle": "From custom business applications to intelligent automation systems, we turn complex business needs into working digital solutions.",
+      "ctaPrimary": "Book a free consultation",
+      "ctaSecondary": "Explore our solutions",
+      "selfServe": "Prefer to start on your own? Describe your idea for a free preview, or find your domain."
+    },
+    "solutions": {
+      "eyebrow": "Solutions",
+      "title": "Software for every part of your operation",
+      "description": "We start from what your business needs, not from a template. Every solution adapts to your processes, data and team.",
+      "items": {
+        "custom": {
+          "title": "Custom Business Software",
+          "text": "Internal applications designed around your processes: roles, approval flows, reports and integrations.",
+          "cta": "See custom software"
+        },
+        "inventory": {
+          "title": "Inventory Management",
+          "text": "Real-time stock, entries and exits, orders, replenishment alerts and inventory value.",
+          "cta": "See Ideon Inventory"
+        },
+        "crm": {
+          "title": "CRM & Sales Management",
+          "text": "Clients, deal pipeline, quotes, follow-up tasks and per-rep targets.",
+          "cta": "See Ideon CRM"
+        },
+        "business": {
+          "title": "Business Management Systems",
+          "text": "Sales, invoicing, inventory, purchasing and finance connected in one system.",
+          "cta": "See Business Suite"
+        },
+        "ai": {
+          "title": "AI-Powered Applications",
+          "text": "Assistants, document classification and data extraction, built into your workflows.",
+          "cta": "Discuss your use case"
+        },
+        "web": {
+          "title": "Web Platforms & E-commerce",
+          "text": "Corporate sites, landing pages, catalogs and customer portals on your own domain.",
+          "cta": "Create a preview"
+        },
+        "automation": {
+          "title": "Workflow Automation",
+          "text": "Less manual work: forms, approvals, notifications and integrations between your tools.",
+          "cta": "Tell us your process"
+        }
+      }
+    },
+    "featured": {
+      "eyebrow": "Featured product · Ideon Inventory",
+      "title": "Take control of your business operations.",
+      "text": "Ideon Inventory brings your products, stock, orders and customers together. You know what you have, what's missing and what to reorder, without spreadsheets.",
+      "points": [
+        "Real-time stock with a history of every movement",
+        "Orders that deduct stock and block overselling",
+        "Low-stock alerts with replenishment suggestions",
+        "Customers with their purchase history",
+        "Sales, product and movement reports with export"
+      ],
+      "cta": "Explore the demo",
+      "secondary": "See pricing and scope",
+      "demoLabel": "Product demo · NOVA Distribution (fictional company)"
+    },
+    "how": {
+      "eyebrow": "How we work",
+      "title": "Specialized AI agents, with human oversight",
+      "description": "Agents speed up the work; you approve the scope before anything is built and, on custom projects, the founder oversees every phase.",
+      "steps": [
+        {
+          "title": "Discover",
+          "text": "A consultant agent asks the key questions about your business and summarizes what you need. Custom projects start with a call."
+        },
+        {
+          "title": "Architect",
+          "text": "An architect agent defines modules, data, roles and flows. You get a proposal with scope, timeline and price to approve."
+        },
+        {
+          "title": "Design",
+          "text": "We define the visual style, navigation and screens from your brand, and you validate them in a clickable preview."
+        },
+        {
+          "title": "Build",
+          "text": "A developer agent builds the working version. Every change is saved as a version you can restore."
+        },
+        {
+          "title": "Test",
+          "text": "Automated quality checks (structure, forms, JavaScript errors, mobile layout) plus human review before delivery."
+        },
+        {
+          "title": "Deploy",
+          "text": "We publish on your domain with HTTPS and hand over the code and documentation as agreed."
+        }
+      ]
+    },
+    "why": {
+      "eyebrow": "Why Ideonapp",
+      "title": "A software studio, not a code generator",
+      "items": [
+        {
+          "title": "Custom-built solutions",
+          "text": "Built around your processes, not forced into a template."
+        },
+        {
+          "title": "AI-powered development workflows",
+          "text": "Specialized agents cut time and cost without losing structure."
+        },
+        {
+          "title": "Transparent scope and budgets",
+          "text": "You know what gets built, what it costs and how long it takes before we start."
+        },
+        {
+          "title": "Human oversight",
+          "text": "Scope decisions and final delivery are reviewed by a person."
+        },
+        {
+          "title": "Modern architecture",
+          "text": "Fast, secure, mobile-ready web applications."
+        },
+        {
+          "title": "You stay in control",
+          "text": "Approve every important step and request changes in plain language."
+        },
+        {
+          "title": "Documented handover",
+          "text": "Documentation of what was built so your team can use and maintain it."
+        },
+        {
+          "title": "Code ownership",
+          "text": "Download your project's code according to the contract terms."
+        }
+      ]
+    },
+    "portfolio": {
+      "eyebrow": "Portfolio",
+      "title": "Working product demos",
+      "description": "These are product demos built by Ideonapp with fictional data, not client projects. Use them freely: changes are only saved in your browser.",
+      "badge": "Product demo",
+      "open": "Open demo",
+      "more": "See more examples",
+      "items": {
+        "inventory": {
+          "title": "Inventory Management",
+          "text": "NOVA Distribution: products, movements, orders, customers, alerts and reports."
+        },
+        "crm": {
+          "title": "Sales CRM",
+          "text": "Clients, kanban pipeline, quotes with tax, tasks and per-rep targets."
+        },
+        "business": {
+          "title": "Business Management",
+          "text": "Point of sale, invoices, inventory, purchasing, expenses and receivables in one system."
+        }
+      },
+      "spanishOnly": "This demo's interface is in Spanish."
+    },
+    "pricing": {
+      "eyebrow": "Getting started and pricing",
+      "title": "Start with a conversation, not a contract",
+      "steps": [
+        {
+          "title": "Tell us what you need",
+          "text": "Fill in the form or book a free 20-minute consultation."
+        },
+        {
+          "title": "Get a proposal",
+          "text": "Written scope, deliverables, timeline and price, with no commitment."
+        },
+        {
+          "title": "Validate together",
+          "text": "Review a working preview and we adjust what's needed."
+        },
+        {
+          "title": "Launch",
+          "text": "We publish, hand over documentation and keep supporting you."
+        }
+      ],
+      "regionLabel": "Prices for",
+      "regions": {
+        "co": "Colombia (COP)",
+        "intl": "International (USD)"
+      },
+      "tiers": {
+        "web": {
+          "title": "Web solutions",
+          "text": "Landing pages, corporate sites and catalogs."
+        },
+        "systems": {
+          "title": "CRM or inventory",
+          "text": "Management systems with the essential modules."
+        },
+        "custom": {
+          "title": "Custom business software",
+          "text": "Multiple modules, roles, flows and integrations."
+        }
+      },
+      "from": "From",
+      "note": "Indicative launch prices. Final quotes depend on each project's features, integrations, infrastructure and scope. Annual hosting and maintenance are quoted separately.",
+      "cta": "Request a proposal"
+    },
+    "finalCta": {
+      "title": "Your next business solution starts here.",
+      "text": "Tell us the problem you want to solve and we'll propose the most direct path.",
+      "cta": "Tell us what you need"
+    },
+    "footer": {
+      "tagline": "An AI-powered software studio building custom digital products and intelligent business solutions.",
+      "services": "Services",
+      "company": "Ideonapp",
+      "legal": "Legal",
+      "contact": "Contact",
+      "portfolio": "Portfolio",
+      "app": "Build with AI",
+      "login": "Log in",
+      "language": "Language"
+    },
+    "inventory": {
+      "eyebrow": "Ideon Inventory",
+      "title": "Inventory management software built for your operation",
+      "subtitle": "For distributors, wholesalers and retailers who need to know what they have, what they sell and what to reorder, in real time.",
+      "cta": "Book a guided demo",
+      "ctaDemo": "Try the demo",
+      "demoTitle": "Try it now: NOVA Distribution",
+      "demoText": "Product demo with fictional data. Create products, record movements and orders: everything is saved only in your browser.",
+      "demoLoading": "Loading the demo…",
+      "demoFullscreen": "Open full screen",
+      "modulesTitle": "Included modules",
+      "modules": [
+        {
+          "title": "Dashboard",
+          "text": "Products, stock value, low stock, pending orders and monthly sales."
+        },
+        {
+          "title": "Products",
+          "text": "Catalog with SKU, categories, suppliers, costs and prices; search and filters."
+        },
+        {
+          "title": "Inventory",
+          "text": "Entries, exits and adjustments with owner and reason; full history."
+        },
+        {
+          "title": "Alerts",
+          "text": "Low-stock and out-of-stock items with replenishment suggestions."
+        },
+        {
+          "title": "Customers",
+          "text": "Contact details, terms and order history."
+        },
+        {
+          "title": "Orders",
+          "text": "Multi-line orders with tax, statuses and stock deduction on shipping."
+        },
+        {
+          "title": "Reports",
+          "text": "Movements, product performance and sales, with CSV export."
+        }
+      ],
+      "fitTitle": "Tailored to your business",
+      "fit": [
+        "Your own categories, units and fields",
+        "Multiple warehouses or locations",
+        "Roles and permissions for your team",
+        "Integration with e-invoicing or other systems (depending on scope)"
+      ],
+      "priceTitle": "Investment",
+      "priceText": "Custom implementation from {price}. Final quotes depend on scope."
+    },
+    "crm": {
+      "eyebrow": "Ideon CRM",
+      "title": "A CRM shaped around your sales process",
+      "subtitle": "For sales teams that want to stop losing deals in spreadsheets and chats.",
+      "cta": "Book a free consultation",
+      "ctaDemo": "Try the demo",
+      "modulesTitle": "What's included",
+      "modules": [
+        {
+          "title": "Clients and contacts",
+          "text": "Companies, contacts, activity history and assigned rep."
+        },
+        {
+          "title": "Deal pipeline",
+          "text": "Kanban board by stage with value, probability and expected close date."
+        },
+        {
+          "title": "Quotes",
+          "text": "Product lines, discounts and tax, numbering and printable view."
+        },
+        {
+          "title": "Tasks and follow-up",
+          "text": "Calls, meetings and reminders with due dates."
+        },
+        {
+          "title": "Per-rep targets",
+          "text": "Monthly goals and progress for each team member."
+        },
+        {
+          "title": "Management dashboard",
+          "text": "Pipeline, deals won, close rate and forecast."
+        }
+      ],
+      "demoTitle": "Product demo",
+      "demoText": "Ideon CRM with fictional data from a B2B company.",
+      "priceText": "Custom implementation from {price}. Final quotes depend on scope."
+    },
+    "custom": {
+      "eyebrow": "Custom software",
+      "title": "Custom software development for businesses",
+      "subtitle": "We turn processes, ideas and specific needs into applications your team uses every day.",
+      "cta": "Book a free consultation",
+      "ctaSelf": "Create a free preview",
+      "areasTitle": "What we build",
+      "areas": [
+        {
+          "id": "business",
+          "title": "Business software",
+          "text": "Internal applications with roles, approval flows, reports and integrations."
+        },
+        {
+          "id": "ai",
+          "title": "AI-powered applications",
+          "text": "Assistants, request triage, document data extraction and summaries, built on AI models."
+        },
+        {
+          "id": "web",
+          "title": "Web platforms and e-commerce",
+          "text": "Corporate sites, catalogs, customer portals and stores."
+        },
+        {
+          "id": "automation",
+          "title": "Automation",
+          "text": "Smart forms, approvals, notifications and integrations between tools."
+        }
+      ],
+      "selfTitle": "Want to see it before talking?",
+      "selfText": "Describe your idea and our agents show you a first clickable version, free and with no commitment."
+    },
+    "contact": {
+      "eyebrow": "Contact",
+      "title": "Tell us what your business needs",
+      "subtitle": "We reply within one business day with next steps. If you prefer, book a free 20-minute consultation directly.",
+      "meetingTitle": "Free 20-minute consultation",
+      "meetingText": "A video call with the founder to understand your case and tell you honestly whether we can help.",
+      "meetingCta": "Pick a time",
+      "meetingPending": "When you submit the form, tick “I'd like to book a consultation” and we'll email you available times.",
+      "timezone": "Your time zone: {tz}",
+      "whatsapp": "Prefer WhatsApp?",
+      "whatsappCta": "Message us on WhatsApp",
+      "whatsappMessage": "Hi, I'd like to talk about a software project for my business."
+    },
+    "lead": {
+      "fullName": "Full name",
+      "company": "Company",
+      "email": "Business email",
+      "country": "Country",
+      "website": "Website (optional)",
+      "solution": "What do you need?",
+      "problem": "Describe your business problem or need",
+      "problemHint": "Which process you want to improve, who will use it and what you use today.",
+      "budget": "Approximate budget (optional)",
+      "timeframe": "Expected timeframe",
+      "choose": "Select…",
+      "wantsMeeting": "I'd like to book a free 20-minute consultation",
+      "consent": "I agree that Ideonapp may use this data to respond to my request, as described in the <privacy></privacy>.",
+      "privacy": "privacy policy",
+      "submit": "Send request",
+      "sending": "Sending…",
+      "successTitle": "Thank you! We've received your request.",
+      "successText": "We'll email you at {email} within one business day.",
+      "successMeeting": "Book your 20-minute consultation now:",
+      "successMeetingPending": "We'll email you available times for the consultation.",
+      "another": "Send another request",
+      "solutions": {
+        "inventory": "Inventory management",
+        "crm": "CRM / sales management",
+        "business": "Business management system",
+        "custom": "Custom software",
+        "ai": "AI-powered application",
+        "web": "Web platform or e-commerce",
+        "automation": "Workflow automation",
+        "other": "Other"
+      },
+      "budgets": {
+        "lt1k": "Under USD 1,000",
+        "1k-3k": "USD 1,000 – 3,000",
+        "3k-10k": "USD 3,000 – 10,000",
+        "gt10k": "Over USD 10,000",
+        "unknown": "Not sure yet"
+      },
+      "timeframes": {
+        "asap": "As soon as possible",
+        "1-3m": "In 1–3 months",
+        "3-6m": "In 3–6 months",
+        "exploring": "Just exploring"
+      },
+      "errors": {
+        "name": "Enter your full name.",
+        "company": "Enter your company name.",
+        "email": "Enter a valid email.",
+        "country": "Enter your country.",
+        "website": "Check the website address.",
+        "solution": "Choose an option.",
+        "problem": "Tell us a bit more (at least 20 characters).",
+        "timeframe": "Choose a timeframe.",
+        "consent": "We need your consent to reply.",
+        "too_many": "You've sent several requests in a row. Try again later or message us on WhatsApp.",
+        "generic": "We couldn't send your request. Try again or message us on WhatsApp."
+      }
+    },
+    "cookies": {
+      "text": "We use analytics cookies to understand how the site is used and improve it. Form data is never sent to analytics.",
+      "accept": "Accept",
+      "reject": "Reject"
+    }
   }
 }
