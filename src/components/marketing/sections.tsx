@@ -192,6 +192,11 @@ export async function UseCases() {
             </Reveal>
           ))}
         </div>
+        <div className="mt-10 text-center">
+          <Link href="/examples" className="inline-flex items-center gap-2 h-11 px-5 rounded-[12px] border border-border-strong bg-surface text-[14px] font-medium hover:bg-surface-hover transition-colors">
+            {t("seeExamples")} <ArrowRight className="size-4" aria-hidden />
+          </Link>
+        </div>
       </Container>
     </section>
   );

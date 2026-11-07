@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Huerta | Cocina mediterránea en Medellín</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6EFE0;--fg:#2E3A23;--ac:#C0603A;--ol:#6B7A3E;--card:#FBF7EC;--line:rgba(46,58,35,.18)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--bg);color:var(--fg);font-size:20px;line-height:1.55}
+h1,h2,h3{font-weight:600;line-height:1.1}
+a{color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+section{padding:90px 0}
+h2{font-size:clamp(2.2rem,5vw,3.2rem);margin-bottom:14px}
+.eyebrow{color:var(--ac);letter-spacing:.2em;text-transform:uppercase;font-size:.8rem;font-weight:700;margin-bottom:10px;display:block}
+.lead{max-width:640px;opacity:.85;margin-bottom:36px}
+.btn{display:inline-block;padding:14px 30px;border-radius:40px;background:var(--ac);color:#fff;text-decoration:none;font-weight:700;font-size:1.05rem;border:2px solid var(--ac);cursor:pointer;font-family:inherit;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(192,96,58,.3)}
+.btn.o{background:transparent;color:#fff;border-color:#fff}
+.btn.o:hover{background:rgba(255,255,255,.15)}
+header{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(246,239,224,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+.logo{font-size:1.7rem;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo svg{width:26px;height:26px}
+.links{display:flex;gap:22px;list-style:none}
+.links a{text-decoration:none;font-weight:600;font-size:1rem}
+.links a:hover{color:var(--ac)}
+.burger{display:none;background:none;border:0;cursor:pointer;color:var(--fg)}
+.hero{min-height:100vh;display:flex;align-items:center;color:#fff;position:relative;overflow:hidden;padding:120px 0 80px;background:radial-gradient(circle at 75% 25%,#E9A36B 0,transparent 35%),linear-gradient(160deg,#3B4A2A 0%,#55672f 45%,#C0603A 130%)}
+.hero .leaf{position:absolute;opacity:.14;color:#fff}
+.hero h1{font-size:clamp(2.6rem,7vw,5rem);max-width:780px;margin-bottom:20px}
+.hero p{font-size:1.45rem;max-width:560px;margin-bottom:34px}
+.hero .b{display:flex;gap:14px;flex-wrap:wrap}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.tab{padding:10px 20px;border-radius:30px;border:1.5px solid var(--fg);background:none;font-family:inherit;font-size:1.05rem;font-weight:600;color:var(--fg);cursor:pointer}
+.tab.on{background:var(--fg);color:var(--bg)}
+.panel{display:none;grid-template-columns:1fr 1fr;gap:6px 50px}
+.panel.on{display:grid}
+.item{padding:18px 0;border-bottom:1px dashed var(--line)}
+.item div{display:flex;justify-content:space-between;gap:12px;font-size:1.3rem;font-weight:700}
+.item span.p{color:var(--ac);white-space:nowrap}
+.item p{font-size:1rem;opacity:.8}
+.tag{display:inline-block;font-size:.7rem;font-weight:700;background:var(--ol);color:#fff;border-radius:10px;padding:0 7px;margin-left:6px;vertical-align:middle}
+.note{margin-top:26px;font-style:italic;opacity:.8}
+.alt{background:var(--card);border-block:1px solid var(--line)}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:34px}
+.ph{border-radius:18px;aspect-ratio:4/3;display:flex;align-items:flex-end;padding:14px;color:#fff;font-weight:700;position:relative;overflow:hidden}
+.ph svg{position:absolute;right:10px;top:10px;width:46px;opacity:.35}
+.ph:nth-child(1){background:linear-gradient(135deg,#C0603A,#E8B36B)}
+.ph:nth-child(2){background:linear-gradient(135deg,#4F6B2D,#8FA45A)}
+.ph:nth-child(3){background:linear-gradient(135deg,#5b4430,#a37b52)}
+.ph:nth-child(4){background:linear-gradient(135deg,#E8B36B,#C0603A)}
+.ph:nth-child(5){background:linear-gradient(135deg,#1f2a3a,#4b3a5a)}
+.ph:nth-child(6){background:linear-gradient(135deg,#8FA45A,#E8B36B)}
+.facts{display:flex;gap:12px;flex-wrap:wrap}
+.facts span{border:1.5px solid var(--ol);border-radius:30px;padding:6px 18px;font-weight:600}
+.pil{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:36px}
+.pil div{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px}
+.pil svg{width:42px;height:42px;color:var(--ac);margin-bottom:10px}
+.pil h3{font-size:1.5rem;margin-bottom:6px}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.q{background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:28px}
+.stars{color:#D49A2A;letter-spacing:3px;font-size:1.2rem}
+.q p{font-size:1.2rem;margin:10px 0}
+.q b{color:var(--ol)}
+table{width:100%;max-width:640px;border-collapse:collapse;margin-bottom:18px}
+td{padding:14px 0;border-bottom:1px dashed var(--line);font-size:1.25rem}
+td:last-child{text-align:right;font-weight:700}
+form{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:.95rem}
+input,select,textarea{font-family:inherit;font-size:1.05rem;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--fg)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac)}
+.full{grid-column:1/-1}
+.err{color:#b3261e;font-size:.85rem;font-weight:600;min-height:1em}
+#ok{display:none;background:var(--ol);color:#fff;padding:30px;border-radius:24px;text-align:center}
+#ok h3{font-size:2rem;margin-bottom:8px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:stretch}
+.map{border-radius:24px;min-height:320px;background:linear-gradient(#e7dcc3,#d9ceb0);position:relative;overflow:hidden;border:1px solid var(--line)}
+.map svg{width:100%;height:100%;position:absolute;inset:0}
+.soc{display:flex;gap:14px;margin-top:20px}
+.soc a{width:44px;height:44px;border:1.5px solid var(--fg);border-radius:50%;display:grid;place-items:center;text-decoration:none;font-weight:700}
+footer{background:var(--fg);color:var(--bg);padding:60px 0 30px}
+.fg{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:34px}
+footer a{display:block;text-decoration:none;opacity:.85;margin:4px 0}
+footer h3{font-size:1.3rem;margin-bottom:8px}
+.copy{border-top:1px solid rgba(246,239,224,.2);margin-top:34px;padding-top:18px;font-size:.9rem;opacity:.8}
+.wa{position:fixed;right:20px;bottom:20px;width:58px;height:58px;border-radius:50%;background:#25a244;display:grid;place-items:center;z-index:60;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.wa svg{width:30px;height:30px;color:#fff}
+@media(max-width:860px){
+.burger{display:block}
+.links{position:absolute;top:66px;left:0;right:0;background:var(--bg);flex-direction:column;padding:18px 22px;gap:14px;border-bottom:1px solid var(--line);display:none}
+.links.open{display:flex}
+.panel.on,.cg,.fg,.pil,.tg,form{grid-template-columns:1fr}
+.gal{grid-template-columns:1fr 1fr}
+section{padding:64px 0}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+<a href="#inicio" class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#6B7A3E" stroke-width="1.6" stroke-linecap="round"><path d="M12 21V9M12 13c-4 0-6-3-6-7 4 0 6 3 6 7zM12 16c3 0 5-2 5-5-3 0-5 2-5 5z"/></svg>La Huerta</a>
+<button class="burger" id="bg" aria-label="Abrir menú"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+<ul class="links" id="lk">
+<li><a href="#inicio">Inicio</a></li><li><a href="#carta">Carta</a></li><li><a href="#terraza">Terraza</a></li><li><a href="#testimonios">Testimonios</a></li><li><a href="#horarios">Horarios</a></li><li><a href="#reservas">Reservas</a></li><li><a href="#contacto">Contacto</a></li>
+</ul></nav></div></header>
+
+<main>
+<section class="hero" id="inicio">
+<svg class="leaf" style="right:-40px;top:90px;width:420px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5"><path d="M12 21V3M12 8c-4 0-6-2-6-5 4 0 6 2 6 5zM12 12c4 0 6-2 6-5-4 0-6 2-6 5zM12 16c-4 0-6-2-6-5 4 0 6 2 6 5zM12 20c4 0 6-2 6-5-4 0-6 2-6 5z"/></svg>
+<svg class="leaf" style="left:-60px;bottom:-40px;width:320px;transform:rotate(-30deg)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5"><path d="M12 21V3M12 8c-4 0-6-2-6-5 4 0 6 2 6 5zM12 12c4 0 6-2 6-5-4 0-6 2-6 5z"/></svg>
+<div class="wrap" style="position:relative">
+<span class="eyebrow" style="color:#F5C9A8">Cocina mediterránea · Medellín</span>
+<h1>Sabores del Mediterráneo en el corazón de Medellín</h1>
+<p>Ingredientes frescos, recetas de temporada y una terraza para compartir.</p>
+<div class="b"><a class="btn" href="#reservas">Reservar mesa</a><a class="btn o" href="#carta">Ver la carta</a></div>
+</div></section>
+
+<section id="carta"><div class="wrap">
+<span class="eyebrow">Del huerto a la mesa</span>
+<h2>Nuestra carta</h2>
+<p class="lead">Platos pensados para compartir. Precios en pesos colombianos (COP). <span class="tag">V</span> vegetariano · <span class="tag" style="background:var(--ac)">SG</span> sin gluten</p>
+<div class="tabs" role="tablist">
+<button class="tab on" data-t="0">Para compartir</button><button class="tab" data-t="1">Ensaladas y huerta</button><button class="tab" data-t="2">Platos fuertes</button><button class="tab" data-t="3">Postres</button><button class="tab" data-t="4">Bebidas</button>
+</div>
+<div class="panel on">
+<div class="item"><div>Hummus de garbanzo<span class="p">COP 24.000</span></div><p>Con aceite de oliva y pan pita. <span class="tag">V</span></p></div>
+<div class="item"><div>Pulpo a la parrilla<span class="p">COP 56.000</span></div><p>Con papa y pimentón ahumado. <span class="tag" style="background:var(--ac)">SG</span></p></div>
+<div class="item"><div>Paella de mariscos para dos<span class="p">COP 98.000</span></div><p>Arroz meloso con mariscos frescos, para compartir.</p></div>
+</div>
+<div class="panel">
+<div class="item"><div>Ensalada griega<span class="p">COP 28.000</span></div><p>Con queso feta y aceitunas kalamata. <span class="tag">V</span> <span class="tag" style="background:var(--ac)">SG</span></p></div>
+</div>
+<div class="panel">
+<div class="item"><div>Risotto de hongos<span class="p">COP 46.000</span></div><p>Con parmesano. <span class="tag">V</span> <span class="tag" style="background:var(--ac)">SG</span></p></div>
+<div class="item"><div>Lasaña de berenjena<span class="p">COP 42.000</span></div><p>Con ricota. <span class="tag">V</span></p></div>
+<div class="item"><div>Paella de mariscos para dos<span class="p">COP 98.000</span></div><p>Nuestro plato insignia.</p></div>
+</div>
+<div class="panel">
+<div class="item"><div>Tarta de limón<span class="p">COP 18.000</span></div><p>Con merengue. <span class="tag">V</span></p></div>
+<div class="item"><div>Panna cotta<span class="p">COP 19.000</span></div><p>Con frutos rojos. <span class="tag">V</span> <span class="tag" style="background:var(--ac)">SG</span></p></div>
+</div>
+<div class="panel">
+<div class="item"><div>Limonada de hierbabuena<span class="p">COP 12.000</span></div><p>Fresca, con hierbabuena de la huerta. <span class="tag">V</span></p></div>
+<div class="item"><div>Copa de vino de la casa<span class="p">COP 22.000</span></div><p>Selección del día.</p></div>
+</div>
+<p class="note">Consulta por alergias e intolerancias.</p>
+</div></section>
+
+<section id="terraza" class="alt"><div class="wrap">
+<span class="eyebrow">Aire libre</span>
+<h2>La terraza</h2>
+<p class="lead">Un rincón verde para comer despacio: ideal para cenas en pareja, almuerzos en familia y celebraciones pequeñas.</p>
+<div class="gal">
+<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.2"><circle cx="12" cy="8" r="4"/><path d="M12 12v9"/></svg>Mesas bajo luces cálidas</div>
+<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.2"><path d="M12 21V9M12 13c-4 0-6-3-6-7 4 0 6 3 6 7z"/></svg>Macetas de aromáticas</div>
+<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.2"><path d="M4 20h16M6 20V9h12v11M9 9V5h6v4"/></svg>La barra</div>
+<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/></svg>Platos servidos</div>
+<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.2"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg>Ambiente de noche</div>
+<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.2"><path d="M3 10h18M5 10v10M19 10v10M8 10V6M16 10V6"/></svg>Mesa familiar</div>
+</div>
+<div class="facts"><span>Aire libre</span><span>Zona con sombra y mantas para la noche</span><span>Apto para niños y mascotas pequeñas</span></div>
+</div></section>
+
+<section id="nosotros"><div class="wrap">
+<span class="eyebrow">Nuestra historia</span>
+<h2>Cocina de huerta, hecha con calma</h2>
+<p class="lead">La Huerta nació del deseo de unir la cocina mediterránea con productos frescos de proveedores locales de Antioquia. Cocinamos para parejas, familias y viajeros que buscan una experiencia auténtica y cercana.</p>
+<div class="pil">
+<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 21V9M12 13c-4 0-6-3-6-7 4 0 6 3 6 7zM12 16c3 0 5-2 5-5-3 0-5 2-5 5z"/></svg><h3>Ingredientes de temporada</h3><p>Lo que da la tierra antioqueña cada mes, directo de productores locales.</p></div>
+<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 3c3 4 5 6 5 9a5 5 0 0 1-10 0c0-3 2-5 5-9z"/></svg><h3>Aceite de oliva y hierbas frescas</h3><p>Albahaca, romero y hierbabuena cultivadas en nuestras macetas.</p></div>
+<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="4"/><circle cx="16" cy="12" r="4"/><path d="M4 20c1-3 3-4 5-4M12 20c1-3 3-4 6-4"/></svg><h3>Recetas para compartir</h3><p>Platos al centro de la mesa, porque comer es mejor en compañía.</p></div>
+</div></div></section>
+
+<section id="testimonios" class="alt"><div class="wrap">
+<span class="eyebrow">Opiniones</span>
+<h2>Lo que dicen nuestros comensales</h2>
+<div class="tg" style="margin-top:30px">
+<div class="q"><div class="stars">★★★★★</div><p>“La paella estaba increíble y la terraza es perfecta para una cena tranquila.”</p><b>Camila R., vecina del barrio</b></div>
+<div class="q"><div class="stars">★★★★★</div><p>“Fuimos con los niños y nos atendieron de maravilla. Volveremos.”</p><b>Andrés y familia</b></div>
+<div class="q"><div class="stars">★★★★★</div><p>“Una joya para turistas: comida honesta, rica y buen ambiente.”</p><b>Sarah M., visitante</b></div>
+</div>
+<p class="note">Reseñas de ejemplo.</p>
+</div></section>
+
+<section id="horarios"><div class="wrap">
+<span class="eyebrow">Te esperamos</span>
+<h2>Horarios</h2>
+<table>
+<tr><td>Lunes a jueves</td><td>12:00 m. – 10:00 p. m.</td></tr>
+<tr><td>Viernes y sábado</td><td>12:00 m. – 11:30 p. m.</td></tr>
+<tr><td>Domingo</td><td>12:00 m. – 6:00 p. m.</td></tr>
+</table>
+<p>Cocina continua durante todo el servicio. Happy hour sugerido: de 5:00 a 7:00 p. m. (texto editable).</p>
+<p class="note">Horarios sujetos a confirmación.</p>
+</div></section>
+
+<section id="reservas" class="alt"><div class="wrap" style="max-width:820px">
+<span class="eyebrow">Reservas</span>
+<h2>Reserva tu mesa</h2>
+<p class="lead">Para grupos de más de 10 personas, escríbenos por WhatsApp.</p>
+<form id="rf" novalidate>
+<label>Nombre<input id="n" required><span class="err"></span></label>
+<label>Teléfono<input id="t" type="tel" required><span class="err"></span></label>
+<label>Correo<input id="e" type="email" required><span class="err"></span></label>
+<label>Fecha<input id="d" type="date" required><span class="err"></span></label>
+<label>Hora<select id="h"><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>17:00</option><option>18:00</option><option selected>19:00</option><option>20:00</option><option>21:00</option></select><span class="err"></span></label>
+<label>Personas<select id="p"></select></label>
+<label class="full">Zona<select id="z"><option>Terraza</option><option>Interior</option></select></label>
+<label class="full">Comentarios (alergias, celebración)<textarea id="c" rows="3"></textarea></label>
+<div class="full"><button class="btn" type="submit">Reservar mesa</button></div>
+</form>
+<div id="ok"><h3>¡Reserva recibida!</h3><p id="okt"></p><br><a class="btn o" id="wl" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a></div>
+</div></section>
+
+<section id="contacto"><div class="wrap">
+<span class="eyebrow">Ubicación</span>
+<h2>Visítanos</h2>
+<div class="cg">
+<div>
+<p><b>Dirección:</b> Calle 10 #40-20, Medellín</p>
+<p style="margin:10px 0"><b>Cómo llegar:</b> a pocos pasos de la estación de metro más cercana; hay parqueaderos públicos en la misma calle y paraderos de taxi a una cuadra.</p>
+<p><b>WhatsApp:</b> +57 300 000 0000</p><br>
+<a class="btn" href="https://wa.me/573000000000" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+<div class="soc"><a href="#contacto" aria-label="Instagram">Ig</a><a href="#contacto" aria-label="Facebook">Fb</a><a href="#contacto" aria-label="TikTok">Tk</a></div>
+<p class="note">Datos de demostración.</p>
+</div>
+<div class="map" role="img" aria-label="Mapa ilustrativo de la ubicación"><svg viewBox="0 0 400 320" preserveAspectRatio="xMidYMid slice"><path d="M0 100h400M0 220h400M110 0v320M280 0v320" stroke="#fff" stroke-width="14" opacity=".7"/><path d="M0 160l400-40" stroke="#fff" stroke-width="8" opacity=".6"/><rect x="130" y="20" width="130" height="60" rx="8" fill="#9db26b" opacity=".6"/><path d="M200 120c-14 0-24 10-24 24 0 18 24 42 24 42s24-24 24-42c0-14-10-24-24-24z" fill="#C0603A"/><circle cx="200" cy="144" r="8" fill="#fff"/></svg></div>
+</div></div></section>
+</main>
+
+<footer><div class="wrap">
+<div class="fg">
+<div><h3 style="font-size:2rem">La Huerta</h3><p>Cocina mediterránea con alma de huerta, bajo el cielo de Medellín.</p></div>
+<div><h3>Navegación</h3><a href="#inicio">Inicio</a><a href="#carta">Carta</a><a href="#terraza">Terraza</a><a href="#testimonios">Testimonios</a><a href="#horarios">Horarios</a><a href="#reservas">Reservas</a><a href="#contacto">Contacto</a></div>
+<div><h3>Visítanos</h3><p>Calle 10 #40-20, Medellín</p><p>WhatsApp +57 300 000 0000</p><p>Lun–Jue 12–22 · Vie–Sáb 12–23:30 · Dom 12–18</p></div>
+</div>
+<div class="copy">© <span id="y"></span> La Huerta. Todos los derechos reservados. Sitio de demostración con datos ficticios.</div>
+</div></footer>
+
+<a class="wa" href="https://wa.me/573000000000" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.6-4.6A8.5 8.5 0 1 1 8 19.5L3 21z"/><path d="M9 9c0 3 3 6 6 6l1-2-2-1-1 .8c-.8-.4-1.600-1.200-2-2l.8-1-1-2z"/></svg></a>
+
+<script>
+document.getElementById('y').textContent=new Date().getFullYear();
+var lk=document.getElementById('lk');
+document.getElementById('bg').onclick=function(){lk.classList.toggle('open')};
+lk.addEventListener('click',function(e){if(e.target.tagName==='A')lk.classList.remove('open')});
+var tabs=document.querySelectorAll('.tab'),pn=document.querySelectorAll('.panel');
+tabs.forEach(function(b,i){b.onclick=function(){tabs.forEach(function(x){x.classList.remove('on')});pn.forEach(function(x){x.classList.remove('on')});b.classList.add('on');pn[i].classList.add('on')}});
+var ps=document.getElementById('p');
+for(var i=1;i<=10;i++){var o=document.createElement('option');o.value=i;o.textContent=i+(i>1?' personas':' persona');if(i==2)o.selected=true;ps.appendChild(o)}
+var d=document.getElementById('d'),now=new Date();
+var iso=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+d.min=iso;d.value=iso;
+function $(i){return document.getElementById(i)}
+function er(el,m){el.parentNode.querySelector('.err').textContent=m;return !m}
+$('rf').addEventListener('submit',function(ev){
+ev.preventDefault();
+var ok=true;
+ok=er($('n'),$('n').value.trim().length<2?'Escribe tu nombre':'')&&ok;
+ok=er($('t'),!/^[+\d\s()-]{7,}$/.test($('t').value.trim())?'Teléfono no válido':'')&&ok;
+ok=er($('e'),!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('e').value.trim())?'Correo no válido':'')&&ok;
+ok=er($('d'),(!d.value||d.value<iso)?'Elige una fecha desde hoy':'')&&ok;
+ok=er($('h'),'')&&ok;
+if(!ok)return;
+var m='Hola, quiero reservar en La Huerta.\nNombre: '+$('n').value+'\nTeléfono: '+$('t').value+'\nCorreo: '+$('e').value+'\nFecha: '+d.value+' '+$('h').value+'\nPersonas: '+$('p').value+'\nZona: '+$('z').value+'\nComentarios: '+($('c').value||'—');
+$('okt').textContent='Gracias, '+$('n').value+'. Tu solicitud para '+$('p').value+' persona(s) el '+d.value+' a las '+$('h').value+' quedó registrada (demo). Confírmala por WhatsApp.';
+$('wl').href='https://wa.me/573000000000?text='+encodeURIComponent(m);
+$('rf').style.display='none';$('ok').style.display='block';
+});
+</script>
+</body>
+</html>
