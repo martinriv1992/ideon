@@ -6,12 +6,13 @@ import { Check, Globe, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { money } from "@/lib/money";
+import { savePendingDomain } from "@/features/domains/pending-domain";
 import { cn } from "@/lib/utils";
 
 interface Result { domain: string; available: boolean; price?: number; currency?: string; unsupported?: boolean }
 
 /** Buscador público de dominios: disponibilidad y precio anual. La compra se hace al activar el proyecto. */
-export function DomainSearch() {
+export function DomainSearch({ onChosen }: { onChosen?: (domain: string) => void }) {
   const t = useTranslations("domains");
   const locale = useLocale();
   const [q, setQ] = useState("");
@@ -45,16 +46,16 @@ export function DomainSearch() {
           {results.map((r) => (
             <div key={r.domain} className={cn("flex items-center gap-3 rounded-[12px] border px-4 py-3", r.available ? "border-border bg-surface" : "border-border/60 bg-surface/50")}>
               {r.available ? <Check className="size-4 text-success shrink-0" /> : <X className="size-4 text-fg-subtle shrink-0" />}
-              <span className={cn("flex-1 font-medium", !r.available && "text-fg-subtle")}>{r.domain}</span>
+              <span className={cn("flex-1 min-w-0 truncate font-medium text-left", !r.available && "text-fg-subtle")}>{r.domain}</span>
               {r.available && r.price != null
-                ? <span className="tabular-nums text-[14px]">{money(r.price, r.currency!, locale)}<span className="text-fg-subtle text-[12px]">/{t("year")}</span></span>
+                ? <>
+                    <span className="tabular-nums text-[14px]">{money(r.price, r.currency!, locale)}<span className="text-fg-subtle text-[12px]">/{t("year")}</span></span>
+                    <Button size="sm" onClick={() => { savePendingDomain(r.domain); onChosen?.(r.domain); }}>{t("choose")}</Button>
+                  </>
                 : <span className="text-[13px] text-fg-subtle">{t("taken")}</span>}
             </div>
           ))}
           <p className="pt-2 text-[13px] text-fg-muted text-center leading-relaxed">{t("how")}</p>
-          <div className="pt-1 flex justify-center">
-            <a href={`/${locale}#start`}><Button variant="secondary">{t("cta")}</Button></a>
-          </div>
         </div>
       )}
     </div>

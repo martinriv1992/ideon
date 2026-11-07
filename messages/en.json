@@ -46,7 +46,10 @@
         "prompt": "A portal where my wholesale customers can see their catalog with special pricing, place orders and check invoice status."
       }
     ],
-    "kindLabel": "What do you want to build?"
+    "kindLabel": "What do you want to build?",
+    "tabIdea": "Create my website or app",
+    "tabDomain": "Find a domain",
+    "domainChosen": "We saved {domain} for you. Now tell us what you want to build: we register it when you activate your project."
   },
   "categories": {
     "eyebrow": "Solutions",
@@ -938,7 +941,8 @@
     "year": "year",
     "taken": "Not available",
     "error": "Search is unavailable right now",
-    "how": "The domain is bought when you activate your project (or later, from the Publish tab) and renews with your annual plan.",
-    "cta": "Create my project"
+    "how": "Pick your domain and tell us what you want to build. We register it in your name when you activate your project, and it renews with your annual plan.",
+    "cta": "Create my project",
+    "choose": "I want it"
   }
 }

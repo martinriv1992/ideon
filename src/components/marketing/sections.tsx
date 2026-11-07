@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/components/ui/category-icon";
 import { Logo } from "@/components/ui/logo";
 import { getCategories, getPricingPlans, localized } from "@/features/catalog/queries";
-import { IdeaComposer } from "./idea-composer";
+import { HeroStart } from "./hero-start";
 import { Reveal } from "./reveal";
 import { FaqList } from "./faq";
 import { cn } from "@/lib/utils";
@@ -53,7 +53,7 @@ export async function Hero({ isAuthenticated }: { isAuthenticated: boolean }) {
           </p>
         </div>
         <div className="mt-12 animate-fade-up [animation-delay:220ms]">
-          <IdeaComposer isAuthenticated={isAuthenticated} />
+          <HeroStart isAuthenticated={isAuthenticated} />
         </div>
       </Container>
     </section>

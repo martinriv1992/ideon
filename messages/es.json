@@ -46,7 +46,10 @@
         "prompt": "Un portal donde mis clientes mayoristas puedan ver su catálogo con precios especiales, hacer pedidos y consultar el estado de sus facturas."
       }
     ],
-    "kindLabel": "¿Qué quieres crear?"
+    "kindLabel": "¿Qué quieres crear?",
+    "tabIdea": "Crear mi web o app",
+    "tabDomain": "Buscar dominio",
+    "domainChosen": "Guardamos {domain} para ti. Ahora cuéntanos qué quieres crear: lo registramos al activar tu proyecto."
   },
   "categories": {
     "eyebrow": "Soluciones",
@@ -938,7 +941,8 @@
     "year": "año",
     "taken": "No disponible",
     "error": "No se pudo buscar ahora mismo",
-    "how": "El dominio se compra al activar tu proyecto (o después, desde la pestaña Publicar) y se renueva junto con tu plan anual.",
-    "cta": "Crear mi proyecto"
+    "how": "Elige tu dominio y cuéntanos qué quieres crear. Lo registramos a tu nombre al activar tu proyecto y se renueva junto con tu plan anual.",
+    "cta": "Crear mi proyecto",
+    "choose": "Lo quiero"
   }
 }
