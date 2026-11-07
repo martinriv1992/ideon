@@ -40,6 +40,78 @@ export async function openEpayco(checkout: Checkout) {
 }
 
 const EMPTY_CONTACT = { firstName: "", lastName: "", email: "", phone: "+57", address1: "", city: "", state: "", zip: "", country: "CO", companyName: "" };
+type Contact = typeof EMPTY_CONTACT;
+
+const STOP = new Set(["web", "app", "para", "de", "del", "la", "el", "los", "las", "en", "y", "con", "mi", "sitio", "pagina", "tienda", "for", "the", "my"]);
+/** Sugerencia inicial a partir del nombre del proyecto: «Web para Panadería Trigo Dorado en Medellín» → «panaderiatrigodorado». */
+const slugName = (name: string) => {
+  const words = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[^a-z0-9]+/).filter((w) => w && !STOP.has(w));
+  return words.slice(0, 3).join("").slice(0, 30);
+};
+const cleanPhone = (p: string) => p.replace(/[\s-]/g, "");
+const contactComplete = (c: Contact) => Object.entries(c).every(([k, v]) => k === "companyName" || v.trim().length > 0) && /^\+[1-9]\d{6,14}$/.test(cleanPhone(c.phone));
+
+/** Buscador de dominios + datos del titular (Colombia por defecto). */
+function DomainPicker({ initialQuery, picked, onPick, contact, onContact }: {
+  initialQuery: string; picked: DomainResult | null; onPick: (r: DomainResult | null) => void; contact: Contact; onContact: (fn: (c: Contact) => Contact) => void;
+}) {
+  const t = useTranslations("app.launch");
+  const locale = useLocale();
+  const [query, setQuery] = useState(initialQuery);
+  const [searching, setSearching] = useState(false);
+  const [results, setResults] = useState<DomainResult[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  async function search() {
+    setSearching(true); setError(null); onPick(null);
+    try { const r = await api<{ results: DomainResult[] }>(`/api/domains/search?q=${encodeURIComponent(query)}`); setResults(r.results); }
+    catch (e) { setError((e as Error).message); setResults(null); }
+    finally { setSearching(false); }
+  }
+  const field = (k: keyof Contact, opts: { type?: string; placeholder?: string; span?: boolean } = {}) => (
+    <label className={cn("block", opts.span && "col-span-2")}>
+      <span className="text-[11px] text-fg-subtle">{t(`contact.${k}`)}</span>
+      <Input value={contact[k]} type={opts.type} placeholder={opts.placeholder} className="h-8 text-[13px]" maxLength={k === "country" ? 2 : 120}
+        onChange={(e) => onContact((c) => ({ ...c, [k]: k === "country" ? e.target.value.toUpperCase() : e.target.value }))} />
+    </label>
+  );
+  return (
+    <>
+      <form className="flex gap-1.5" onSubmit={(e) => { e.preventDefault(); void search(); }}>
+        <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="minegocio" className="h-9" aria-label={t("searchLabel")} />
+        <Button size="sm" type="submit" variant="secondary" loading={searching} disabled={query.trim().length < 2}><Search className="size-4" /> {t("search")}</Button>
+      </form>
+      {error && <p className="text-[13px] text-danger" role="alert">{error}</p>}
+      {results && (
+        <div className="space-y-1">
+          {results.map((r) => (
+            <button key={r.domain} type="button" disabled={!r.available} onClick={() => onPick(r)}
+              className={cn("w-full flex items-center gap-2 rounded-[10px] border px-3 py-2 text-left transition-colors",
+                picked?.domain === r.domain ? "border-accent bg-accent-soft" : "border-border bg-surface hover:border-border-strong",
+                !r.available && "opacity-50 cursor-not-allowed")}>
+              <Globe className="size-4 text-fg-subtle shrink-0" />
+              <span className="flex-1 min-w-0 truncate font-medium" title={r.domain}>{r.domain}</span>
+              {r.available && r.price != null ? <span className="tabular-nums shrink-0">{money(r.price, r.currency!, locale)}<span className="text-fg-subtle text-[11px]">/{t("year")}</span></span> : <span className="text-[12px] text-fg-subtle shrink-0">{t("taken")}</span>}
+              {picked?.domain === r.domain && <Check className="size-4 text-accent shrink-0" />}
+            </button>
+          ))}
+        </div>
+      )}
+      {picked && (
+        <Card className="p-3 space-y-2">
+          <p className="text-[12px] text-fg-muted leading-relaxed">{t("contactHelp")}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {field("firstName")}{field("lastName")}
+            {field("email", { type: "email", span: true })}
+            {field("phone", { placeholder: "+573001234567" })}{field("companyName")}
+            {field("address1", { span: true })}
+            {field("city")}{field("state")}
+            {field("zip")}{field("country", { placeholder: "CO" })}
+          </div>
+        </Card>
+      )}
+    </>
+  );
+}
 
 export function LaunchPanel({ detail }: { detail: ProjectDetail }) {
   const t = useTranslations("app.launch");
@@ -49,9 +121,6 @@ export function LaunchPanel({ detail }: { detail: ProjectDetail }) {
   const [info, setInfo] = useState<LaunchInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [wantDomain, setWantDomain] = useState(true);
-  const [query, setQuery] = useState(project.name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "").slice(0, 30));
-  const [searching, setSearching] = useState(false);
-  const [results, setResults] = useState<DomainResult[] | null>(null);
   const [picked, setPicked] = useState<DomainResult | null>(null);
   const [contact, setContact] = useState(EMPTY_CONTACT);
   const [paying, setPaying] = useState(false);
@@ -68,19 +137,12 @@ export function LaunchPanel({ detail }: { detail: ProjectDetail }) {
     return () => { clearInterval(iv); clearTimeout(stop); };
   }, [router]);
 
-  async function search() {
-    setSearching(true); setError(null); setPicked(null);
-    try { const r = await api<{ results: DomainResult[] }>(`/api/domains/search?q=${encodeURIComponent(query)}`); setResults(r.results); }
-    catch (e) { setError((e as Error).message); setResults(null); }
-    finally { setSearching(false); }
-  }
-
   async function pay() {
     setPaying(true); setError(null);
     try {
       const domain = wantDomain ? picked?.domain ?? null : null;
       const r = await api<{ checkout: Checkout }>(`/api/projects/${project.id}/launch`, {
-        method: "POST", body: JSON.stringify({ domain, contact: domain ? { ...contact, phone: contact.phone.replace(/[\s-]/g, "") } : undefined, locale }),
+        method: "POST", body: JSON.stringify({ domain, contact: domain ? { ...contact, phone: cleanPhone(contact.phone) } : undefined, locale }),
       });
       await openEpayco(r.checkout);
     } catch (e) { setError((e as Error).message); }
@@ -95,15 +157,8 @@ export function LaunchPanel({ detail }: { detail: ProjectDetail }) {
   const base = info.quote.items.filter((i) => i.key !== "domain");
   const total = base.reduce((n, i) => n + i.amount, 0) + domainPrice;
   const renewal = info.quote.renewal + domainPrice;
-  const contactOk = !wantDomain || (picked && Object.entries(contact).every(([k, v]) => k === "companyName" || v.trim().length > 0) && /^\+[1-9]\d{6,14}$/.test(contact.phone.replace(/[\s-]/g, "")));
+  const contactOk = !wantDomain || (picked && contactComplete(contact));
   const canPay = info.paymentsConfigured && !info.pendingPrice && (!wantDomain || Boolean(picked)) && contactOk;
-  const field = (k: keyof typeof EMPTY_CONTACT, opts: { type?: string; placeholder?: string; span?: boolean } = {}) => (
-    <label className={cn("block", opts.span && "col-span-2")}>
-      <span className="text-[11px] text-fg-subtle">{t(`contact.${k}`)}</span>
-      <Input value={contact[k]} type={opts.type} placeholder={opts.placeholder} className="h-8 text-[13px]" maxLength={k === "country" ? 2 : 120}
-        onChange={(e) => setContact((c) => ({ ...c, [k]: k === "country" ? e.target.value.toUpperCase() : e.target.value }))} />
-    </label>
-  );
 
   return (
     <div className="space-y-5">
@@ -124,38 +179,7 @@ export function LaunchPanel({ detail }: { detail: ProjectDetail }) {
         </div>
         {wantDomain && (!info.domainsConfigured ? <p className="text-fg-muted">{t("domainsNotConfigured")}</p> : (
           <>
-            <form className="flex gap-1.5" onSubmit={(e) => { e.preventDefault(); void search(); }}>
-              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="minegocio" className="h-9" aria-label={t("searchLabel")} />
-              <Button size="sm" type="submit" variant="secondary" loading={searching} disabled={query.trim().length < 2}><Search className="size-4" /> {t("search")}</Button>
-            </form>
-            {results && (
-              <div className="space-y-1">
-                {results.map((r) => (
-                  <button key={r.domain} type="button" disabled={!r.available} onClick={() => setPicked(r)}
-                    className={cn("w-full flex items-center gap-2 rounded-[10px] border px-3 py-2 text-left transition-colors",
-                      picked?.domain === r.domain ? "border-accent bg-accent-soft" : "border-border bg-surface hover:border-border-strong",
-                      !r.available && "opacity-50 cursor-not-allowed")}>
-                    <Globe className="size-4 text-fg-subtle" />
-                    <span className="flex-1 font-medium">{r.domain}</span>
-                    {r.available && r.price != null ? <span className="tabular-nums">{money(r.price, r.currency!, locale)}<span className="text-fg-subtle text-[11px]">/{t("year")}</span></span> : <span className="text-[12px] text-fg-subtle">{t("taken")}</span>}
-                    {picked?.domain === r.domain && <Check className="size-4 text-accent" />}
-                  </button>
-                ))}
-              </div>
-            )}
-            {picked && (
-              <Card className="p-3 space-y-2">
-                <p className="text-[12px] text-fg-muted leading-relaxed">{t("contactHelp")}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {field("firstName")}{field("lastName")}
-                  {field("email", { type: "email", span: true })}
-                  {field("phone", { placeholder: "+573001234567" })}{field("companyName")}
-                  {field("address1", { span: true })}
-                  {field("city")}{field("state")}
-                  {field("zip")}{field("country", { placeholder: "CO" })}
-                </div>
-              </Card>
-            )}
+            <DomainPicker initialQuery={slugName(project.name)} picked={picked} onPick={setPicked} contact={contact} onContact={setContact} />
           </>
         ))}
       </div>
@@ -234,6 +258,56 @@ export function ChangesCard({ detail }: { detail: ProjectDetail }) {
         ))}
       </div>
       {error && <p className="text-[12px] text-danger">{error}</p>}
+    </Card>
+  );
+}
+
+/** Proyecto ya activado sin dominio: buscarlo y comprarlo ahora (se suma a la renovación anual). */
+export function BuyDomainCard({ detail }: { detail: ProjectDetail }) {
+  const t = useTranslations("app.launch");
+  const locale = useLocale();
+  const [open, setOpen] = useState(false);
+  const [picked, setPicked] = useState<DomainResult | null>(null);
+  const [contact, setContact] = useState(EMPTY_CONTACT);
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const order = detail.domainOrder;
+  const hasDomain = Boolean(detail.subscription?.domain) || (order && ["purchasing", "configuring", "active"].includes(order.status));
+  if (!detail.subscription || hasDomain) return null;
+
+  async function pay() {
+    if (!picked) return;
+    setPaying(true); setError(null);
+    try {
+      const r = await api<{ checkout: Checkout }>(`/api/projects/${detail.project.id}/domain/buy`, {
+        method: "POST", body: JSON.stringify({ domain: picked.domain, contact: { ...contact, phone: cleanPhone(contact.phone) }, locale }),
+      });
+      await openEpayco(r.checkout);
+    } catch (e) { setError((e as Error).message); }
+    finally { setPaying(false); }
+  }
+
+  return (
+    <Card className="p-3 space-y-2 border-accent/30">
+      <div className="flex items-center justify-between gap-2">
+        <b className="flex items-center gap-1.5"><Globe className="size-4 text-accent" /> {t("buyDomainTitle")}</b>
+        {!open && <Button size="sm" onClick={() => setOpen(true)}><Search className="size-4" /> {t("buyDomainCta")}</Button>}
+      </div>
+      <p className="text-[12px] text-fg-muted leading-relaxed">{t("buyDomainHelp")}</p>
+      {open && (
+        <div className="space-y-2">
+          <DomainPicker initialQuery={slugName(detail.project.name)} picked={picked} onPick={setPicked} contact={contact} onContact={setContact} />
+          {error && <p className="text-[13px] text-danger" role="alert">{error}</p>}
+          {picked?.price != null && (
+            <>
+              <Button className="w-full" loading={paying} disabled={!contactComplete(contact)} onClick={() => void pay()}>
+                <Lock className="size-4" /> {t("pay", { amount: money(picked.price, picked.currency!, locale) })}
+              </Button>
+              <p className="text-[11px] text-fg-subtle text-center">{t("buyDomainNote")}</p>
+            </>
+          )}
+        </div>
+      )}
     </Card>
   );
 }

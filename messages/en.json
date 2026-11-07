@@ -13,7 +13,10 @@
     "start": "Start a project",
     "dashboard": "Go to dashboard",
     "language": "Language",
-    "examples": "Examples"
+    "examples": "Examples",
+    "business": "Business",
+    "custom": "Websites & apps",
+    "domains": "Domains"
   },
   "hero": {
     "badge": "AI-powered software studio",
@@ -306,7 +309,12 @@
       "kindLabel": "Solution type",
       "attachLabel": "Photos and documents (optional)",
       "uploading": "Uploading attachments ({n} of {total})…",
-      "uploadErrors": "Some attachments could not be uploaded (you can add them later in the Images and Files tabs):"
+      "uploadErrors": "Some attachments could not be uploaded (you can add them later in the Images and Files tabs):",
+      "packageLabel": "How do you want to start?",
+      "customOption": "Custom project",
+      "customOptionHint": "A website or app built from scratch around your idea.",
+      "ideaLabelPackage": "Tell us about your business",
+      "ideaPlaceholderPackage": "Business name, what it does, products or services, how many locations or warehouses, who will use it and what you need beyond what's included…"
     },
     "status": {
       "draft": "Draft",
@@ -668,7 +676,11 @@
       "changesTitle": "Chat changes",
       "changesLeft": "{left} of {total} left",
       "changesHelp": "Your plan includes {n} changes per year. If you need more, buy a pack (used during the current year).",
-      "buyPack": "{qty} changes · {price}"
+      "buyPack": "{qty} changes · {price}",
+      "buyDomainTitle": "Your own domain",
+      "buyDomainCta": "Find a domain",
+      "buyDomainHelp": "Get www.yourbusiness.com: we register it in your name, connect it to your site with HTTPS and it renews with your annual plan.",
+      "buyDomainNote": "You pay the domain's first year today. From the next renewal, the domain is included in your plan's annual payment."
     }
   },
   "common": {
@@ -854,5 +866,79 @@
   "whatsapp": {
     "label": "Message us on WhatsApp",
     "message": "Hi, I'd like to know more about Ideon."
+  },
+  "paths": {
+    "eyebrow": "Two ways to work with Ideon",
+    "title": "Business solutions ready for your company, or your custom website and app",
+    "description": "Pick a proven package and we tailor it to your company, or tell us your idea and we build it from scratch.",
+    "business": {
+      "title": "Business solutions",
+      "text": "Ideon Inventory, Ideon CRM and Ideon Business Suite: complete systems at a fixed price, adapted to your industry, products and team.",
+      "points": [
+        "Try them first with a working demo",
+        "Tailored with your data, roles and brand",
+        "Fixed price, hosting and support included"
+      ],
+      "cta": "See business solutions"
+    },
+    "custom": {
+      "title": "Custom websites and apps",
+      "text": "Landing pages, corporate sites, portals and apps built from your idea, with a free preview before you pay.",
+      "points": [
+        "Describe your idea and answer a few questions",
+        "Free preview with 2 changes",
+        "Published on your own domain"
+      ],
+      "cta": "Start my project"
+    }
+  },
+  "business": {
+    "metaTitle": "Business solutions · Ideon",
+    "eyebrow": "Ideon Business",
+    "title": "Management systems ready for your company",
+    "description": "Complete packages we tailor to your business in days, not months. Try the demo and, if you like it, we adapt it to you.",
+    "pageTitle": "Tailored business solutions",
+    "pageSubtitle": "Inventory, sales and full operations in proven systems we adapt to your industry, products, team and brand. Fixed price, with hosting and support.",
+    "tryDemo": "Try demo",
+    "want": "I want it",
+    "complete": "Most complete",
+    "priceNote": "One-time implementation · then annual hosting and support plan",
+    "footnote": "Demos use sample data and save changes in your browser. Your version is built with your data, fields, roles and brand; you can ask for extra modules during customization.",
+    "stepsTitle": "How it works",
+    "steps": [
+      {
+        "title": "Try the demo",
+        "text": "Browse every module with sample data, no sign-up needed."
+      },
+      {
+        "title": "Tell us about your business",
+        "text": "Pick the package and answer a few questions about your products, team and needs."
+      },
+      {
+        "title": "Tailored preview",
+        "text": "Ideon's agents build your version. Review it for free and ask for tweaks."
+      },
+      {
+        "title": "Activate it",
+        "text": "Pay for the package, we publish it on your domain and keep supporting it with changes included."
+      }
+    ],
+    "talkTitle": "Need something more custom?",
+    "talkText": "Integrations, multiple locations, e-invoicing or a special module: let's talk.",
+    "talkCta": "Chat on WhatsApp",
+    "talkMessage": "Hi, I'm interested in Ideon's business solutions."
+  },
+  "domains": {
+    "eyebrow": "Domains",
+    "title": "Find the domain for your business",
+    "description": "Search your name in .com, .co, .net and more. We register it in your name and connect it to your site, HTTPS included.",
+    "label": "Domain name",
+    "placeholder": "mybusiness",
+    "search": "Search",
+    "year": "year",
+    "taken": "Not available",
+    "error": "Search is unavailable right now",
+    "how": "The domain is bought when you activate your project (or later, from the Publish tab) and renews with your annual plan.",
+    "cta": "Create my project"
   }
 }

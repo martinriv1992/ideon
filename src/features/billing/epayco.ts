@@ -27,6 +27,8 @@ export interface EpaycoCheckout {
 export function epaycoCheckout(args: {
   paymentId: string; name: string; description: string; amount: number; currency: string;
   email?: string | null; buyerName?: string | null; locale: "es" | "en"; projectId: string;
+  /** Datos del pagador para prellenar el checkout (Colombia por defecto). */
+  phone?: string | null; address?: string | null;
   /** Página a la que vuelve el cliente tras pagar (por defecto, el proyecto). */
   returnPath?: string;
 }): EpaycoCheckout {
@@ -51,6 +53,10 @@ export function epaycoCheckout(args: {
       confirmation: `${base}/api/billing/epayco/confirmation`,
       ...(args.email ? { email_billing: args.email } : {}),
       ...(args.buyerName ? { name_billing: args.buyerName } : {}),
+      // Colombia por defecto: documento tipo cédula y móvil sin el prefijo +57.
+      type_doc_billing: "CC",
+      ...(args.phone ? { mobilephone_billing: args.phone.replace(/^\+57/, "").replace(/\D/g, "") } : {}),
+      ...(args.address ? { address_billing: args.address.slice(0, 100) } : {}),
     },
   };
 }

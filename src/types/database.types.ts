@@ -127,6 +127,8 @@ export type Project = {
   /** Pago de lanzamiento confirmado: fin de la vista previa gratuita. */
   paid_at: string | null;
   free_changes_used: number;
+  /** Paquete empresarial del que parte el proyecto (inventory | crm | suite). */
+  package_key: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -218,7 +220,7 @@ export type Database = {
       };
       projects: {
         Row: Row<Project>;
-        Insert: Insert<Project, "id" | "created_by" | "category_key" | "status" | "complexity" | "locale" | "archived_at" | "kind" | "brief" | "current_version_id" | "active_run_id" | "paid_at" | "free_changes_used" | "created_at" | "updated_at">;
+        Insert: Insert<Project, "id" | "created_by" | "category_key" | "status" | "complexity" | "locale" | "archived_at" | "kind" | "brief" | "current_version_id" | "active_run_id" | "paid_at" | "free_changes_used" | "package_key" | "created_at" | "updated_at">;
         Update: Partial<Project>;
         Relationships: [];
       };
@@ -249,6 +251,7 @@ export type Database = {
       project_files: { Row: ProjectFile; Insert: Insert<ProjectFile, "id" | "content_type" | "size">; Update: Partial<ProjectFile>; Relationships: [] };
       project_images: { Row: ProjectImage; Insert: Insert<ProjectImage, "id" | "width" | "height" | "size" | "created_by" | "created_at">; Update: Partial<ProjectImage>; Relationships: [] };
       domain_orders: { Row: DomainOrder; Insert: Insert<DomainOrder, "id" | "payment_id" | "years" | "status" | "vercel_order_id" | "error" | "expires_at" | "created_at" | "updated_at">; Update: Partial<DomainOrder>; Relationships: [] };
+      rate_limits: { Row: { id: number; bucket: string; ip_hash: string; created_at: string }; Insert: { bucket: string; ip_hash: string; created_at?: string }; Update: Partial<{ bucket: string }>; Relationships: [] };
       signup_attempts: { Row: { id: number; ip_hash: string; created_at: string }; Insert: { ip_hash: string; created_at?: string }; Update: Partial<{ ip_hash: string }>; Relationships: [] };
       project_assets: { Row: ProjectAsset; Insert: Insert<ProjectAsset, "id" | "size" | "use_reference" | "use_site" | "text_content" | "text_chars" | "extract_status" | "created_by" | "created_at">; Update: Partial<ProjectAsset>; Relationships: [] };
       approvals: { Row: Approval; Insert: Insert<Approval, "id" | "payload" | "decision" | "requested_by" | "decided_by" | "decided_at" | "created_at">; Update: Partial<Approval>; Relationships: [] };

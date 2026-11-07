@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ideon CRM · Soluciones Atlas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--p:#0E4A5C;--fg:#12303A;--ac:#FF6B57;--bg:#F4F8F9;--mut:#5d7882;--bd:#dfe9ec;--ok:#1f9d74;--warn:#e8a317}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.45}
+#app{display:flex;min-height:100vh}
+.side{width:236px;background:var(--p);color:#fff;padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto;flex:none;display:flex;flex-direction:column;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 12px;font-weight:800;font-size:15px;line-height:1.1}
+.brand small{display:block;font-weight:500;opacity:.7;font-size:11px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;gap:10px;align-items:center;width:100%;background:none;border:0;color:#cfe3e8;padding:10px 12px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;text-align:left}
+.nav button:hover{background:rgba(255,255,255,.08)}
+.nav button.on{background:rgba(255,255,255,.16);color:#fff}
+.nav svg,.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sfoot{margin-top:auto;font-size:12px;color:#cfe3e8}
+.sfoot select{width:100%;margin:6px 0;background:#0b3b4a;color:#fff;border:1px solid rgba(255,255,255,.25)}
+main{flex:1;min-width:0;padding:24px 30px 40px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+h1{margin:0;font-size:24px;font-weight:800;color:var(--p)}
+h2{font-size:16px;margin:0 0 12px;font-weight:700}
+h3{margin:0 0 14px;font-size:18px;color:var(--p)}
+.mut{color:var(--mut);margin:2px 0 0;font-size:13px}
+.ha{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:18px;margin-bottom:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--p)}
+.kpi.hot:before{background:var(--ac)}
+.kpi span{font-size:12px;color:var(--mut);font-weight:600}
+.kpi b{display:block;font-size:22px;margin-top:4px;color:var(--p)}
+.kpi.hot b{color:var(--ac)}
+.kpi small{color:var(--mut)}
+.g2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
+.btn{border:0;background:var(--ac);color:#fff;font:inherit;font-weight:700;padding:9px 16px;border-radius:10px;cursor:pointer}
+.btn:hover{filter:brightness(.95)}
+.btn.sec{background:var(--p)}
+.btn.ghost{background:#fff;color:var(--p);border:1px solid var(--bd)}
+.btn.danger{background:#d6402c}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:8px}
+input,select,textarea{font:inherit;color:var(--fg);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;background:#fff;max-width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(14,74,92,.25);border-color:var(--p)}
+label{display:block;font-weight:600;font-size:12px;color:var(--mut);margin-bottom:12px}
+label input,label select,label textarea{display:block;width:100%;margin-top:4px;font-weight:400;font-size:14px}
+.fb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.fb input{min-width:200px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);padding:8px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid #eef3f5;vertical-align:middle}
+tr.cl{cursor:pointer}tr.cl:hover td{background:#f7fbfc}
+.num{text-align:right;white-space:nowrap}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700;background:#e6f0f3;color:var(--p)}
+.chip.ok{background:#dcf4ea;color:#157a58}.chip.bad{background:#ffe3df;color:#c2402e}.chip.w{background:#fff1d1;color:#9a6a00}
+.row{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;background:#fff}
+.row.late{border-color:var(--ac);background:#fff3f1}
+.row.now{border-color:#f3c46a;background:#fffaf0}
+.grow{flex:1;min-width:0}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--bd);background:#fff;padding:7px 14px;border-radius:99px;font:inherit;font-weight:600;cursor:pointer;color:var(--mut)}
+.tabs button.on{background:var(--p);color:#fff;border-color:var(--p)}
+.kan{display:grid;grid-template-columns:repeat(6,minmax(230px,1fr));gap:12px;overflow-x:auto;padding-bottom:10px}
+.col{background:#e9f1f3;border-radius:14px;padding:10px;min-height:200px}
+.col h4{margin:2px 4px 8px;font-size:13px;display:flex;justify-content:space-between;color:var(--p)}
+.col .tot{font-size:11px;color:var(--mut);margin:0 4px 8px}
+.kc{background:#fff;border-radius:12px;padding:10px;margin-bottom:8px;border:1px solid var(--bd);cursor:grab;box-shadow:0 1px 2px rgba(14,74,92,.05)}
+.kc b{display:block;font-size:13px}
+.kc .m{font-size:12px;color:var(--mut);display:flex;justify-content:space-between;margin-top:4px}
+.kc select{width:100%;margin-top:6px;padding:3px 6px;font-size:12px}
+.bar{height:8px;background:#e3edf0;border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--p);border-radius:9px}
+.bar i.c{background:var(--ac)}
+.tl{border-left:2px solid var(--bd);margin-left:6px;padding-left:14px}
+.tl div{position:relative;margin-bottom:12px}
+.tl div:before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--ac)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+#modal{position:fixed;inset:0;background:rgba(18,48,58,.55);display:none;justify-content:center;align-items:flex-start;padding:28px 12px;overflow:auto;z-index:50}
+#modal.on{display:flex}
+.box{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.box.wide{max-width:880px}
+.btns{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+.err{color:#c2402e;font-weight:600;min-height:18px}
+.totals{margin:12px 0 0 auto;max-width:300px}
+.totals div{display:flex;justify-content:space-between;padding:4px 0}
+.totals .t{border-top:2px solid var(--p);font-weight:800;font-size:17px;color:var(--p);margin-top:4px;padding-top:8px}
+.doc h2{font-size:22px;color:var(--p)}
+.doc .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--ac);padding-bottom:12px;margin-bottom:14px}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--fg);color:#fff;padding:10px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:.3s;z-index:99}
+#toast.on{opacity:1}
+.demo{background:#fff1ee;color:#b0412f;border:1px dashed var(--ac);border-radius:10px;padding:6px 12px;font-size:12px;font-weight:600;margin-bottom:16px;display:inline-block}
+textarea.big{width:100%;min-height:160px;font-family:monospace;font-size:12px}
+.empty{text-align:center;color:var(--mut);padding:24px}
+@media(max-width:860px){
+#app{flex-direction:column}
+.side{width:100%;height:auto;position:static;padding:10px;flex-direction:column}
+.nav{flex-direction:row;overflow-x:auto;gap:4px}
+.nav button{width:auto;white-space:nowrap;padding:8px 12px}
+.brand{padding-bottom:4px}
+.sfoot{margin:0}
+main{padding:16px 14px 30px}
+.g2,.grid2{grid-template-columns:1fr}
+}
+@media print{
+#app,#toast{display:none!important}
+body{background:#fff}
+#modal{position:static;background:none;padding:0;display:block}
+.box{box-shadow:none;max-width:none;padding:0}
+.noprint{display:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<aside class="side">
+<div class="brand"><svg width="34" height="34" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#FF6B57"/><path d="M8 29L20 9l12 20h-6l-6-10-6 10z" fill="#fff"/></svg><div>Soluciones Atlas<small>Ideon CRM · demo</small></div></div>
+<nav class="nav" id="nav"></nav>
+<div class="sfoot"><label style="color:#cfe3e8;margin:0">Usuario de demostración<select id="usel" onchange="setUser(this.value)"></select></label>Datos de ejemplo ficticios.</div>
+</aside>
+<main id="main"></main>
+</div>
+<div id="modal" onclick="if(event.target===this)closeM()"></div>
+<div id="toast"></div>
+<script>
+const KEY='ideon-crm-atlas-v1';
+const ETAPAS=['Prospecto','Contactado','Propuesta','Negociación','Ganada','Perdida'];
+const SUG={Prospecto:10,Contactado:25,Propuesta:50,'Negociación':75,Ganada:100,Perdida:0};
+const TIPOS=['Llamada','Reunión','Correo','WhatsApp'];
+const SECT=['Tecnología','Manufactura','Salud','Retail','Construcción','Educación','Logística'];
+const CIU=['Bogotá','Medellín','Cali','Barranquilla','Bucaramanga','Cartagena'];
+const PRE={clientes:'c',contactos:'p',oportunidades:'o',vendedores:'v',tareas:'t',productos:'g',cotizaciones:'q'};
+const $=s=>document.querySelector(s);
+const pad=(n,l=4)=>String(n).padStart(l,'0');
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const today=()=>iso(new Date());
+const dd=n=>{const d=new Date();d.setDate(d.getDate()+n);return iso(d)};
+const cop=n=>'$ '+Math.round(n||0).toLocaleString('es-CO');
+const fd=s=>s?s.split('-').reverse().join('/'):'—';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const noacc=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+function seed(){
+const s={seq:1000,user:'v1',iva:19,emp:{nombre:'Soluciones Atlas S.A.S. (demo)',nit:'900.000.000-0',dir:'Calle Ficticia 123, Bogotá',tel:'601 555 0100',email:'ventas@atlas.example'}};
+s.vendedores=[['v1','Laura Mendoza','Gerente comercial','Bogotá',0],['v2','Andrés Rojas','Vendedor','Bogotá',20e6],['v3','Camila Ortiz','Vendedor','Medellín',18e6],['v4','Julián Prada','Vendedor','Cali',25e6],['v5','Marcela Duque','Vendedor','Barranquilla',15e6]].map(([id,n,r,c,m])=>({id,nombre:n,email:noacc(n.split(' ')[0].toLowerCase())+'@atlas.example',rol:r,ciudad:c,metaMensual:m,estado:'Activo'}));
+const SV=['v2','v3','v4','v5'];
+const EMP=['Nodo Andino S.A.S.','Textiles Aurora Ltda.','Clínica Vista Serena','Retail Kiosko Sur','Constructora Pórtico','Colegio Horizonte Azul','Logística Río Claro','Bitácora Digital S.A.S.','Metalúrgica Cumbre','Droguería Salud Plena','Almacenes La Ceiba','Ingeniería Brújula'];
+s.clientes=EMP.map((e,i)=>({id:'c'+(i+1),empresa:e,nit:`900.${100+i}.${200+i}-${i%9}`,sector:SECT[i%7],ciudad:CIU[i%6],vendedor:SV[i%4],estado:['Activo','Activo','Prospecto','Activo','Inactivo','Activo'][i%6]}));
+const NOM=['Sofía Cardona','Mateo Vargas','Valentina Ríos','Santiago Peña','Daniela Cruz','Felipe Arango','Isabela Gómez','Sebastián Lara','Natalia Pardo','Tomás Giraldo','Paula Escobar','Diego Salazar','Juliana Mora','Camilo Herrera','Lucía Franco','Esteban Duarte','Mariana Toro','Nicolás Bravo','Andrea Londoño','Ricardo Pinto'];
+const CAR=['Gerente general','Director de compras','Jefe de TI','Gerente financiero','Coordinadora administrativa','Director de operaciones'];
+s.contactos=NOM.map((n,i)=>({id:'p'+(i+1),nombre:n,cliente:'c'+(i%12+1),cargo:CAR[i%6],email:noacc(n.split(' ')[0].toLowerCase())+'.'+i+'@demo.example',telefono:'300 555 01'+pad(i,2)}));
+const ET=['Prospecto','Contactado','Propuesta','Negociación','Ganada','Prospecto','Contactado','Propuesta','Negociación','Perdida','Ganada','Prospecto','Contactado','Propuesta','Negociación','Ganada','Perdida','Prospecto','Contactado','Propuesta','Negociación','Ganada','Contactado','Propuesta'];
+const VAL=[12,8,25,40,6,18,30,9,22,15,35,5],TT=['Licenciamiento ERP','Mantenimiento anual','Plataforma de inventario','Capacitación de equipo','Soporte 24/7','Migración a la nube','Automatización de reportes','Portal de clientes'];
+const dom=new Date().getDate();
+s.oportunidades=ET.map((e,i)=>({id:'o'+(i+1),titulo:TT[i%8]+' — '+EMP[i%12].split(' ')[0],cliente:'c'+(i%12+1),valor:VAL[i%12]*1e6,probabilidad:SUG[e],etapa:e,cierre:dd(5+i*3),vendedor:SV[i%4],motivoPerdida:e==='Perdida'?'Eligieron un proveedor con menor precio (ejemplo)':'',creada:dd(-(10+i*2)),cerradaEn:e==='Ganada'?(i===21?dd(-dom-3):dd(-(i%dom))):''}));
+const PR=[['Licencia ERP Atlas (anual)','Software',9500000],['Módulo de inventario','Software',4200000],['Implementación y migración','Servicios',7800000],['Capacitación (jornada)','Servicios',1500000],['Soporte 24/7 (mensual)','Soporte',2200000],['Portal de clientes','Software',6400000],['Automatización de reportes','Servicios',3300000],['Lector de códigos de barras','Hardware',890000]];
+s.productos=PR.map((p,i)=>({id:'g'+(i+1),sku:'ATL-'+pad(i+1,3),nombre:p[0],categoria:p[1],precio:p[2],estado:i===7?'Inactivo':'Activo'}));
+const OFF=[-4,-2,0,0,1,3,-1,0,5,8],TA=['Llamar para confirmar propuesta','Enviar cotización actualizada','Reunión de seguimiento','Escribir por WhatsApp para agendar demo','Revisar contrato con jurídico'];
+s.tareas=Array.from({length:30},(_,i)=>{const h=i%5===4;return{id:'t'+(i+1),titulo:TA[i%5],tipo:TIPOS[i%4],fecha:h?dd(-(i%4+1)):dd(OFF[i%10]),cliente:'c'+(i%12+1),opp:i<24?'o'+(i+1):'',vendedor:SV[i%4],estado:h?'Hecha':'Pendiente',resultado:h?'Cliente confirmó interés (ejemplo)':''}});
+const qc=(L,p)=>{let sub=0,de=0;L.forEach(l=>{sub+=l.q*l.pr;de+=l.q*l.pr*l.d/100});const b=sub-de,iv=b*p/100;return{sub,desc:de,base:b,iva:iv,total:b+iv}};
+s.cotizaciones=Array.from({length:10},(_,i)=>{const es=['Borrador','Enviada','Aceptada','Rechazada'][i%4];const lines=[0,1].slice(0,i%2+1).map(k=>{const p=PR[(i+k*3)%8];return{p:'g'+((i+k*3)%8+1),n:p[0],q:(i%3)+1,pr:p[2],d:(i%4)*5}});const c=qc(lines,19);return{id:'q'+(i+1),numero:'COT-'+pad(i+1),cliente:'c'+(i+1),opp:es==='Aceptada'?'':'o'+(i+1),fecha:dd(-(i*3+1)),lines,items:lines.map(l=>l.q+'× '+l.n).join('; '),descuento:c.sub?Math.round(c.desc/c.sub*100):0,ivaP:19,total:c.total,estado:es}});
+const RES=['Quedó de revisar la propuesta (ejemplo)','Solicitó ajuste de precio (ejemplo)','Envió documentos requeridos (ejemplo)','Confirmó reunión con su equipo (ejemplo)'];
+s.acts=Array.from({length:16},(_,i)=>({id:'a'+i,tipo:TIPOS[i%4],fecha:dd(-(i+1)),cliente:'c'+(i%12+1),vendedor:SV[i%4],resultado:RES[i%4]}));
+return s}
+
+function load(){try{const j=localStorage.getItem(KEY);if(j){const o=JSON.parse(j);if(o&&o.clientes&&o.vendedores&&o.acts)return o}}catch(e){}return seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load(),ui={view:'dashboard',f:{},fv:'',tab:'Hoy',cli:null,etapa:'',q:null,qid:''};
+const byId=(l,id)=>S[l].find(x=>x.id===id);
+const cn=id=>(byId('clientes',id)||{}).empresa||'—';
+const vn=id=>(byId('vendedores',id)||{}).nombre||'—';
+const cur=()=>byId('vendedores',S.user)||S.vendedores[0];
+const mgr=()=>cur().rol==='Gerente comercial';
+const sv=()=>mgr()?ui.fv:cur().id;
+const sellers=()=>S.vendedores.filter(v=>v.rol==='Vendedor');
+const uid=p=>p+(++S.seq);
+const okV=v=>!sv()||v===sv();
+const oppS=()=>S.oportunidades.filter(o=>okV(o.vendedor));
+const cliS=()=>S.clientes.filter(c=>okV(c.vendedor));
+const tarS=()=>S.tareas.filter(t=>okV(t.vendedor));
+const actS=()=>S.acts.filter(a=>okV(a.vendedor));
+const contS=()=>S.contactos.filter(p=>okV((byId('clientes',p.cliente)||{}).vendedor));
+const cotS=()=>S.cotizaciones.filter(q=>okV((byId('clientes',q.cliente)||{}).vendedor));
+const ventasMes=(vid,m)=>S.oportunidades.filter(o=>o.etapa==='Ganada'&&(o.cerradaEn||'').startsWith(m)&&(!vid||o.vendedor===vid)).reduce((s,o)=>s+o.valor,0);
+const logAct=(tipo,cliente,vendedor,resultado)=>S.acts.unshift({id:uid('a'),tipo,fecha:today(),cliente,vendedor,resultado});
+const qcalc=(L,p)=>{let sub=0,de=0;L.forEach(l=>{sub+=l.q*l.pr;de+=l.q*l.pr*l.d/100});const b=sub-de,iv=b*p/100;return{sub,desc:de,base:b,iva:iv,total:b+iv}};
+const F=k=>ui.f[ui.view+k]||'';
+function setF(k,v){ui.f[ui.view+k]=v;render()}
+const so=(L,sel)=>L.map(x=>{const a=Array.isArray(x)?x:[x,x];return`<option value="${esc(a[0])}" ${a[0]==sel?'selected':''}>${esc(a[1])}</option>`}).join('');
+const fsel=(k,l,L)=>`<select id="s_${k}" onchange="setF('${k}',this.value)"><option value="">${l}</option>${so(L,F(k))}</select>`;
+const chipE=e=>`<span class="chip ${{Ganada:'ok',Aceptada:'ok',Activo:'ok',Hecha:'ok',Perdida:'bad',Rechazada:'bad',Inactivo:'bad',Enviada:'w',Propuesta:'w','Negociación':'w'}[e]||''}">${esc(e)}</span>`;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200)}
+function modal(h,w){$('#modal').innerHTML=`<div class="box ${w?'wide':''}">${h}</div>`;$('#modal').classList.add('on')}
+function closeM(){$('#modal').classList.remove('on');$('#modal').innerHTML=''}
+function ask(msg,fn,lbl){ask.fn=fn;modal(`<h3>Confirmar</h3><p>${msg}</p><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn danger" onclick="const f=ask.fn;closeM();f()">${lbl||'Eliminar'}</button></div>`)}
+
+const IC={dashboard:'M4 13h6V4H4zM14 20h6V4h-6zM4 20h6v-3H4z',clientes:'M4 21V6l8-3 8 3v15M9 21v-5h6v5M9 9h2M13 9h2',contactos:'M12 11a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6',oportunidades:'M3 4h18l-7 8v7l-4 2v-9z',tareas:'M4 5h16v15H4zM8 12l3 3 5-6',cotizaciones:'M6 3h9l4 4v14H6zM9 12h7M9 16h7',productos:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8',equipo:'M4 20V10M10 20V4M16 20v-8M22 20H2',reportes:'M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3',ajustes:'M12 15a3 3 0 100-6 3 3 0 000 6zM4 12h2M18 12h2M12 4v2M12 18v2'};
+const NAV=[['dashboard','Panel gerencial'],['clientes','Clientes'],['contactos','Contactos'],['oportunidades','Oportunidades'],['tareas','Tareas'],['cotizaciones','Cotizaciones'],['productos','Productos'],['equipo','Equipo y metas'],['reportes','Reportes'],['ajustes','Ajustes']];
+function go(v,keep){ui.view=v;if(!keep)ui.cli=null;render();window.scrollTo(0,0)}
+function setUser(id){S.user=id;ui.fv='';ui.cli=null;save();render()}
+const fvSel=()=>`<select id="fv" onchange="ui.fv=this.value;render()"><option value="">Todo el equipo</option>${so(sellers().map(v=>[v.id,v.nombre]),ui.fv)}</select>`;
+const head=(t,sub,act,fv)=>`<div class="hd"><div><h1>${t}</h1><p class="mut">${sub}</p></div><div class="ha">${fv&&mgr()?fvSel():''}${act||''}</div></div>`;
+const tbl=(h,rows,emp)=>`<div class="tw"><table><thead><tr>${h.map(x=>`<th ${x[0]==='#'?'class="num"':''}>${x.replace(/^#/,'')}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${h.length}" class="empty">${emp||'Sin registros para mostrar.'}</td></tr>`}</tbody></table></div>`;
+const ico=(n)=>`<svg class="ic" viewBox="0 0 24 24"><path d="${IC[n]}"/></svg>`;
+
+function render(){
+const a=document.activeElement,id=a&&a.id,pos=a&&a.selectionStart;
+$('#nav').innerHTML=NAV.map(([k,t])=>`<button class="${ui.view===k?'on':''}" onclick="go('${k}')"><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg>${t}</button>`).join('');
+$('#usel').innerHTML=S.vendedores.map(v=>`<option value="${v.id}" ${v.id===S.user?'selected':''}>${esc(v.nombre)} · ${v.rol}</option>`).join('');
+$('#main').innerHTML=V[ui.view]();
+if(id){const e=document.getElementById(id);if(e&&e!==a||e&&a){e.focus();try{if(pos!=null)e.setSelectionRange(pos,pos)}catch(x){}}}
+}
+
+const E={
+clientes:{s:'cliente',coll:'clientes',f:[['empresa','Empresa','text',1],['nit','NIT','text',0],['sector','Sector','select',1,SECT],['ciudad','Ciudad','select',1,CIU],['vendedor','Vendedor asignado','select',1,'V'],['estado','Estado','select',1,['Prospecto','Activo','Inactivo']]]},
+contactos:{s:'contacto',coll:'contactos',f:[['nombre','Nombre','text',1],['cliente','Empresa','select',1,'C'],['cargo','Cargo','text',0],['email','Correo','email',1],['telefono','Teléfono','phone',0]]},
+oportunidades:{s:'oportunidad',coll:'oportunidades',f:[['titulo','Título','text',1],['cliente','Cliente','select',1,'C'],['valor','Valor (COP)','money',1],['probabilidad','Probabilidad %','number',1],['etapa','Etapa','select',1,ETAPAS],['cierre','Cierre estimado','date',1],['vendedor','Vendedor','select',1,'V'],['motivoPerdida','Motivo de pérdida','textarea',0]]},
+vendedores:{s:'vendedor',coll:'vendedores',f:[['nombre','Nombre','text',1],['email','Correo','email',1],['rol','Rol','select',1,['Vendedor','Gerente comercial']],['ciudad','Ciudad','text',0],['metaMensual','Meta mensual (COP)','money',1],['estado','Estado','select',1,['Activo','Inactivo']]]},
+tareas:{s:'tarea',coll:'tareas',f:[['titulo','Descripción','text',1],['tipo','Tipo','select',1,TIPOS],['fecha','Fecha','date',1],['cliente','Cliente','select',1,'C'],['opp','Oportunidad (opcional)','select',0,'O'],['vendedor','Responsable','select',1,'V'],['estado','Estado','select',1,['Pendiente','Hecha']],['resultado','Resultado','textarea',0]]},
+productos:{s:'producto',coll:'productos',f:[['sku','SKU','text',1],['nombre','Producto o servicio','text',1],['categoria','Categoría','select',1,['Software','Servicios','Soporte','Hardware']],['precio','Precio (COP)','money',1],['estado','Estado','select',1,['Activo','Inactivo']]]}
+};
+function optList(o){if(o==='V')return sellers().map(v=>[v.id,v.nombre]);if(o==='C')return S.clientes.map(c=>[c.id,c.empresa]);if(o==='O')return S.oportunidades.map(x=>[x.id,x.titulo]);return o}
+function openForm(ent,id,defs){
+const cfg=E[ent],r=id?byId(cfg.coll,id):(defs||{});
+const fh=cfg.f.map(([k,l,t,req,o])=>{const v=r[k]!=null?r[k]:'';let inp;
+if(t==='select')inp=`<select name="${k}" ${req?'required':''}>${req?'':'<option value="">—</option>'}${so(optList(o),v)}</select>`;
+else if(t==='textarea')inp=`<textarea name="${k}" rows="3">${esc(v)}</textarea>`;
+else inp=`<input name="${k}" type="${{money:'number',number:'number',phone:'tel'}[t]||t}" value="${esc(v)}" ${req?'required':''} ${t==='money'||t==='number'?'min="0"':''}>`;
+return`<label id="w_${k}">${l}${req?' *':''}${inp}</label>`}).join('');
+modal(`<h3>${id?'Editar':'Nuevo/a'} ${cfg.s}</h3><form id="gf" onsubmit="return saveForm(event,'${ent}','${id||''}')"><div class="grid2">${fh}</div><div class="err" id="ferr"></div><div class="btns"><button type="button" class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn">Guardar</button></div></form>`);
+if(ent==='oportunidades'){const fm=$('#gf'),tg=()=>$('#w_motivoPerdida').style.display=fm.etapa.value==='Perdida'?'':'none';fm.etapa.onchange=()=>{fm.probabilidad.value=SUG[fm.etapa.value];tg()};tg()}
+}
+function persist(ent,o,id){const c=E[ent].coll;if(id)Object.assign(byId(c,id),o);else S[c].push(Object.assign({id:uid(PRE[ent])},o))}
+const HOOK={
+oportunidades(o,id){
+if(o.etapa==='Perdida'&&!o.motivoPerdida)return'Indica el motivo de pérdida.';
+if(o.probabilidad>100)return'La probabilidad debe estar entre 0 y 100.';
+const prev=id&&byId('oportunidades',id);
+if(o.etapa==='Ganada'&&(!prev||prev.etapa!=='Ganada'))o.cerradaEn=today();
+if(o.etapa!=='Ganada')o.cerradaEn='';
+if(!id)o.creada=today();
+persist('oportunidades',o,id);
+if(prev&&prev.etapa!==o.etapa)logAct('Sistema',o.cliente,o.vendedor,`Oportunidad "${o.titulo}" pasó de ${prev.etapa} a ${o.etapa}`)},
+tareas(o,id){const op=o.opp&&byId('oportunidades',o.opp);if(op)o.cliente=op.cliente;persist('tareas',o,id)},
+productos(o,id){persist('productos',o,id)}
+};
+function saveForm(e,ent,id){
+e.preventDefault();const fm=e.target,o={};
+E[ent].f.forEach(([k,,t])=>{let v=fm.elements[k].value;if(t==='money'||t==='number')v=v===''?0:Number(v);o[k]=typeof v==='string'?v.trim():v});
+const err=(HOOK[ent]||((o,i)=>persist(ent,o,i)))(o,id);
+if(err){$('#ferr').textContent=err;return false}
+closeM();save();render();toast('Guardado correctamente');return false}
+function del(ent,id){
+const r=byId(E[ent].coll,id);
+ask(ent==='clientes'?`¿Eliminar a <b>${esc(r.empresa)}</b> junto con sus contactos, oportunidades, tareas y cotizaciones?`:`¿Eliminar este registro (${esc(r.nombre||r.titulo||r.sku)})? Esta acción no se puede deshacer.`,()=>{
+if(ent==='clientes'){['contactos','oportunidades','tareas','cotizaciones','acts'].forEach(c=>S[c]=S[c].filter(x=>x.cliente!==id));if(ui.cli===id)ui.cli=null}
+else if(ent==='vendedores'){if(S.clientes.some(c=>c.vendedor===id)||S.oportunidades.some(o=>o.vendedor===id)||id===S.user){toast('No se puede: tiene registros asignados o es el usuario activo');return}}
+S[E[ent].coll]=S[E[ent].coll].filter(x=>x.id!==id);save();render();toast('Registro eliminado')})}
+
+const V={};
+V.dashboard=()=>{
+const o=oppS(),mes=today().slice(0,7),vm=ventasMes(sv(),mes);
+const gan=o.filter(x=>x.etapa==='Ganada').length,per=o.filter(x=>x.etapa==='Perdida').length;
+const ab=o.filter(x=>x.etapa!=='Ganada'&&x.etapa!=='Perdida');
+const pron=ab.reduce((s,x)=>s+x.valor*x.probabilidad/100,0);
+const venc=tarS().filter(t=>t.estado==='Pendiente'&&t.fecha<today()).length;
+const sl=sellers().filter(v=>!sv()||v.id===sv()),meta=sl.reduce((s,v)=>s+v.metaMensual,0),av=meta?vm/meta*100:0;
+const kp=(l,v,h,hot)=>`<div class="kpi ${hot?'hot':''}"><span>${l}</span><b>${v}</b><small>${h}</small></div>`;
+const rows=ETAPAS.map(e=>{const l=o.filter(x=>x.etapa===e);return{e,n:l.length,v:l.reduce((s,x)=>s+x.valor,0)}});
+const mx=Math.max(1,...rows.map(r=>r.v));
+const funnel=`<svg viewBox="0 0 640 ${rows.length*44}" width="100%" role="img" aria-label="Embudo por etapa">${rows.map((r,i)=>{const w=Math.max(4,r.v/mx*360),c=r.e==='Ganada'?'#1f9d74':r.e==='Perdida'?'#b9c6cb':i%2?'#FF6B57':'#0E4A5C';return`<g style="cursor:pointer" onclick="ui.etapa='${r.e}';go('oportunidades')"><text x="0" y="${i*44+26}" font-size="13" font-weight="700" fill="#12303A">${r.e}</text><rect x="110" y="${i*44+8}" width="${w}" height="26" rx="8" fill="${c}"/><text x="${118+w}" y="${i*44+26}" font-size="12" fill="#12303A">${r.n} · ${cop(r.v)}</text></g>`}).join('')}</svg>`;
+const rank=sellers().map(v=>({v,m:ventasMes(v.id,mes)})).sort((a,b)=>b.m-a.m).map(({v,m},i)=>{const p=v.metaMensual?m/v.metaMensual*100:0;return`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${esc(v.nombre)}</b><span>${cop(m)} · ${Math.round(p)}%</span></div><div class="bar"><i class="${p>=100?'':'c'}" style="width:${Math.min(100,p)}%"></i></div><small class="mut">Meta ${cop(v.metaMensual)}</small></div>`}).join('');
+const ag=tarS().filter(t=>t.estado==='Pendiente'&&t.fecha<=today()).sort((a,b)=>a.fecha<b.fecha?-1:1);
+const agh=ag.map(t=>`<div class="row ${t.fecha<today()?'late':'now'}"><div class="grow"><b>${esc(t.titulo)}</b><div class="mut">${t.tipo} · ${esc(cn(t.cliente))} · ${t.fecha<today()?'Vencida '+fd(t.fecha):'Hoy'}</div></div><button class="btn sm sec" onclick="quickDone('${t.id}')">Hecha</button></div>`).join('')||'<div class="empty">Sin tareas pendientes para hoy. ¡Buen trabajo!</div>';
+return head('Panel gerencial',`Hola, ${esc(cur().nombre)} · ${mgr()?'vista del equipo':'tus cifras'}`,'<button class="btn" onclick="openForm(\'oportunidades\',null,newOpp())">Crear oportunidad</button>',1)+
+`<div class="demo">Datos de ejemplo ficticios · demo pública de Ideon</div><div class="kpis">`+
+kp('Ventas ganadas del mes',cop(vm),'oportunidades ganadas en '+mes)+
+kp('Tasa de cierre',(gan+per?Math.round(gan/(gan+per)*100):0)+'%',gan+' ganadas · '+per+' perdidas')+
+kp('Pronóstico ponderado',cop(pron),'valor × probabilidad')+
+kp('Oportunidades abiertas',ab.length,cop(ab.reduce((s,x)=>s+x.valor,0))+' en juego')+
+kp('Tareas vencidas',venc,'requieren atención',venc>0)+
+kp('Avance de meta',Math.round(av)+'%','meta '+cop(meta))+
+`</div><div class="g2"><div><div class="card"><h2>Embudo por etapa</h2>${funnel}<small class="mut">Clic en una etapa para ver el tablero filtrado.</small></div></div><div>${mgr()?`<div class="card"><h2>Ranking de vendedores</h2>${rank}</div>`:''}<div class="card"><h2>Agenda de hoy</h2>${agh}</div></div></div>`};
+const newOpp=()=>({probabilidad:10,etapa:'Prospecto',cierre:dd(30),vendedor:sv()||'v2',cliente:(S.clientes[0]||{}).id,valor:0});
+function quickDone(id){completeTask(id,'Completada desde la agenda')}
+function completeTask(id,res){const t=byId('tareas',id);t.estado='Hecha';t.resultado=res||t.resultado;logAct(t.tipo,t.cliente,t.vendedor,res||t.titulo);save();render();toast('Tarea completada')}
+
+V.clientes=()=>{
+if(ui.cli)return cliDetail();
+const q=F('q').toLowerCase();
+const L=cliS().filter(c=>(!F('sec')||c.sector===F('sec'))&&(!F('ciu')||c.ciudad===F('ciu'))&&(!F('est')||c.estado===F('est'))&&(!q||(c.empresa+c.nit).toLowerCase().includes(q)));
+return head('Clientes','Cartera de empresas',`<button class="btn" onclick="openForm('clientes',null,{vendedor:sv()||'v2',estado:'Prospecto'})">+ Nuevo cliente</button>`,1)+
+`<div class="card"><div class="fb"><input id="fq" placeholder="Buscar empresa o NIT…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('sec','Sector',SECT)}${fsel('ciu','Ciudad',CIU)}${fsel('est','Estado',['Prospecto','Activo','Inactivo'])}</div>`+
+tbl(['Empresa','NIT','Sector','Ciudad','Estado','Vendedor','Oport. abiertas',''],L.map(c=>{const n=S.oportunidades.filter(o=>o.cliente===c.id&&o.etapa!=='Ganada'&&o.etapa!=='Perdida').length;return`<tr class="cl" onclick="ui.cli='${c.id}';render()"><td><b>${esc(c.empresa)}</b></td><td>${esc(c.nit)}</td><td>${c.sector}</td><td>${c.ciudad}</td><td>${chipE(c.estado)}</td><td>${esc(vn(c.vendedor))}</td><td>${n}</td><td class="acts" onclick="event.stopPropagation()"><button class="btn sm ghost" onclick="openForm('clientes','${c.id}')">Editar</button><button class="btn sm ghost" onclick="del('clientes','${c.id}')">Eliminar</button></td></tr>`}).join(''))+`</div>`};
+function cliDetail(){
+const c=byId('clientes',ui.cli);if(!c){ui.cli=null;return V.clientes()}
+const cs=S.contactos.filter(p=>p.cliente===c.id),os=S.oportunidades.filter(o=>o.cliente===c.id),qs=S.cotizaciones.filter(q=>q.cliente===c.id),as=S.acts.filter(a=>a.cliente===c.id).sort((a,b)=>a.fecha<b.fecha?1:-1);
+return head(esc(c.empresa),`${c.sector} · ${c.ciudad} · NIT ${esc(c.nit||'—')} · ${esc(vn(c.vendedor))}`,`<button class="btn ghost" onclick="ui.cli=null;render()">← Volver</button><button class="btn ghost" onclick="openForm('clientes','${c.id}')">Editar</button><button class="btn" onclick="actModal('${c.id}')">Registrar actividad</button>`)+
+`<div class="g2"><div><div class="card"><div style="display:flex;justify-content:space-between"><h2>Contactos</h2><button class="btn sm sec" onclick="openForm('contactos',null,{cliente:'${c.id}'})">+ Agregar</button></div>${tbl(['Nombre','Cargo','Correo','Teléfono',''],cs.map(p=>`<tr><td><b>${esc(p.nombre)}</b></td><td>${esc(p.cargo)}</td><td>${esc(p.email)}</td><td>${esc(p.telefono)}</td><td class="acts"><button class="btn sm ghost" onclick="openForm('contactos','${p.id}')">Editar</button><button class="btn sm ghost" onclick="del('contactos','${p.id}')">Borrar</button></td></tr>`).join(''),'Sin contactos.')}</div>
+<div class="card"><h2>Oportunidades</h2>${tbl(['Título','Etapa','#Valor'],os.map(o=>`<tr class="cl" onclick="openForm('oportunidades','${o.id}')"><td>${esc(o.titulo)}</td><td>${chipE(o.etapa)}</td><td class="num">${cop(o.valor)}</td></tr>`).join(''),'Sin oportunidades.')}</div>
+<div class="card"><h2>Cotizaciones</h2>${tbl(['Número','Fecha','Estado','#Total'],qs.map(q=>`<tr class="cl" onclick="qView('${q.id}')"><td><b>${q.numero}</b></td><td>${fd(q.fecha)}</td><td>${chipE(q.estado)}</td><td class="num">${cop(q.total)}</td></tr>`).join(''),'Sin cotizaciones.')}</div></div>
+<div class="card"><h2>Línea de tiempo</h2><div class="tl">${as.map(a=>`<div><b>${a.tipo}</b> · <span class="mut">${fd(a.fecha)} · ${esc(vn(a.vendedor))}</span><br>${esc(a.resultado)}</div>`).join('')||'<span class="mut">Sin actividades registradas.</span>'}</div></div></div>`}
+function actModal(cid){
+modal(`<h3>Registrar actividad</h3><form onsubmit="return saveAct(event)"><label>Cliente<select name="cliente">${so(S.clientes.map(c=>[c.id,c.empresa]),cid)}</select></label><div class="grid2"><label>Tipo<select name="tipo">${so(TIPOS)}</select></label><label>Fecha<input type="date" name="fecha" value="${today()}" required></label></div><label>Resultado<textarea name="resultado" rows="3" required></textarea></label><div class="btns"><button type="button" class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn">Guardar</button></div></form>`)}
+function saveAct(e){e.preventDefault();const f=e.target.elements,c=byId('clientes',f.cliente.value);S.acts.unshift({id:uid('a'),tipo:f.tipo.value,fecha:f.fecha.value,cliente:c.id,vendedor:mgr()?c.vendedor:cur().id,resultado:f.resultado.value.trim()});closeM();save();render();toast('Actividad registrada');return false}
+
+V.contactos=()=>{
+const q=F('q').toLowerCase();
+const L=contS().filter(p=>(!F('e')||p.cliente===F('e'))&&(!q||(p.nombre+p.email+p.cargo+cn(p.cliente)).toLowerCase().includes(q)));
+return head('Contactos','Directorio de personas por empresa',`<button class="btn" onclick="openForm('contactos',null,{cliente:(cliS()[0]||{}).id})">+ Nuevo contacto</button>`,1)+
+`<div class="card"><div class="fb"><input id="fq" placeholder="Buscar nombre, cargo o correo…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('e','Empresa',cliS().map(c=>[c.id,c.empresa]))}</div>`+
+tbl(['Nombre','Empresa','Cargo','Correo','Teléfono',''],L.map(p=>{const w='57'+(p.telefono||'').replace(/\D/g,'');return`<tr><td><b>${esc(p.nombre)}</b></td><td>${esc(cn(p.cliente))}</td><td>${esc(p.cargo)}</td><td><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></td><td>${esc(p.telefono)}</td><td class="acts">${p.telefono?`<a class="btn sm sec" target="_blank" rel="noopener" href="https://wa.me/${w}">WhatsApp</a>`:''}<button class="btn sm ghost" onclick="openForm('contactos','${p.id}')">Editar</button><button class="btn sm ghost" onclick="del('contactos','${p.id}')">Eliminar</button></td></tr>`}).join(''))+`</div>`};
+
+V.oportunidades=()=>{
+const o=oppS(),cols=ui.etapa?[ui.etapa]:ETAPAS;
+return head('Tablero de oportunidades','Arrastra las tarjetas entre columnas para cambiar de etapa',`${ui.etapa?`<button class="btn ghost" onclick="ui.etapa='';render()">Ver todas las etapas ✕</button>`:''}<button class="btn" onclick="openForm('oportunidades',null,newOpp())">Crear oportunidad</button>`,1)+
+`<div class="kan" style="${ui.etapa?'grid-template-columns:minmax(260px,420px)':''}">${cols.map(e=>{const l=o.filter(x=>x.etapa===e);return`<div class="col" ondragover="event.preventDefault()" ondrop="event.preventDefault();moveOpp(event.dataTransfer.getData('text/plain'),'${e}')"><h4>${e}<span>${l.length}</span></h4><div class="tot">${cop(l.reduce((s,x)=>s+x.valor,0))}</div>${l.map(x=>`<div class="kc" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')" onclick="openForm('oportunidades','${x.id}')"><b>${esc(x.titulo)}</b><div class="mut">${esc(cn(x.cliente))}</div><div class="m"><span>${cop(x.valor)}</span><span>${x.probabilidad}%</span></div><div class="m"><span>Cierre ${fd(x.cierre)}</span><span>${esc(vn(x.vendedor).split(' ')[0])}</span></div><select onclick="event.stopPropagation()" onchange="moveOpp('${x.id}',this.value)" aria-label="Mover etapa">${so(ETAPAS,x.etapa)}</select></div>`).join('')}</div>`}).join('')}</div>`};
+function moveOpp(id,e){const o=byId('oportunidades',id);if(!o||o.etapa===e){render();return}
+if(e==='Perdida'){modal(`<h3>Motivo de pérdida</h3><p>¿Por qué se perdió «${esc(o.titulo)}»?</p><textarea id="mot" rows="3" style="width:100%"></textarea><div class="err" id="ferr"></div><div class="btns"><button class="btn ghost" onclick="closeM();render()">Cancelar</button><button class="btn" onclick="const m=$('#mot').value.trim();if(!m){$('#ferr').textContent='Indica el motivo.';return}closeM();setStage('${id}','Perdida',m)">Marcar perdida</button></div>`);return}
+setStage(id,e)}
+function setStage(id,e,mot){const o=byId('oportunidades',id),prev=o.etapa;o.etapa=e;o.probabilidad=SUG[e];o.cerradaEn=e==='Ganada'?today():'';if(mot)o.motivoPerdida=mot;logAct('Sistema',o.cliente,o.vendedor,`Oportunidad "${o.titulo}" pasó de ${prev} a ${e}`);save();render();toast('Etapa actualizada: '+e)}
+
+const trow=t=>{const v=t.estado==='Pendiente'&&t.fecha<today(),h=t.estado==='Pendiente'&&t.fecha===today(),op=t.opp&&byId('oportunidades',t.opp);
+return`<div class="row ${v?'late':h?'now':''}"><div class="grow"><b>${esc(t.titulo)}</b><div class="mut">${t.tipo} · ${esc(cn(t.cliente))}${op?' · '+esc(op.titulo):''} · ${fd(t.fecha)}${mgr()?' · '+esc(vn(t.vendedor)):''}</div>${t.resultado?`<div class="mut">Resultado: ${esc(t.resultado)}</div>`:''}</div><div class="acts">${t.estado==='Pendiente'?`<button class="btn sm sec" onclick="doneModal('${t.id}')">Completar</button><button class="btn sm ghost" onclick="reprog('${t.id}')">Reprogramar</button>`:''}<button class="btn sm ghost" onclick="openForm('tareas','${t.id}')">Editar</button><button class="btn sm ghost" onclick="del('tareas','${t.id}')">Borrar</button></div></div>`};
+V.tareas=()=>{
+const T=tarS(),td=today();
+const tabs={Vencidas:T.filter(t=>t.estado==='Pendiente'&&t.fecha<td),Hoy:T.filter(t=>t.estado==='Pendiente'&&t.fecha===td),'Próximas':T.filter(t=>t.estado==='Pendiente'&&t.fecha>td),Hechas:T.filter(t=>t.estado==='Hecha')};
+const L=tabs[ui.tab].sort((a,b)=>a.fecha<b.fecha?-1:1);
+const A=actS().filter(a=>(!F('tp')||a.tipo===F('tp'))&&(!F('d')||a.fecha>=F('d'))&&(!F('h')||a.fecha<=F('h'))).sort((a,b)=>a.fecha<b.fecha?1:-1);
+return head('Tareas y actividades','Tu agenda comercial',`<button class="btn" onclick="openForm('tareas',null,{fecha:today(),estado:'Pendiente',tipo:'Llamada',vendedor:sv()||'v2',cliente:(S.clientes[0]||{}).id})">+ Nueva tarea</button>`,1)+
+`<div class="card"><div class="tabs">${Object.keys(tabs).map(k=>`<button class="${ui.tab===k?'on':''}" onclick="ui.tab='${k}';render()">${k} (${tabs[k].length})</button>`).join('')}</div>${L.map(trow).join('')||'<div class="empty">No hay tareas en esta pestaña.</div>'}</div>
+<div class="card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Registro de actividades</h2><button class="btn sm sec" onclick="actModal('')">+ Registrar actividad</button></div><div class="fb">${fsel('tp','Tipo',[...TIPOS,'Sistema'])}<label style="margin:0">Desde <input type="date" id="fd1" value="${F('d')}" onchange="setF('d',this.value)"></label><label style="margin:0">Hasta <input type="date" id="fd2" value="${F('h')}" onchange="setF('h',this.value)"></label></div>${tbl(['Fecha','Tipo','Cliente','Resultado','Vendedor'],A.slice(0,60).map(a=>`<tr><td>${fd(a.fecha)}</td><td><span class="chip">${a.tipo}</span></td><td>${esc(cn(a.cliente))}</td><td>${esc(a.resultado)}</td><td>${esc(vn(a.vendedor))}</td></tr>`).join(''))}</div>`};
+function doneModal(id){modal(`<h3>Completar tarea</h3><label>Resultado<textarea id="res" rows="3" placeholder="¿Qué pasó?"></textarea></label><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn" onclick="const r=$('#res').value.trim();closeM();completeTask('${id}',r)">Marcar como hecha</button></div>`)}
+function reprog(id){const t=byId('tareas',id);modal(`<h3>Reprogramar tarea</h3><label>Nueva fecha<input type="date" id="nf" value="${t.fecha}"></label><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn" onclick="const v=$('#nf').value;if(v){byId('tareas','${id}').fecha=v;save();closeM();render();toast('Tarea reprogramada')}">Guardar</button></div>`)}
+
+V.cotizaciones=()=>{
+const L=cotS().filter(q=>(!F('est')||q.estado===F('est'))&&(!F('q')||(q.numero+cn(q.cliente)).toLowerCase().includes(F('q').toLowerCase()))).sort((a,b)=>a.numero<b.numero?1:-1);
+return head('Cotizaciones','Numeración consecutiva, descuento e IVA en vivo',`<button class="btn" onclick="qOpen()">+ Nueva cotización</button>`,1)+
+`<div class="card"><div class="fb"><input id="fq" placeholder="Buscar número o cliente…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('est','Estado',['Borrador','Enviada','Aceptada','Rechazada'])}</div>`+
+tbl(['Número','Cliente','Fecha','#Total (COP)','Estado',''],L.map(q=>`<tr><td><b>${q.numero}</b></td><td>${esc(cn(q.cliente))}</td><td>${fd(q.fecha)}</td><td class="num">${cop(q.total)}</td><td><select onchange="qState('${q.id}',this.value)">${so(['Borrador','Enviada','Aceptada','Rechazada'],q.estado)}</select></td><td class="acts"><button class="btn sm sec" onclick="qView('${q.id}')">Ver / imprimir</button><button class="btn sm ghost" onclick="qOpen('${q.id}')">Editar</button><button class="btn sm ghost" onclick="qDel('${q.id}')">Eliminar</button></td></tr>`).join(''))+`</div>`};
+function qState(id,e){const q=byId('cotizaciones',id);q.estado=e;if(e==='Aceptada'&&q.opp){const o=byId('oportunidades',q.opp);if(o&&o.etapa!=='Ganada'){setStage(q.opp,'Ganada');toast(q.numero+' aceptada: oportunidad marcada como Ganada');return}}save();render();toast('Estado actualizado')}
+function qDel(id){const q=byId('cotizaciones',id);ask(`¿Eliminar la cotización ${q.numero}?`,()=>{S.cotizaciones=S.cotizaciones.filter(x=>x.id!==id);save();render();toast('Cotización eliminada')})}
+const nextNum=()=>'COT-'+pad(Math.max(0,...S.cotizaciones.map(q=>parseInt(q.numero.replace(/\D/g,''))||0))+1);
+function qOpen(id){const q=id&&byId('cotizaciones',id);ui.q=q?JSON.parse(JSON.stringify(q)):{cliente:(cliS()[0]||S.clientes[0]).id,opp:'',fecha:today(),estado:'Borrador',lines:[{p:'',n:'',q:1,pr:0,d:0}],ivaP:S.iva};ui.qid=id||'';qDraw()}
+function qDraw(){
+const q=ui.q,pr=S.productos.filter(p=>p.estado==='Activo'),ops=S.oportunidades.filter(o=>o.cliente===q.cliente);
+modal(`<h3>${ui.qid?'Editar '+byId('cotizaciones',ui.qid).numero:'Nueva cotización · '+nextNum()}</h3><div class="grid2"><label>Cliente<select onchange="ui.q.cliente=this.value;ui.q.opp='';qDraw()">${so(S.clientes.map(c=>[c.id,c.empresa]),q.cliente)}</select></label><label>Oportunidad<select onchange="ui.q.opp=this.value"><option value="">— Sin oportunidad —</option>${so(ops.map(o=>[o.id,o.titulo]),q.opp)}</select></label><label>Fecha<input type="date" value="${q.fecha}" onchange="ui.q.fecha=this.value"></label><label>Estado<select onchange="ui.q.estado=this.value">${so(['Borrador','Enviada','Aceptada','Rechazada'],q.estado)}</select></label></div>
+<div class="tw"><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Desc. %</th><th class="num">Subtotal</th><th></th></tr></thead><tbody>${q.lines.map((l,i)=>`<tr><td><select style="min-width:200px" onchange="qProd(${i},this.value)"><option value="">Seleccionar…</option>${so(pr.map(p=>[p.id,p.nombre]),l.p)}</select></td><td><input type="number" min="1" style="width:70px" value="${l.q}" oninput="ui.q.lines[${i}].q=Math.max(0,+this.value);qTot()"></td><td><input type="number" min="0" style="width:120px" value="${l.pr}" oninput="ui.q.lines[${i}].pr=Math.max(0,+this.value);qTot()"></td><td><input type="number" min="0" max="100" style="width:70px" value="${l.d}" oninput="ui.q.lines[${i}].d=Math.min(100,Math.max(0,+this.value));qTot()"></td><td class="num" id="ls${i}"></td><td><button class="btn sm ghost" onclick="ui.q.lines.splice(${i},1);qDraw()">✕</button></td></tr>`).join('')}</tbody></table></div>
+<button class="btn sm ghost" onclick="ui.q.lines.push({p:'',n:'',q:1,pr:0,d:0});qDraw()">+ Agregar línea</button><div class="totals" id="qt"></div><div class="err" id="ferr"></div><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn" onclick="qSave()">Guardar cotización</button></div>`,1);qTot()}
+function qProd(i,pid){const p=byId('productos',pid),l=ui.q.lines[i];if(p){l.p=p.id;l.n=p.nombre;l.pr=p.precio}else{l.p='';l.n=''}qDraw()}
+function qTot(){const q=ui.q,c=qcalc(q.lines,q.ivaP);q.lines.forEach((l,i)=>{const e=$('#ls'+i);if(e)e.textContent=cop(l.q*l.pr*(1-l.d/100))});$('#qt').innerHTML=`<div><span>Subtotal</span><span>${cop(c.sub)}</span></div><div><span>Descuento</span><span>- ${cop(c.desc)}</span></div><div><span>IVA ${q.ivaP}%</span><span>${cop(c.iva)}</span></div><div class="t"><span>Total</span><span>${cop(c.total)}</span></div>`}
+function qSave(){
+const q=ui.q,L=q.lines.filter(l=>l.p||l.n);
+if(!L.length){$('#ferr').textContent='Agrega al menos un producto.';return}
+if(L.some(l=>l.q<=0)){$('#ferr').textContent='Las cantidades deben ser mayores a 0.';return}
+const c=qcalc(L,q.ivaP),rec=Object.assign({},q,{lines:L,items:L.map(l=>l.q+'× '+l.n).join('; '),descuento:c.sub?Math.round(c.desc/c.sub*100):0,total:c.total});
+if(ui.qid)Object.assign(byId('cotizaciones',ui.qid),rec);else{rec.id=uid('q');rec.numero=nextNum();S.cotizaciones.push(rec)}
+closeM();
+const o=rec.opp&&byId('oportunidades',rec.opp);
+if(rec.estado==='Aceptada'&&o&&o.etapa!=='Ganada'){setStage(o.id,'Ganada');return}
+save();render();toast('Cotización guardada')}
+function qView(id){
+const q=byId('cotizaciones',id),c=byId('clientes',q.cliente)||{},t=qcalc(q.lines,q.ivaP),e=S.emp;
+modal(`<div class="doc"><div class="top"><div style="display:flex;gap:10px;align-items:center"><svg width="46" height="46" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#0E4A5C"/><path d="M8 29L20 9l12 20h-6l-6-10-6 10z" fill="#FF6B57"/></svg><div><b>${esc(e.nombre)}</b><div class="mut">NIT ${esc(e.nit)}<br>${esc(e.dir)}<br>${esc(e.tel)} · ${esc(e.email)}</div></div></div><div style="text-align:right"><h2>${q.numero}</h2><div class="mut">Fecha ${fd(q.fecha)}<br>Estado: ${q.estado}</div></div></div>
+<p><b>Cliente:</b> ${esc(c.empresa)} · NIT ${esc(c.nit||'—')} · ${esc(c.ciudad||'')}</p>
+${tbl(['Producto','#Cant.','#Precio','#Desc.','#Subtotal'],q.lines.map(l=>`<tr><td>${esc(l.n)}</td><td class="num">${l.q}</td><td class="num">${cop(l.pr)}</td><td class="num">${l.d}%</td><td class="num">${cop(l.q*l.pr*(1-l.d/100))}</td></tr>`).join(''))}
+<div class="totals"><div><span>Subtotal</span><span>${cop(t.sub)}</span></div><div><span>Descuento</span><span>- ${cop(t.desc)}</span></div><div><span>IVA ${q.ivaP}%</span><span>${cop(t.iva)}</span></div><div class="t"><span>Total COP</span><span>${cop(t.total)}</span></div></div>
+<p class="mut">Documento de ejemplo con datos ficticios. Validez de la oferta: 30 días.</p></div><div class="btns noprint"><button class="btn ghost" onclick="closeM()">Cerrar</button><button class="btn" onclick="window.print()">Imprimir</button></div>`,1)}
+
+V.productos=()=>{
+const q=F('q').toLowerCase(),L=S.productos.filter(p=>(!F('cat')||p.categoria===F('cat'))&&(!q||(p.nombre+p.sku).toLowerCase().includes(q)));
+return head('Catálogo','Productos y servicios de Soluciones Atlas',`<button class="btn" onclick="openForm('productos',null,{estado:'Activo',categoria:'Software',sku:'ATL-'+pad(S.productos.length+1,3)})">+ Nuevo producto</button>`)+
+`<div class="card"><div class="fb"><input id="fq" placeholder="Buscar producto o SKU…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('cat','Categoría',['Software','Servicios','Soporte','Hardware'])}</div>`+
+tbl(['SKU','Producto','Categoría','#Precio (COP)','Estado',''],L.map(p=>`<tr><td>${esc(p.sku)}</td><td><b>${esc(p.nombre)}</b></td><td>${p.categoria}</td><td class="num">${cop(p.precio)}</td><td>${chipE(p.estado)}</td><td class="acts"><button class="btn sm ghost" onclick="openForm('productos','${p.id}')">Editar</button><button class="btn sm ghost" onclick="del('productos','${p.id}')">Dar de baja</button></td></tr>`).join(''))+`</div>`};
+
+V.equipo=()=>{
+const m=F('m')||today().slice(0,7),sl=sellers().filter(v=>!sv()||v.id===sv()),M=mgr();
+const team=M?S.vendedores:S.vendedores.filter(v=>v.id===cur().id);
+const rows=sl.map(v=>({v,a:ventasMes(v.id,m)}));
+const chart=`<svg viewBox="0 0 640 ${Math.max(1,rows.length)*46}" width="100%" role="img" aria-label="Meta contra avance">${rows.map(({v,a},i)=>{const p=v.metaMensual?a/v.metaMensual*100:0,y=i*46;return`<text x="0" y="${y+20}" font-size="13" font-weight="700" fill="#12303A">${esc(v.nombre)}</text><text x="0" y="${y+36}" font-size="11" fill="#5d7882">${cop(a)} / ${cop(v.metaMensual)}</text><rect x="190" y="${y+10}" width="360" height="18" rx="9" fill="#e3edf0"/><rect x="190" y="${y+10}" width="${Math.min(100,p)*3.6}" height="18" rx="9" fill="${p>=100?'#1f9d74':'#FF6B57'}"/><text x="562" y="${y+24}" font-size="13" font-weight="800" fill="#0E4A5C">${Math.round(p)}%</text>`}).join('')}</svg>`;
+return head('Equipo y metas','Vendedores y cumplimiento de metas',M?`<button class="btn" onclick="openForm('vendedores',null,{rol:'Vendedor',estado:'Activo',metaMensual:15000000})">+ Nuevo vendedor</button>`:'')+
+`<div class="card"><h2>Vendedores</h2>${tbl(['Nombre','Correo','Rol','Ciudad','Estado','#Ventas del mes',''],team.map(v=>`<tr><td><b>${esc(v.nombre)}</b></td><td>${esc(v.email)}</td><td>${v.rol}</td><td>${esc(v.ciudad)}</td><td>${chipE(v.estado)}</td><td class="num">${cop(ventasMes(v.id,today().slice(0,7)))}</td><td class="acts">${M?`<button class="btn sm ghost" onclick="openForm('vendedores','${v.id}')">Editar</button><button class="btn sm ghost" onclick="del('vendedores','${v.id}')">Eliminar</button>`:''}</td></tr>`).join(''))}</div>
+<div class="card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Metas mensuales</h2><label style="margin:0">Mes <input type="month" id="fm" value="${m}" onchange="setF('m',this.value)"></label></div>${chart}
+${M?`<h2 style="margin-top:16px">Editar metas</h2><div class="grid3">${sellers().map(v=>`<label>${esc(v.nombre)}<input type="number" min="0" step="100000" value="${v.metaMensual}" onchange="setMeta('${v.id}',this.value)"></label>`).join('')}</div>`:'<p class="mut">Solo el gerente comercial puede editar las metas.</p>'}</div>`};
+function setMeta(id,v){byId('vendedores',id).metaMensual=Math.max(0,Number(v)||0);save();render();toast('Meta actualizada')}
+
+function repData(){
+const d=F('d'),h=F('h'),inR=x=>(!d||x>=d)&&(!h||x<=h),r=ui.f.reportes_t||'etapas';
+if(r==='etapas')return{h:['Etapa','Oportunidades','Valor (COP)','Ponderado (COP)'],m:[2,3],r:ETAPAS.map(e=>{const l=oppS().filter(o=>o.etapa===e&&inR(o.creada));return[e,l.length,l.reduce((s,o)=>s+o.valor,0),l.reduce((s,o)=>s+o.valor*o.probabilidad/100,0)]})};
+if(r==='ventas')return{h:['Vendedor','Oportunidades ganadas','Ventas (COP)','Meta mensual (COP)'],m:[2,3],r:sellers().filter(v=>okV(v.id)).map(v=>{const l=S.oportunidades.filter(o=>o.vendedor===v.id&&o.etapa==='Ganada'&&o.cerradaEn&&inR(o.cerradaEn));return[v.nombre,l.length,l.reduce((s,o)=>s+o.valor,0),v.metaMensual]})};
+if(r==='actividades'){const A=actS().filter(a=>a.tipo!=='Sistema'&&inR(a.fecha));return{h:['Cliente','Total','Llamadas','Reuniones','Correos','WhatsApp'],m:[],r:S.clientes.map(c=>{const l=A.filter(a=>a.cliente===c.id);return[c.empresa,l.length,...TIPOS.map(t=>l.filter(a=>a.tipo===t).length)]}).filter(x=>x[1]>0)}}
+return{h:['Estado','Cotizaciones','Total (COP)'],m:[2],r:['Borrador','Enviada','Aceptada','Rechazada'].map(e=>{const l=cotS().filter(q=>q.estado===e&&inR(q.fecha));return[e,l.length,l.reduce((s,q)=>s+q.total,0)]})}}
+V.reportes=()=>{
+const t=ui.f.reportes_t||'etapas',R=repData();
+return head('Reportes','Datos exportables según tus filtros',`<button class="btn" onclick="exportCsv()">Exportar CSV</button>`,1)+
+`<div class="card"><div class="fb"><select id="rt" onchange="ui.f.reportes_t=this.value;render()">${so([['etapas','Oportunidades por etapa'],['ventas','Ventas por vendedor'],['actividades','Actividades por cliente'],['cotizaciones','Cotizaciones por estado']],t)}</select><label style="margin:0">Desde <input type="date" id="fd1" value="${F('d')}" onchange="setF('d',this.value)"></label><label style="margin:0">Hasta <input type="date" id="fd2" value="${F('h')}" onchange="setF('h',this.value)"></label></div>${tbl(R.h.map((x,i)=>i>0?'#'+x:x),R.r.map(r=>`<tr>${r.map((x,i)=>`<td class="${i?'num':''}">${R.m.includes(i)?cop(x):esc(x)}</td>`).join('')}</tr>`).join(''),'No hay datos en el rango seleccionado.')}</div>`};
+function exportCsv(){
+const R=repData(),q=x=>'"'+String(x).replace(/"/g,'""')+'"';
+const csv='\ufeff'+[R.h,...R.r].map(r=>r.map(q).join(';')).join('\r\n');
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='reporte-'+(ui.f.reportes_t||'etapas')+'-'+today()+'.csv';document.body.appendChild(a);a.click();a.remove();toast('CSV exportado')}
+
+V.ajustes=()=>{const M=mgr(),e=S.emp,d=M?'':'disabled';
+return head('Ajustes','Usuario de demostración, empresa y datos')+
+`<div class="card"><h2>Usuario de demostración</h2><p class="mut">Cambia de perfil para ver cómo se ajustan menús, permisos y filtros.</p><label style="max-width:360px">Usuario activo<select onchange="setUser(this.value)">${so(S.vendedores.map(v=>[v.id,v.nombre+' · '+v.rol]),S.user)}</select></label></div>
+<div class="card"><h2>Datos de la empresa e IVA</h2>${M?'':'<p class="mut">Solo el gerente comercial puede modificar estos datos.</p>'}<form onsubmit="return saveEmp(event)"><div class="grid2"><label>Razón social<input name="nombre" value="${esc(e.nombre)}" ${d}></label><label>NIT<input name="nit" value="${esc(e.nit)}" ${d}></label><label>Dirección<input name="dir" value="${esc(e.dir)}" ${d}></label><label>Teléfono<input name="tel" value="${esc(e.tel)}" ${d}></label><label>Correo<input name="email" value="${esc(e.email)}" ${d}></label><label>IVA %<input name="iva" type="number" min="0" max="100" value="${S.iva}" ${d}></label></div>${M?'<button class="btn">Guardar datos</button>':''}</form></div>
+<div class="card"><h2>Exportar e importar datos</h2><div class="btns" style="justify-content:flex-start;margin:0 0 10px"><button class="btn sec" onclick="$('#io').value=JSON.stringify(S,null,1);toast('Datos exportados abajo')">Exportar datos</button><button class="btn ghost" onclick="importData()">Importar</button></div><textarea class="big" id="io" placeholder="El JSON exportado aparece aquí. Pega un JSON para importar."></textarea></div>
+<div class="card"><h2>Reiniciar demo</h2><p class="mut">Restaura los registros de ejemplo y borra tus cambios.</p><button class="btn danger" onclick="ask('¿Restaurar todos los datos de ejemplo? Se perderán los cambios actuales.',()=>{S=seed();ui.cli=null;ui.fv='';save();render();toast('Datos de ejemplo restaurados')},'Reiniciar')">Reiniciar datos de ejemplo</button></div>`};
+function saveEmp(e){e.preventDefault();const f=e.target.elements;['nombre','nit','dir','tel','email'].forEach(k=>S.emp[k]=f[k].value.trim());S.iva=Math.min(100,Math.max(0,Number(f.iva.value)||0));save();toast('Datos guardados');return false}
+function importData(){try{const o=JSON.parse($('#io').value);if(!o||!Array.isArray(o.clientes)||!Array.isArray(o.vendedores)||!Array.isArray(o.oportunidades))throw 0;['contactos','tareas','cotizaciones','productos','acts'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[]});o.emp=o.emp||S.emp;o.iva=o.iva||19;o.seq=o.seq||2000;o.user=o.vendedores.some(v=>v.id===o.user)?o.user:o.vendedores[0].id;S=o;ui.fv='';ui.cli=null;save();render();toast('Datos importados')}catch(x){toast('JSON no válido: no se importó nada')}}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+render();
+</script>
+</body>
+</html>

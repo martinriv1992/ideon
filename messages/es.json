@@ -13,7 +13,10 @@
     "start": "Comenzar proyecto",
     "dashboard": "Ir al panel",
     "language": "Idioma",
-    "examples": "Ejemplos"
+    "examples": "Ejemplos",
+    "business": "Empresas",
+    "custom": "Webs y apps",
+    "domains": "Dominios"
   },
   "hero": {
     "badge": "Estudio de software impulsado por IA",
@@ -306,7 +309,12 @@
       "kindLabel": "Tipo de solución",
       "attachLabel": "Fotos y documentos (opcional)",
       "uploading": "Subiendo adjuntos ({n} de {total})…",
-      "uploadErrors": "Algunos adjuntos no se pudieron subir (puedes añadirlos luego en las pestañas Imágenes y Archivos):"
+      "uploadErrors": "Algunos adjuntos no se pudieron subir (puedes añadirlos luego en las pestañas Imágenes y Archivos):",
+      "packageLabel": "¿Cómo quieres empezar?",
+      "customOption": "Proyecto a medida",
+      "customOptionHint": "Una web o app hecha desde cero según tu idea.",
+      "ideaLabelPackage": "Cuéntanos de tu negocio",
+      "ideaPlaceholderPackage": "Nombre del negocio, a qué se dedica, qué productos o servicios maneja, cuántas sedes o bodegas, quién lo usará y qué necesitas además de lo incluido…"
     },
     "status": {
       "draft": "Borrador",
@@ -668,7 +676,11 @@
       "changesTitle": "Cambios por chat",
       "changesLeft": "Quedan {left} de {total}",
       "changesHelp": "Tu plan incluye {n} cambios al año. Si necesitas más, compra un paquete (se usan durante el año en curso).",
-      "buyPack": "{qty} cambios · {price}"
+      "buyPack": "{qty} cambios · {price}",
+      "buyDomainTitle": "Tu dominio propio",
+      "buyDomainCta": "Buscar dominio",
+      "buyDomainHelp": "Consigue www.tunegocio.com: lo registramos a tu nombre, lo conectamos a tu sitio con HTTPS y se renueva junto con tu plan anual.",
+      "buyDomainNote": "Pagas hoy el primer año del dominio. Desde la próxima renovación, el dominio va incluido en el pago anual de tu plan."
     }
   },
   "common": {
@@ -854,5 +866,79 @@
   "whatsapp": {
     "label": "Escríbenos por WhatsApp",
     "message": "Hola, quiero información sobre Ideon."
+  },
+  "paths": {
+    "eyebrow": "Dos formas de trabajar con Ideon",
+    "title": "Soluciones empresariales listas para tu negocio, o tu web y app a medida",
+    "description": "Elige un paquete probado y lo personalizamos para tu empresa, o cuéntanos tu idea y la construimos desde cero.",
+    "business": {
+      "title": "Soluciones empresariales",
+      "text": "Ideon Inventory, Ideon CRM e Ideon Business Suite: sistemas completos con precio cerrado, adaptados a tu sector, tus productos y tu equipo.",
+      "points": [
+        "Pruébalos antes con una demo funcional",
+        "Personalizados con tus datos, roles y marca",
+        "Precio cerrado, hosting y soporte incluidos"
+      ],
+      "cta": "Ver soluciones empresariales"
+    },
+    "custom": {
+      "title": "Webs y apps a medida",
+      "text": "Landing pages, sitios corporativos, portales y aplicaciones hechas a partir de tu idea, con vista previa gratis antes de pagar.",
+      "points": [
+        "Describe tu idea y responde unas preguntas",
+        "Vista previa gratis con 2 cambios",
+        "Publicación con tu dominio propio"
+      ],
+      "cta": "Empezar mi proyecto"
+    }
+  },
+  "business": {
+    "metaTitle": "Soluciones empresariales · Ideon",
+    "eyebrow": "Ideon Business",
+    "title": "Sistemas de gestión listos para tu empresa",
+    "description": "Paquetes completos que personalizamos para tu negocio en días, no meses. Prueba la demo y, si te gusta, lo adaptamos a ti.",
+    "pageTitle": "Soluciones empresariales personalizadas",
+    "pageSubtitle": "Inventario, ventas y operación completa en sistemas probados que adaptamos a tu sector, tus productos, tu equipo y tu marca. Precio cerrado, con hosting y soporte.",
+    "tryDemo": "Probar demo",
+    "want": "Lo quiero",
+    "complete": "Más completo",
+    "priceNote": "Pago único de implementación · luego plan anual de hosting y soporte",
+    "footnote": "Las demos usan datos de ejemplo y guardan los cambios en tu navegador. Tu versión se construye con tus datos, campos, roles y marca; puedes pedir módulos adicionales durante la personalización.",
+    "stepsTitle": "Cómo funciona",
+    "steps": [
+      {
+        "title": "Prueba la demo",
+        "text": "Navega por todos los módulos con datos de ejemplo, sin registrarte."
+      },
+      {
+        "title": "Cuéntanos de tu negocio",
+        "text": "Elige el paquete y responde unas preguntas sobre tus productos, tu equipo y lo que necesitas."
+      },
+      {
+        "title": "Vista previa personalizada",
+        "text": "Los agentes de Ideon generan tu versión. Revísala gratis y pide ajustes."
+      },
+      {
+        "title": "Actívala",
+        "text": "Pagas el paquete, la publicamos con tu dominio y seguimos con soporte y cambios incluidos."
+      }
+    ],
+    "talkTitle": "¿Necesitas algo más a la medida?",
+    "talkText": "Integraciones, varias sedes, facturación electrónica o un módulo especial: hablemos.",
+    "talkCta": "Hablar por WhatsApp",
+    "talkMessage": "Hola, me interesan las soluciones empresariales de Ideon."
+  },
+  "domains": {
+    "eyebrow": "Dominios",
+    "title": "Encuentra el dominio para tu negocio",
+    "description": "Busca tu nombre en .com, .co, .net y más. Lo registramos a tu nombre y lo conectamos a tu sitio, con HTTPS incluido.",
+    "label": "Nombre del dominio",
+    "placeholder": "minegocio",
+    "search": "Buscar",
+    "year": "año",
+    "taken": "No disponible",
+    "error": "No se pudo buscar ahora mismo",
+    "how": "El dominio se compra al activar tu proyecto (o después, desde la pestaña Publicar) y se renueva junto con tu plan anual.",
+    "cta": "Crear mi proyecto"
   }
 }

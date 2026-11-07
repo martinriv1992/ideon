@@ -7,6 +7,7 @@ import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { deriveProjectName, slugify } from "@/lib/utils";
 import { getCurrentContext } from "@/features/organizations/queries";
+import { getPackage } from "@/features/packages/catalog";
 
 export interface ActionState {
   error?: string;
@@ -20,6 +21,7 @@ const createProjectSchema = z.object({
   name: z.string().trim().max(120).optional(),
   idea: z.string().trim().min(10, "ideaTooShort").max(8000, "ideaTooLong"),
   kind: z.enum(["web", "crm", "inventory", "erp", "dashboard", "portal", "app", "other"]).default("web"),
+  package: z.enum(["inventory", "crm", "suite"]).nullable().default(null),
 });
 
 export async function createProjectAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -27,6 +29,7 @@ export async function createProjectAction(_prev: ActionState, formData: FormData
     name: formData.get("name") ?? undefined,
     idea: formData.get("idea"),
     kind: formData.get("kind") ?? "web",
+    package: formData.get("package") || null,
   });
   if (!parsed.success) {
     return { fieldErrors: { idea: parsed.error.issues[0]?.message ?? "invalid" } };
@@ -48,7 +51,9 @@ export async function createProjectAction(_prev: ActionState, formData: FormData
       name,
       slug,
       initial_idea: parsed.data.idea,
-      kind: parsed.data.kind,
+      // Un paquete empresarial fija el tipo de solución.
+      kind: getPackage(parsed.data.package)?.kind ?? parsed.data.kind,
+      package_key: parsed.data.package,
       locale,
       status: "draft",
     })
@@ -77,7 +82,7 @@ export async function createProjectAction(_prev: ActionState, formData: FormData
     actor_id: ctx.user.id,
     actor_type: "user",
     type: "project.created",
-    payload: { name, locale },
+    payload: { name, locale, package: parsed.data.package },
   });
 
   revalidatePath(`/${locale}/dashboard`);

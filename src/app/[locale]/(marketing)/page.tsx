@@ -11,6 +11,8 @@ import {
   Process,
   UseCases,
 } from "@/components/marketing/sections";
+import { BusinessPackages, TwoPaths } from "@/components/marketing/business";
+import { DomainSection } from "@/components/marketing/domain-section";
 
 export default async function HomePage({
   params,
@@ -24,11 +26,14 @@ export default async function HomePage({
   return (
     <>
       <Hero isAuthenticated={Boolean(user)} />
+      <TwoPaths />
+      <BusinessPackages />
       <Process />
       <Categories />
       <Benefits />
       <UseCases />
       <Pricing />
+      <DomainSection />
       <Faq />
       <FinalCta />
     </>

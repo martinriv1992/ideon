@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
-import { Lightbulb } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { Briefcase, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FieldError, Input, Label, Textarea } from "@/components/ui/input";
 import { createProjectAction, type ActionState } from "@/features/projects/actions";
@@ -12,9 +12,14 @@ import { uploadToProject } from "@/lib/upload-client";
 import { useRouter } from "@/i18n/navigation";
 import { PROJECT_KINDS } from "@/features/projects/kinds";
 import { cn } from "@/lib/utils";
+import { PACKAGES, getPackage } from "@/features/packages/catalog";
+import { money } from "@/lib/money";
 
-export function NewProjectForm() {
+export function NewProjectForm({ initialPackage = null }: { initialPackage?: string | null }) {
   const t = useTranslations("app.newProject");
+  const locale = useLocale();
+  const [pkgKey, setPkgKey] = useState<string | null>(getPackage(initialPackage)?.key ?? null);
+  const pkg = getPackage(pkgKey);
   const tHero = useTranslations("hero");
   const [state, formAction, pending] = useActionState(createProjectAction, {} as ActionState);
   const [idea, setIdea] = useState("");
@@ -74,8 +79,32 @@ export function NewProjectForm() {
       )}
 
       <div>
+        <Label>{t("packageLabel")}</Label>
+        <input type="hidden" name="package" value={pkg?.key ?? ""} />
+        <div className="grid sm:grid-cols-2 gap-2" role="group">
+          <button type="button" onClick={() => setPkgKey(null)} aria-pressed={!pkg}
+            className={cn("rounded-[12px] border p-3 text-left transition-colors", !pkg ? "border-accent bg-accent-soft" : "border-border bg-surface hover:border-border-strong")}>
+            <span className="block text-[13.5px] font-medium">{t("customOption")}</span>
+            <span className="block text-[12px] text-fg-muted mt-0.5">{t("customOptionHint")}</span>
+          </button>
+          {PACKAGES.map((p) => (
+            <button key={p.key} type="button" onClick={() => { setPkgKey(p.key); setKind(p.kind); }} aria-pressed={pkg?.key === p.key}
+              className={cn("rounded-[12px] border p-3 text-left transition-colors", pkg?.key === p.key ? "border-accent bg-accent-soft" : "border-border bg-surface hover:border-border-strong")}>
+              <span className="flex items-center justify-between gap-2 text-[13.5px] font-medium"><span className="inline-flex items-center gap-1.5"><Briefcase className="size-3.5 text-accent" />{p.name}</span><span className="tabular-nums text-fg-muted text-[12px]">{money(p.price, p.currency, locale)}</span></span>
+              <span className="block text-[12px] text-fg-muted mt-0.5">{locale === "en" ? p.tagline.en : p.tagline.es}</span>
+            </button>
+          ))}
+        </div>
+        {pkg && (
+          <ul className="mt-2 grid sm:grid-cols-2 gap-x-4 gap-y-1 text-[12.5px] text-fg-muted">
+            {pkg.modules.map((m) => <li key={m.es}>✓ {locale === "en" ? m.en : m.es}</li>)}
+          </ul>
+        )}
+      </div>
+
+      <div className={cn(pkg && "hidden")}>
         <Label>{t("kindLabel")}</Label>
-        <input type="hidden" name="kind" value={kind} />
+        <input type="hidden" name="kind" value={pkg ? pkg.kind : kind} />
         <div className="flex flex-wrap gap-1.5" role="group">
           {PROJECT_KINDS.map((k) => (
             <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k}
@@ -93,14 +122,14 @@ export function NewProjectForm() {
       </div>
 
       <div>
-        <Label htmlFor="idea">{t("ideaLabel")}</Label>
+        <Label htmlFor="idea">{pkg ? t("ideaLabelPackage") : t("ideaLabel")}</Label>
         <Textarea
           id="idea"
           name="idea"
           rows={8}
           value={idea}
           onChange={(e) => setIdea(e.target.value)}
-          placeholder={t("ideaPlaceholder")}
+          placeholder={pkg ? t("ideaPlaceholderPackage") : t("ideaPlaceholder")}
           maxLength={8000}
           required
         />
