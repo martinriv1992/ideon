@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { requireProjectAccess, json, fail, errorResponse } from "@/lib/api";
+import { requireProjectAccess, requireUnlocked, json, fail, errorResponse } from "@/lib/api";
 import { removeCustomDomain, setCustomDomain, verifyCustomDomain } from "@/features/deploy/publish";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +9,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const access = await requireProjectAccess(id);
   if ("error" in access) return access.error;
+  const locked = await requireUnlocked(access);
+  if (locked) return locked;
   const body = z.object({ domain: z.string().min(4).max(253) }).safeParse(await req.json().catch(() => null));
   if (!body.success) return fail("invalid", "Dominio no válido");
   try { return json(await setCustomDomain(id, access.user.id, body.data.domain)); } catch (e) { return errorResponse(e); }

@@ -14,6 +14,12 @@ export function resolveImageMarkers(html: string, base = "") {
     .replace(/\{\{FILE:([a-z0-9-]+)\}\}/gi, (_m, id) => `${base}/api/files/${id}`);
 }
 
+/** Marca «Vista previa» que se añade a la vista previa mientras el proyecto no está activado. */
+export function withPreviewBadge(html: string, label = "Vista previa · Ideon") {
+  const badge = `<div style="position:fixed;z-index:2147483647;right:12px;bottom:12px;padding:6px 12px;border-radius:999px;background:rgba(17,17,20,.86);color:#fff;font:600 12px/1.4 system-ui,sans-serif;letter-spacing:.02em;box-shadow:0 4px 18px rgba(0,0,0,.25);pointer-events:none">${label}</div>`;
+  return /<\/body>/i.test(html) ? html.replace(/<\/body>(?![\s\S]*<\/body>)/i, `${badge}</body>`) : html + badge;
+}
+
 /**
  * Para exportar el sitio como archivos estáticos (ZIP o Vercel): descarga las
  * imágenes y archivos referenciados, los coloca en images/ y files/ y reescribe

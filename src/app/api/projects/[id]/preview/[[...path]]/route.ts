@@ -1,5 +1,5 @@
 import { requireProjectAccess, fail } from "@/lib/api";
-import { getVersionFile, resolveImageMarkers, siteHeaders } from "@/features/deploy/serve";
+import { getVersionFile, resolveImageMarkers, siteHeaders, withPreviewBadge } from "@/features/deploy/serve";
 
 export const dynamic = "force-dynamic";
 
@@ -16,5 +16,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   if (!version) return fail("not_found", "Versión no encontrada", 404);
   const file = await getVersionFile(versionId, (path ?? []).join("/") || "index.html");
   if (!file) return fail("not_found", "Archivo no encontrado", 404);
-  return new Response(file.content_type.startsWith("text/html") ? resolveImageMarkers(file.content) : file.content, { headers: siteHeaders(file.content_type) });
+  if (!file.content_type.startsWith("text/html")) return new Response(file.content, { headers: siteHeaders(file.content_type) });
+  const html = resolveImageMarkers(file.content);
+  return new Response(access.project.paid_at ? html : withPreviewBadge(html), { headers: siteHeaders(file.content_type) });
 }

@@ -385,7 +385,8 @@
         "project": {
           "created": "Proyecto creado",
           "archived": "Proyecto archivado",
-          "restored": "Proyecto restaurado"
+          "restored": "Proyecto restaurado",
+          "activated": "Proyecto activado"
         },
         "message": {
           "sent": "Mensaje enviado"
@@ -417,11 +418,21 @@
         },
         "domain": {
           "requested": "Dominio propio solicitado",
-          "verified": "Dominio verificado"
+          "verified": "Dominio verificado",
+          "purchasing": "Registrando el dominio",
+          "failed": "Error al registrar el dominio",
+          "renewed": "Dominio renovado",
+          "renew_failed": "Error al renovar el dominio"
         },
         "asset": {
           "uploaded": "Archivo subido",
           "deleted": "Archivo eliminado"
+        },
+        "payment": {
+          "received": "Pago recibido"
+        },
+        "subscription": {
+          "renewed": "Plan renovado"
         }
       },
       "kind": "Tipo de solución",
@@ -527,7 +538,10 @@
       "extractOk": "texto leído (≈ {tokens} tokens)",
       "extractEmpty": "sin texto legible (¿PDF escaneado?)",
       "extractFailed": "no se pudo leer el texto",
-      "extractNone": "solo para publicar"
+      "extractNone": "solo para publicar",
+      "freeChangesLeft": "Vista previa gratis · te quedan {n} de {total} cambios",
+      "activateProject": "Activar proyecto",
+      "payOnActivate": "Esta propuesta se paga al activar el proyecto, junto con el primer año de hosting y dominio (pestaña Publicar). Antes puedes ver la vista previa gratis."
     },
     "settings": {
       "title": "Configuración",
@@ -584,6 +598,63 @@
         "send": "Enviar ticket",
         "sent": "Ticket enviado."
       }
+    },
+    "launch": {
+      "needsVersion": "La activación estará disponible cuando el desarrollador genere la primera versión de tu proyecto.",
+      "previewTitle": "Tu vista previa es gratis",
+      "previewText": "Puedes ver tu proyecto y pedir {n} cambios sin pagar. Para publicarlo en internet, conectar tu dominio, descargarlo y seguir haciendo cambios, actívalo.",
+      "freeLeft": "Cambios gratis: {n} de {total}",
+      "domainTitle": "Dominio",
+      "withDomain": "Quiero mi dominio (www.minegocio.com)",
+      "withoutDomain": "Por ahora no (usar la dirección de Ideon)",
+      "domainsNotConfigured": "La compra de dominios aún no está disponible. Puedes activar sin dominio y añadirlo después.",
+      "searchLabel": "Nombre del dominio",
+      "search": "Buscar",
+      "year": "año",
+      "taken": "No disponible",
+      "contactHelp": "Datos del titular del dominio (quedará registrado a tu nombre). Teléfono en formato internacional, p. ej. +573001234567; país con código de 2 letras (CO, MX, US…).",
+      "contact": {
+        "firstName": "Nombre",
+        "lastName": "Apellidos",
+        "email": "Correo",
+        "phone": "Teléfono",
+        "companyName": "Empresa (opcional)",
+        "address1": "Dirección",
+        "city": "Ciudad",
+        "state": "Departamento / estado",
+        "zip": "Código postal",
+        "country": "País"
+      },
+      "summary": "Resumen",
+      "pendingPrice": "La propuesta aún no tiene precio: te lo confirmaremos antes de activar el proyecto.",
+      "domainLine": "Dominio {domain} (1 año)",
+      "total": "Total hoy",
+      "renewalNote": "Después, {amount} al año por hosting y dominio. Te avisaremos antes de cada renovación.",
+      "paymentsNotConfigured": "Los pagos en línea aún no están configurados en la plataforma.",
+      "pay": "Pagar {amount} con ePayco",
+      "payNote": "Pago seguro con ePayco: tarjeta, PSE, Nequi y otros medios. Al confirmarse, publicamos tu sitio y conectamos el dominio automáticamente.",
+      "waitingPayment": "Estamos confirmando tu pago con ePayco. Esta página se actualizará sola.",
+      "orderStatus": {
+        "awaiting_payment": "Esperando pago",
+        "purchasing": "Registrando dominio",
+        "configuring": "Conectando",
+        "active": "Activo",
+        "failed": "Requiere revisión",
+        "cancelled": "Anulado"
+      },
+      "orderFailed": "No pudimos registrar el dominio automáticamente. Nuestro equipo lo revisará y te contactará; tu sitio ya está publicado en la dirección de Ideon.",
+      "planUntil": "Plan de hosting y dominio activo hasta el {date}.",
+      "planName": "Hosting + dominio",
+      "activeUntil": "activo hasta el {date}",
+      "expiredOn": "venció el {date}",
+      "state": {
+        "active": "Activo",
+        "grace": "Pendiente de renovación",
+        "suspended": "Suspendido",
+        "none": "Sin fecha"
+      },
+      "renew": "Renovar 1 año",
+      "renewFailed": "No se pudo iniciar la renovación"
     }
   },
   "common": {
@@ -722,7 +793,14 @@
       "integrations": "Integraciones (variables de entorno)",
       "configured": "configurada",
       "missing": "no configurada",
-      "envNote": "Las claves se definen en el entorno del servidor (.env.local o panel de Vercel), nunca desde esta pantalla."
+      "envNote": "Las claves se definen en el entorno del servidor (.env.local o panel de Vercel), nunca desde esta pantalla.",
+      "billingCurrency": "Moneda de cobro con ePayco (COP).",
+      "usdRate": "Tasa de cambio: 1 USD en la moneda de cobro (para dominios y propuestas en USD).",
+      "hostingYear": "Precio anual del hosting, en la moneda de cobro.",
+      "domainMarkup": "Margen (%) sobre el coste del dominio en el registrador.",
+      "domainTlds": "Extensiones de dominio que se ofrecen (lista JSON).",
+      "freeChanges": "Cambios por chat gratis en la vista previa antes de pagar.",
+      "graceDays": "Días tras el vencimiento antes de suspender el sitio."
     }
   },
   "attachments": {
