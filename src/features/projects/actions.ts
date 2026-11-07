@@ -17,12 +17,14 @@ export interface ActionState {
 const createProjectSchema = z.object({
   name: z.string().trim().max(120).optional(),
   idea: z.string().trim().min(10, "ideaTooShort").max(8000, "ideaTooLong"),
+  kind: z.enum(["web", "crm", "inventory", "erp", "dashboard", "portal", "app", "other"]).default("web"),
 });
 
 export async function createProjectAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const parsed = createProjectSchema.safeParse({
     name: formData.get("name") ?? undefined,
     idea: formData.get("idea"),
+    kind: formData.get("kind") ?? "web",
   });
   if (!parsed.success) {
     return { fieldErrors: { idea: parsed.error.issues[0]?.message ?? "invalid" } };
@@ -44,6 +46,7 @@ export async function createProjectAction(_prev: ActionState, formData: FormData
       name,
       slug,
       initial_idea: parsed.data.idea,
+      kind: parsed.data.kind,
       locale,
       status: "draft",
     })
@@ -81,40 +84,17 @@ export async function createProjectAction(_prev: ActionState, formData: FormData
   return { ok: true };
 }
 
-const sendMessageSchema = z.object({
-  projectId: z.string().uuid(),
-  conversationId: z.string().uuid(),
-  content: z.string().trim().min(1).max(20000),
-});
-
-export async function sendMessageAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const parsed = sendMessageSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: "invalid" };
-
+export async function setCurrentVersionAction(projectId: string, versionId: string) {
   const ctx = await getCurrentContext();
   if (!ctx) return { error: "unauthenticated" };
   const supabase = await createClient();
-
-  const { error } = await supabase.from("messages").insert({
-    conversation_id: parsed.data.conversationId,
-    role: "user",
-    content: parsed.data.content,
-    author_id: ctx.user.id,
-  });
+  const { data: v } = await supabase.from("project_versions").select("id,number").eq("id", versionId).eq("project_id", projectId).maybeSingle();
+  if (!v) return { error: "not_found" };
+  const { error } = await supabase.from("projects").update({ current_version_id: versionId }).eq("id", projectId);
   if (error) return { error: error.message };
-
-  await supabase.from("project_events").insert({
-    project_id: parsed.data.projectId,
-    actor_id: ctx.user.id,
-    actor_type: "user",
-    type: "message.sent",
-    payload: { length: parsed.data.content.length },
-  });
-
-  // Fase 2: aquí se encola la ejecución del agente consultor (agent_runs).
-
+  await supabase.from("project_events").insert({ project_id: projectId, actor_id: ctx.user.id, actor_type: "user", type: "version.restored", payload: { number: v.number } });
   const locale = await getLocale();
-  revalidatePath(`/${locale}/projects/${parsed.data.projectId}`);
+  revalidatePath(`/${locale}/projects/${projectId}`);
   return { ok: true };
 }
 

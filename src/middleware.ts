@@ -17,7 +17,36 @@ function stripLocale(pathname: string) {
   return { locale, rest };
 }
 
+/** Dominios propios de sitios publicados: host → slug (caché 60 s por instancia). */
+const domainCache = new Map<string, { slug: string | null; at: number }>();
+async function lookupCustomDomain(host: string): Promise<string | null> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL; const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  const hit = domainCache.get(host);
+  if (hit && Date.now() - hit.at < 60_000) return hit.slug;
+  try {
+    const res = await fetch(`${url}/rest/v1/published_sites?select=slug&custom_domain=eq.${encodeURIComponent(host)}&domain_status=eq.verified&limit=1`, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+    const rows = (await res.json()) as { slug: string }[];
+    const slug = rows?.[0]?.slug ?? null;
+    domainCache.set(host, { slug, at: Date.now() });
+    return slug;
+  } catch { return null; }
+}
+
+function isPlatformHost(host: string) {
+  const app = (process.env.NEXT_PUBLIC_APP_URL || "").replace(/^https?:\/\//, "").split("/")[0];
+  const site = (process.env.NEXT_PUBLIC_SITE_BASE_URL || "").replace(/^https?:\/\//, "").split("/")[0];
+  return !host || host.startsWith("localhost") || host.startsWith("127.") || host === app || host === site || host.endsWith(".vercel.app");
+}
+
 export default async function middleware(request: NextRequest) {
+  // Dominio propio de un sitio publicado → servir /s/<slug>
+  const host = request.headers.get("host")?.split(":")[0]?.toLowerCase() ?? "";
+  if (!isPlatformHost(host)) {
+    const slug = await lookupCustomDomain(host);
+    if (slug) { const url = request.nextUrl.clone(); url.pathname = `/s/${slug}`; return NextResponse.rewrite(url); }
+  }
+
   const intlResponse = intlMiddleware(request);
 
   // Si next-intl redirige (p. ej. "/" → "/es"), devolvemos esa respuesta tal cual.
@@ -52,5 +81,5 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   // Todo excepto API, estáticos de Next y archivos con extensión.
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/((?!api|s/|_next|_vercel|.*\\..*).*)"],
 };

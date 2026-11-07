@@ -6,6 +6,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { savePendingIdea } from "@/features/projects/pending-idea";
+import { PROJECT_KINDS } from "@/features/projects/kinds";
 import { cn } from "@/lib/utils";
 
 const MAX = 2000;
@@ -17,6 +18,8 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [kind, setKind] = useState<string>("web");
+  const tk = useTranslations("app.workspace.kinds");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const examples = t.raw("examples") as { title: string; prompt: string }[];
 
@@ -43,7 +46,7 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
       return;
     }
     setSubmitting(true);
-    savePendingIdea(idea, locale);
+    savePendingIdea(idea, locale, kind);
     router.push(
       isAuthenticated ? "/projects/new" : { pathname: "/register", query: { next: "/projects/new" } },
     );
@@ -51,6 +54,14 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
 
   return (
     <div id="start" className="w-full max-w-3xl mx-auto scroll-mt-28">
+      <div className="mb-3 flex flex-wrap justify-center gap-1.5" role="group" aria-label={t("kindLabel")}>
+        {PROJECT_KINDS.map((k) => (
+          <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k}
+            className={cn("h-8 px-3 rounded-full border text-[12.5px] font-medium transition-colors", kind === k ? "bg-accent-soft text-accent border-accent/40" : "bg-surface text-fg-muted border-border hover:text-fg hover:border-border-strong")}>
+            {tk(k)}
+          </button>
+        ))}
+      </div>
       <div
         className={cn(
           "relative rounded-[20px] border bg-surface/80 backdrop-blur transition-[border-color,box-shadow] duration-300",
@@ -105,6 +116,7 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
             <button
               key={ex.title}
               type="button"
+              data-prompt={ex.prompt}
               onClick={() => pickExample(ex.prompt)}
               className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full border border-border bg-surface text-[13px] text-fg-muted hover:text-fg hover:border-border-strong hover:bg-surface-hover transition-colors"
             >

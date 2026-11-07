@@ -8,11 +8,12 @@ const KEY = "ideon.pendingIdea";
 export interface PendingIdea {
   idea: string;
   locale: string;
+  kind?: string;
   savedAt: string;
 }
 
-export function savePendingIdea(idea: string, locale: string) {
-  const payload: PendingIdea = { idea, locale, savedAt: new Date().toISOString() };
+export function savePendingIdea(idea: string, locale: string, kind = "web") {
+  const payload: PendingIdea = { idea, locale, kind, savedAt: new Date().toISOString() };
   try {
     sessionStorage.setItem(KEY, JSON.stringify(payload));
     localStorage.setItem(KEY, JSON.stringify(payload));
