@@ -6,7 +6,7 @@ import { updateSession } from "@/lib/supabase/middleware";
 const intlMiddleware = createIntlMiddleware(routing);
 
 /** Rutas (sin prefijo de idioma) que requieren sesión. */
-const PROTECTED_PREFIXES = ["/dashboard", "/projects", "/billing", "/settings", "/support"];
+const PROTECTED_PREFIXES = ["/dashboard", "/projects", "/billing", "/settings", "/support", "/proposals", "/files", "/subscriptions", "/admin"];
 /** Rutas de auth: si ya hay sesión, redirigir al dashboard. */
 const AUTH_PREFIXES = ["/login", "/register", "/forgot-password"];
 

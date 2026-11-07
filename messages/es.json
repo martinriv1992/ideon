@@ -258,7 +258,8 @@
       "support": "Soporte",
       "settings": "Configuración",
       "logout": "Cerrar sesión",
-      "backToSite": "Volver al sitio"
+      "backToSite": "Volver al sitio",
+      "admin": "Backoffice"
     },
     "dashboard": {
       "greeting": "Hola, {name}",
@@ -480,30 +481,10 @@
       "vercelNotConfigured": "Despliegue en Vercel no configurado (VERCEL_TOKEN). El hosting en Ideon no lo necesita.",
       "deployments": "Despliegues",
       "download": "Descargar",
-      "downloadZip": "Descargar ZIP"
-    },
-    "placeholder": {
-      "proposals": {
-        "title": "Presupuestos",
-        "text": "Aquí verás las propuestas que genere la IA para cada proyecto, con alcance, tiempo y precio. Se activa en la Fase 2 (inteligencia)."
-      },
-      "billing": {
-        "title": "Facturación",
-        "text": "Facturas y pagos de tus proyectos. El módulo de pagos (Stripe y Wompi) se activa en la Fase 5."
-      },
-      "subscriptions": {
-        "title": "Suscripciones",
-        "text": "Hosting, mantenimiento y evolución de tus productos. Se activa en la Fase 5."
-      },
-      "files": {
-        "title": "Archivos",
-        "text": "Documentos, especificaciones y entregables de tus proyectos. El almacenamiento se activa en la Fase 3."
-      },
-      "support": {
-        "title": "Soporte",
-        "text": "Tickets y ayuda. Mientras tanto, escríbenos a soporte@ideon.app."
-      },
-      "notAvailable": "Módulo no disponible todavía"
+      "downloadZip": "Descargar ZIP",
+      "paid": "Pagado",
+      "payNow": "Pagar con tarjeta",
+      "paymentNotConfigured": "El pago en línea se activa cuando la plataforma configure la pasarela; mientras tanto se coordina manualmente."
     },
     "settings": {
       "title": "Configuración",
@@ -516,6 +497,50 @@
       "saved": "Cambios guardados.",
       "email": "Correo",
       "role": "Rol"
+    },
+    "pages": {
+      "proposals": {
+        "title": "Presupuestos",
+        "subtitle": "Propuestas generadas para tus proyectos.",
+        "empty": "Todavía no hay propuestas. Se generan cuando el consultor cierra el alcance de un proyecto."
+      },
+      "billing": {
+        "title": "Facturación",
+        "subtitle": "Pagos y facturas de tu organización.",
+        "notConfigured": "Los pagos con tarjeta se activan cuando la plataforma configure la pasarela (Stripe; Wompi para Colombia). Mientras tanto los pagos se gestionan manualmente.",
+        "payments": "Pagos",
+        "noPayments": "Sin pagos registrados.",
+        "invoices": "Facturas",
+        "noInvoices": "Sin facturas."
+      },
+      "subscriptions": {
+        "title": "Suscripciones",
+        "subtitle": "Hosting y mantenimiento de tus productos.",
+        "hosting": "Sitios publicados en Ideon",
+        "noSites": "Aún no has publicado ningún sitio.",
+        "included": "Hosting incluido",
+        "plans": "Planes de mantenimiento",
+        "none": "Sin suscripciones activas."
+      },
+      "files": {
+        "title": "Archivos",
+        "subtitle": "Versiones generadas de todos tus proyectos.",
+        "empty": "Aún no hay versiones generadas.",
+        "open": "Abrir"
+      },
+      "support": {
+        "title": "Soporte",
+        "subtitle": "Abre un ticket y te respondemos por correo.",
+        "newTicket": "Nuevo ticket",
+        "yourTickets": "Tus tickets",
+        "none": "Sin tickets.",
+        "subject": "Asunto",
+        "project": "Proyecto (opcional)",
+        "noProject": "Sin proyecto",
+        "body": "Describe el problema o la consulta",
+        "send": "Enviar ticket",
+        "sent": "Ticket enviado."
+      }
     }
   },
   "common": {
@@ -527,5 +552,134 @@
     "notFound": "No encontrado",
     "notFoundText": "La página que buscas no existe o no tienes acceso.",
     "goHome": "Ir al inicio"
+  },
+  "admin": {
+    "save": "Guardar",
+    "saved": "Guardado.",
+    "nav": {
+      "backoffice": "Backoffice",
+      "backToApp": "Volver a la app",
+      "overview": "Resumen",
+      "clients": "Clientes",
+      "projects": "Proyectos",
+      "runs": "Ejecuciones",
+      "ai": "Modelos de IA",
+      "pricing": "Planes y precios",
+      "deployments": "Despliegues",
+      "tickets": "Tickets",
+      "settings": "Configuración"
+    },
+    "overview": {
+      "title": "Resumen del negocio",
+      "subtitle": "Facturación, consumo de IA y estado de los proyectos.",
+      "revenue": "Facturación",
+      "last30": "últimos 30 días",
+      "mrr": "Ingresos recurrentes (MRR)",
+      "activeSubs": "suscripciones activas",
+      "clients": "Clientes",
+      "projectsRunning": "Proyectos en ejecución",
+      "finished": "publicados",
+      "versions": "versiones",
+      "aiCost": "Coste de IA",
+      "margin": "Margen bruto",
+      "marginNote": "facturación − coste de IA",
+      "conversion": "Tasa de conversión",
+      "proposalsApproved": "propuestas aprobadas",
+      "failedRuns": "Ejecuciones fallidas",
+      "costByModel": "Coste por modelo",
+      "model": "Modelo",
+      "cost": "Coste",
+      "noUsage": "Sin consumo registrado.",
+      "recentErrors": "Errores recientes",
+      "date": "Fecha",
+      "project": "Proyecto",
+      "step": "Paso",
+      "error": "Error",
+      "noErrors": "Sin errores."
+    },
+    "clients": {
+      "name": "Organización",
+      "type": "Tipo",
+      "members": "Miembros",
+      "projects": "Proyectos",
+      "aiCost": "Coste IA",
+      "created": "Alta",
+      "empty": "Sin clientes."
+    },
+    "projects": {
+      "name": "Proyecto",
+      "client": "Cliente",
+      "kind": "Tipo",
+      "status": "Estado",
+      "revenue": "Facturado",
+      "aiCost": "Coste IA",
+      "margin": "Margen",
+      "updated": "Actualizado",
+      "empty": "Sin proyectos."
+    },
+    "runs": {
+      "date": "Fecha",
+      "project": "Proyecto",
+      "step": "Paso",
+      "model": "Modelo",
+      "status": "Estado",
+      "tokens": "Tokens (in/out)",
+      "cost": "Coste",
+      "duration": "Duración",
+      "error": "Error",
+      "empty": "Sin ejecuciones."
+    },
+    "ai": {
+      "provider": "Proveedor activo",
+      "none": "ninguno (configura ANTHROPIC_API_KEY)",
+      "help": "Modelo, límite de salida y coste por millón de tokens por tarea.",
+      "model": "Modelo",
+      "maxTokens": "Máx. tokens de salida",
+      "inCost": "Coste entrada $/Mtok",
+      "outCost": "Coste salida $/Mtok",
+      "usage": "Consumo por modelo",
+      "calls": "Llamadas",
+      "cost": "Coste",
+      "noUsage": "Sin consumo."
+    },
+    "pricing": {
+      "help": "Precio «desde» de cada modalidad. Vacío = «según alcance» en la web y en las propuestas.",
+      "price": "Precio desde",
+      "currency": "Moneda",
+      "active": "Activo"
+    },
+    "deployments": {
+      "sites": "Sitios publicados",
+      "project": "Proyecto",
+      "domain": "Dominio propio",
+      "domainStatus": "Estado DNS",
+      "published": "Publicado",
+      "noSites": "Sin sitios publicados.",
+      "history": "Historial de despliegues",
+      "date": "Fecha",
+      "target": "Destino",
+      "status": "Estado",
+      "none": "Sin despliegues."
+    },
+    "tickets": {
+      "date": "Fecha",
+      "client": "Cliente",
+      "project": "Proyecto",
+      "subject": "Asunto",
+      "body": "Mensaje",
+      "status": "Estado",
+      "none": "Sin tickets."
+    },
+    "settings": {
+      "commercial": "Configuración comercial",
+      "requireApproval": "true: el cliente debe aprobar la propuesta antes de construir.",
+      "requirePayment": "true: exigir pago antes de construir (requiere pasarela configurada).",
+      "currency": "Moneda por defecto de las propuestas.",
+      "siteBase": "URL base de los sitios publicados (opcional, p. ej. https://sites.ideon.app).",
+      "integrations": "Integraciones (variables de entorno)",
+      "configured": "configurada",
+      "missing": "no configurada",
+      "envNote": "Las claves se definen en el entorno del servidor (.env.local o panel de Vercel), nunca desde esta pantalla."
+    }
   }
 }

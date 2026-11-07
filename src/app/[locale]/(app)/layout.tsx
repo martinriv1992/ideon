@@ -20,6 +20,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <AppSidebar
         userName={ctx!.profile.full_name ?? ctx!.user.email ?? ""}
         orgName={ctx!.organization.name}
+        isAdmin={ctx!.profile.is_platform_admin}
         logout={logoutAction}
       />
       <div className="flex-1 min-w-0 pt-14 lg:pt-0">{children}</div>

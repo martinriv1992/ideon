@@ -382,6 +382,13 @@ function ProposalPanel({ detail, busy, onApprove, onRebuild }: { detail: Project
           <p className="text-[12px] text-fg-subtle leading-relaxed">{t("approveNote")}</p>
         </div>
       )}
+      {proposal.status === "approved" && proposal.price != null && (
+        detail.payments.some((p) => p.proposal_id === proposal.id && p.status === "paid")
+          ? <Badge tone="success">{t("paid")}</Badge>
+          : detail.stripeConfigured
+            ? <Button variant="secondary" size="sm" loading={busy} onClick={async () => { const r = await api("/api/billing/checkout", { method: "POST", body: JSON.stringify({ proposalId: proposal.id, locale }) }).catch(() => null); if (r?.url) window.location.href = r.url; }}>{t("payNow")}</Button>
+            : <p className="text-[12px] text-fg-subtle">{t("paymentNotConfigured")}</p>
+      )}
       {proposal.status === "approved" && ["approved", "review"].includes(project.status) && (
         <Button variant="secondary" size="sm" loading={busy} onClick={onRebuild}><RefreshCw className="size-4" /> {project.current_version_id ? t("regenerate") : t("retryBuild")}</Button>
       )}

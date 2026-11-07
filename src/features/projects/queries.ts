@@ -32,6 +32,8 @@ export interface ProjectDetail {
   activeRun: AgentRun | null;
   aiConfigured: boolean;
   vercelConfigured: boolean;
+  stripeConfigured: boolean;
+  payments: { id: string; status: string; amount: number; currency: string; proposal_id: string | null }[];
   siteBaseUrl: string;
 }
 
@@ -69,6 +71,8 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
     deployments: deployments ?? [], site: site ?? null, activeRun,
     aiConfigured: aiProviderName() !== null,
     vercelConfigured: Boolean(process.env.VERCEL_TOKEN),
+    stripeConfigured: Boolean(process.env.STRIPE_SECRET_KEY),
+    payments: (await supabase.from("payments").select("id,status,amount,currency,proposal_id").eq("project_id", projectId).order("created_at", { ascending: false }).limit(10)).data ?? [],
     siteBaseUrl: (process.env.NEXT_PUBLIC_SITE_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, ""),
   };
 }

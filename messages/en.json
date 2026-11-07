@@ -258,7 +258,8 @@
       "support": "Support",
       "settings": "Settings",
       "logout": "Sign out",
-      "backToSite": "Back to site"
+      "backToSite": "Back to site",
+      "admin": "Backoffice"
     },
     "dashboard": {
       "greeting": "Hi, {name}",
@@ -480,30 +481,10 @@
       "vercelNotConfigured": "Vercel deployment not configured (VERCEL_TOKEN). Ideon hosting doesn't need it.",
       "deployments": "Deployments",
       "download": "Download",
-      "downloadZip": "Download ZIP"
-    },
-    "placeholder": {
-      "proposals": {
-        "title": "Proposals",
-        "text": "Here you'll see the proposals the AI generates for each project, with scope, timeline and price. Activates in Phase 2 (intelligence)."
-      },
-      "billing": {
-        "title": "Billing",
-        "text": "Invoices and payments for your projects. The payments module (Stripe and Wompi) activates in Phase 5."
-      },
-      "subscriptions": {
-        "title": "Subscriptions",
-        "text": "Hosting, maintenance and evolution of your products. Activates in Phase 5."
-      },
-      "files": {
-        "title": "Files",
-        "text": "Documents, specifications and deliverables for your projects. Storage activates in Phase 3."
-      },
-      "support": {
-        "title": "Support",
-        "text": "Tickets and help. In the meantime, write to support@ideon.app."
-      },
-      "notAvailable": "Module not available yet"
+      "downloadZip": "Download ZIP",
+      "paid": "Paid",
+      "payNow": "Pay by card",
+      "paymentNotConfigured": "Online payment activates once the platform configures its gateway; until then it is arranged manually."
     },
     "settings": {
       "title": "Settings",
@@ -516,6 +497,50 @@
       "saved": "Changes saved.",
       "email": "Email",
       "role": "Role"
+    },
+    "pages": {
+      "proposals": {
+        "title": "Proposals",
+        "subtitle": "Proposals generated for your projects.",
+        "empty": "No proposals yet. They are generated when the consultant closes a project's scope."
+      },
+      "billing": {
+        "title": "Billing",
+        "subtitle": "Payments and invoices for your organization.",
+        "notConfigured": "Card payments activate once the platform configures its gateway (Stripe; Wompi for Colombia). Until then payments are handled manually.",
+        "payments": "Payments",
+        "noPayments": "No payments recorded.",
+        "invoices": "Invoices",
+        "noInvoices": "No invoices."
+      },
+      "subscriptions": {
+        "title": "Subscriptions",
+        "subtitle": "Hosting and maintenance for your products.",
+        "hosting": "Sites published on Ideon",
+        "noSites": "You haven't published any site yet.",
+        "included": "Hosting included",
+        "plans": "Maintenance plans",
+        "none": "No active subscriptions."
+      },
+      "files": {
+        "title": "Files",
+        "subtitle": "Generated versions across all your projects.",
+        "empty": "No versions generated yet.",
+        "open": "Open"
+      },
+      "support": {
+        "title": "Support",
+        "subtitle": "Open a ticket and we reply by email.",
+        "newTicket": "New ticket",
+        "yourTickets": "Your tickets",
+        "none": "No tickets.",
+        "subject": "Subject",
+        "project": "Project (optional)",
+        "noProject": "No project",
+        "body": "Describe the issue or question",
+        "send": "Send ticket",
+        "sent": "Ticket sent."
+      }
     }
   },
   "common": {
@@ -527,5 +552,134 @@
     "notFound": "Not found",
     "notFoundText": "The page you're looking for doesn't exist or you don't have access.",
     "goHome": "Go home"
+  },
+  "admin": {
+    "save": "Save",
+    "saved": "Saved.",
+    "nav": {
+      "backoffice": "Backoffice",
+      "backToApp": "Back to app",
+      "overview": "Overview",
+      "clients": "Clients",
+      "projects": "Projects",
+      "runs": "Runs",
+      "ai": "AI models",
+      "pricing": "Plans & pricing",
+      "deployments": "Deployments",
+      "tickets": "Tickets",
+      "settings": "Settings"
+    },
+    "overview": {
+      "title": "Business overview",
+      "subtitle": "Revenue, AI consumption and project status.",
+      "revenue": "Revenue",
+      "last30": "last 30 days",
+      "mrr": "Recurring revenue (MRR)",
+      "activeSubs": "active subscriptions",
+      "clients": "Clients",
+      "projectsRunning": "Projects in progress",
+      "finished": "live",
+      "versions": "versions",
+      "aiCost": "AI cost",
+      "margin": "Gross margin",
+      "marginNote": "revenue − AI cost",
+      "conversion": "Conversion rate",
+      "proposalsApproved": "proposals approved",
+      "failedRuns": "Failed runs",
+      "costByModel": "Cost by model",
+      "model": "Model",
+      "cost": "Cost",
+      "noUsage": "No usage recorded.",
+      "recentErrors": "Recent errors",
+      "date": "Date",
+      "project": "Project",
+      "step": "Step",
+      "error": "Error",
+      "noErrors": "No errors."
+    },
+    "clients": {
+      "name": "Organization",
+      "type": "Type",
+      "members": "Members",
+      "projects": "Projects",
+      "aiCost": "AI cost",
+      "created": "Created",
+      "empty": "No clients."
+    },
+    "projects": {
+      "name": "Project",
+      "client": "Client",
+      "kind": "Kind",
+      "status": "Status",
+      "revenue": "Billed",
+      "aiCost": "AI cost",
+      "margin": "Margin",
+      "updated": "Updated",
+      "empty": "No projects."
+    },
+    "runs": {
+      "date": "Date",
+      "project": "Project",
+      "step": "Step",
+      "model": "Model",
+      "status": "Status",
+      "tokens": "Tokens (in/out)",
+      "cost": "Cost",
+      "duration": "Duration",
+      "error": "Error",
+      "empty": "No runs."
+    },
+    "ai": {
+      "provider": "Active provider",
+      "none": "none (set ANTHROPIC_API_KEY)",
+      "help": "Model, output limit and cost per million tokens per task.",
+      "model": "Model",
+      "maxTokens": "Max output tokens",
+      "inCost": "Input cost $/Mtok",
+      "outCost": "Output cost $/Mtok",
+      "usage": "Usage by model",
+      "calls": "Calls",
+      "cost": "Cost",
+      "noUsage": "No usage."
+    },
+    "pricing": {
+      "help": "'From' price per plan. Empty = 'priced by scope' on the site and in proposals.",
+      "price": "Price from",
+      "currency": "Currency",
+      "active": "Active"
+    },
+    "deployments": {
+      "sites": "Published sites",
+      "project": "Project",
+      "domain": "Custom domain",
+      "domainStatus": "DNS status",
+      "published": "Published",
+      "noSites": "No published sites.",
+      "history": "Deployment history",
+      "date": "Date",
+      "target": "Target",
+      "status": "Status",
+      "none": "No deployments."
+    },
+    "tickets": {
+      "date": "Date",
+      "client": "Client",
+      "project": "Project",
+      "subject": "Subject",
+      "body": "Message",
+      "status": "Status",
+      "none": "No tickets."
+    },
+    "settings": {
+      "commercial": "Commercial settings",
+      "requireApproval": "true: the client must approve the proposal before building.",
+      "requirePayment": "true: require payment before building (needs a configured gateway).",
+      "currency": "Default currency for proposals.",
+      "siteBase": "Base URL for published sites (optional, e.g. https://sites.ideon.app).",
+      "integrations": "Integrations (environment variables)",
+      "configured": "configured",
+      "missing": "missing",
+      "envNote": "Keys are set in the server environment (.env.local or Vercel), never from this screen."
+    }
   }
 }

@@ -12,6 +12,7 @@ import {
   Files,
   LifeBuoy,
   Settings,
+  ShieldCheck,
   LogOut,
   ArrowUpRight,
   Menu,
@@ -25,10 +26,11 @@ import { cn } from "@/lib/utils";
 interface Props {
   userName: string;
   orgName: string;
+  isAdmin?: boolean;
   logout: () => Promise<void>;
 }
 
-export function AppSidebar({ userName, orgName, logout }: Props) {
+export function AppSidebar({ userName, orgName, isAdmin, logout }: Props) {
   const t = useTranslations("app.nav");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -44,6 +46,7 @@ export function AppSidebar({ userName, orgName, logout }: Props) {
     { href: "/subscriptions", label: t("subscriptions"), icon: RefreshCw },
     { href: "/support", label: t("support"), icon: LifeBuoy },
     { href: "/settings", label: t("settings"), icon: Settings },
+    ...(isAdmin ? [{ href: "/admin", label: t("admin"), icon: ShieldCheck }] : []),
   ];
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
