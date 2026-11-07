@@ -16,6 +16,7 @@
    - `supabase/migrations/0003_project_assets.sql` (archivos del proyecto: documentos que lee la IA y archivos que se publican; bucket privado `project-files` de 10 MB por archivo).
    - `supabase/migrations/0004_models_sonnet_5_5.sql` (los agentes pasan a `claude-sonnet-5-5`).
    - `supabase/migrations/0005_launch_domains_epayco.sql` (vista previa gratuita, pagos con ePayco, pedidos de dominio y paquete anual).
+   - `supabase/migrations/0006_preview_costs_abuse_changes.sql` (modelos mixtos Haiku/Sonnet, freno diario de gasto, antiabuso del registro y paquetes de cambios).
 3. **Authentication → Providers → Email**: activa *Email*; decide si exiges confirmación de correo.
 4. **Authentication → URL Configuration**: *Site URL* = `http://localhost:3000` (y la de producción); *Redirect URLs* = `http://localhost:3000/api/auth/callback` y `https://<tu-dominio>/api/auth/callback`.
 5. Para convertirte en administrador de la plataforma, tras registrarte ejecuta en SQL Editor:
@@ -66,3 +67,12 @@ Tras cualquier cambio de esquema: `npx supabase gen types typescript --project-i
 **ePayco.** Variables `EPAYCO_PUBLIC_KEY`, `EPAYCO_P_CUST_ID_CLIENTE`, `EPAYCO_P_KEY` y `EPAYCO_TEST=true` mientras pruebas. La confirmación (servidor a servidor) llega a `/api/billing/epayco/confirmation`; se valida la firma, el importe y la moneda, y es idempotente. Prueba primero en modo de pruebas de ePayco con una tarjeta de prueba.
 
 **Dominios.** Variables `VERCEL_TOKEN` (token dedicado, alcance del equipo), `VERCEL_TEAM_ID` y `VERCEL_PROJECT_ID` (el proyecto de la plataforma). Al confirmarse el pago, el dominio se compra en el registrador de Vercel **a nombre del cliente** (los datos de titular se piden en el checkout), con renovación automática desactivada; se cobra al **método de pago de la cuenta de Vercel**. Después se añade al proyecto (con `www` → redirección), Vercel gestiona DNS y SSL y el middleware sirve el sitio. Si el precio del registrador sube más de un 10 % respecto a lo cotizado, la compra se detiene y el pedido queda «requiere revisión». Cuando el cliente paga su renovación, el dominio se renueva un año.
+
+## 9. Control de costes de IA
+
+- **Modelos mixtos** (`/admin/ai`): consultor, arquitecto y todo lo que ocurre durante la vista previa gratuita (`developer_preview`, `modify_preview`) usan Claude Haiku 5.5; al activarse el proyecto, desarrollo y modificaciones pasan a Claude Sonnet 5.5.
+- **Freno diario** (`free_preview_daily_budget_usd`, 5 USD): si el gasto de IA del día (hora de Colombia) en proyectos sin activar alcanza el tope, las vistas previas nuevas esperan al día siguiente con un aviso; los proyectos activados no se detienen. Los proyectos de administradores no cuentan.
+- **Registro**: se rechazan correos desechables y más de `max_signups_per_ip_day` cuentas nuevas por conexión en 24 h (la IP se guarda con hash y sal; opcionalmente `IP_HASH_SALT`).
+- **Cambios del plan anual**: `included_changes_year` (20) por año; después, paquetes `change_packs` pagados con ePayco. El contador y los paquetes se reinician al renovar.
+- **Panel**: `/admin/ai` muestra el gasto de hoy frente al tope, el gasto de 14 días en vistas previas frente a proyectos activados y la conversión.
+- **Red de seguridad**: define además un límite mensual de gasto en console.anthropic.com.

@@ -201,3 +201,39 @@ export function DomainOrderCard({ detail }: { detail: ProjectDetail }) {
     </Card>
   );
 }
+
+/** Cambios por chat del plan anual y compra de paquetes adicionales. */
+export function ChangesCard({ detail }: { detail: ProjectDetail }) {
+  const t = useTranslations("app.launch");
+  const locale = useLocale();
+  const [busy, setBusy] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const sub = detail.subscription;
+  if (!sub) return null;
+  const total = detail.includedChanges + sub.extra_changes;
+  const left = Math.max(0, total - sub.changes_used);
+  async function buy(i: number) {
+    setBusy(i); setError(null);
+    try {
+      const r = await api<{ checkout: Checkout }>(`/api/projects/${detail.project.id}/changes`, { method: "POST", body: JSON.stringify({ pack: i, locale }) });
+      await openEpayco(r.checkout);
+    } catch (e) { setError((e as Error).message); } finally { setBusy(null); }
+  }
+  return (
+    <Card className="p-3 space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <b>{t("changesTitle")}</b>
+        <Badge tone={left > 3 ? "success" : left > 0 ? "warning" : "danger"}>{t("changesLeft", { left, total })}</Badge>
+      </div>
+      <p className="text-[12px] text-fg-muted">{t("changesHelp", { n: detail.includedChanges })}</p>
+      <div className="flex flex-wrap gap-2">
+        {detail.changePacks.map((p, i) => (
+          <Button key={i} size="sm" variant="secondary" loading={busy === i} onClick={() => void buy(i)}>
+            {t("buyPack", { qty: p.qty, price: money(p.price, detail.billingCurrency, locale) })}
+          </Button>
+        ))}
+      </div>
+      {error && <p className="text-[12px] text-danger">{error}</p>}
+    </Card>
+  );
+}

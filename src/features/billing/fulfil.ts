@@ -16,7 +16,9 @@ import type { DomainOrder, Json, Project } from "@/types/database.types";
 type Admin = ReturnType<typeof createAdminClient>;
 
 export interface PaymentMeta {
-  type: "launch" | "renewal";
+  type: "launch" | "renewal" | "changes";
+  /** Paquete de cambios comprado (type = "changes"). */
+  pack_qty?: number;
   user_id: string;
   items: { key: string; label: string; amount: number }[];
   renewal: number;
@@ -66,7 +68,12 @@ export async function fulfilPayment(paymentId: string, providerData: Record<stri
   await event(db, payment.project_id, "payment.received", { amount: payment.amount, currency: payment.currency, type: meta.type });
 
   if (meta.type === "launch") await fulfilLaunch(db, payment.project_id, payment.organization_id, payment.amount, payment.currency, meta);
-  else await fulfilRenewal(db, payment.project_id, meta);
+  else if (meta.type === "renewal") await fulfilRenewal(db, payment.project_id, meta);
+  else if (meta.type === "changes" && meta.subscription_id && meta.pack_qty) {
+    const { data: sub } = await db.from("subscriptions").select("extra_changes").eq("id", meta.subscription_id).single();
+    if (sub) await db.from("subscriptions").update({ extra_changes: sub.extra_changes + meta.pack_qty }).eq("id", meta.subscription_id);
+    await event(db, payment.project_id, "changes.purchased", { qty: meta.pack_qty });
+  }
   return { ok: true };
 }
 
@@ -98,7 +105,8 @@ async function fulfilRenewal(db: Admin, projectId: string, meta: PaymentMeta) {
   const { data: sub } = await db.from("subscriptions").select("*").eq("id", meta.subscription_id).single();
   if (!sub) return;
   const base = sub.current_period_end && new Date(sub.current_period_end) > new Date() ? new Date(sub.current_period_end) : new Date();
-  await db.from("subscriptions").update({ status: "active", current_period_end: addYear(base).toISOString() }).eq("id", sub.id);
+  // Nuevo año: el contador de cambios se reinicia y los paquetes no usados no se acumulan.
+  await db.from("subscriptions").update({ status: "active", current_period_end: addYear(base).toISOString(), changes_used: 0, extra_changes: 0 }).eq("id", sub.id);
   await event(db, projectId, "subscription.renewed", { until: addYear(base).toISOString() });
   if (sub.domain) {
     try {

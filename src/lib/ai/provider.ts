@@ -29,7 +29,7 @@ export interface AIProvider {
 }
 
 export interface ModelPolicy {
-  task: AgentTask;
+  task: AgentTask | PolicyKey;
   provider: string;
   model: string;
   maxOutputTokens: number;
@@ -37,9 +37,18 @@ export interface ModelPolicy {
   outputCostPerMtok: number;
 }
 
-export const DEFAULT_POLICIES: Record<AgentTask, ModelPolicy> = {
-  consultant: { task: "consultant", provider: "anthropic", model: "claude-sonnet-5-5", maxOutputTokens: 4096, inputCostPerMtok: 2, outputCostPerMtok: 10 },
-  architect: { task: "architect", provider: "anthropic", model: "claude-sonnet-5-5", maxOutputTokens: 8192, inputCostPerMtok: 2, outputCostPerMtok: 10 },
+/**
+ * Políticas por defecto. Las «*_preview» se usan mientras el proyecto está en la
+ * vista previa gratuita (Claude Haiku 5.5, ≈ 20 veces más barato); al activarse,
+ * desarrollo y modificaciones pasan a Claude Sonnet 5.5.
+ */
+export type PolicyKey = AgentTask | "developer_preview" | "modify_preview";
+
+export const DEFAULT_POLICIES: Record<PolicyKey, ModelPolicy> = {
+  consultant: { task: "consultant", provider: "anthropic", model: "claude-haiku-5-5", maxOutputTokens: 4096, inputCostPerMtok: 0.1, outputCostPerMtok: 0.5 },
+  architect: { task: "architect", provider: "anthropic", model: "claude-haiku-5-5", maxOutputTokens: 8192, inputCostPerMtok: 0.1, outputCostPerMtok: 0.5 },
+  developer_preview: { task: "developer", provider: "anthropic", model: "claude-haiku-5-5", maxOutputTokens: 32000, inputCostPerMtok: 0.1, outputCostPerMtok: 0.5 },
+  modify_preview: { task: "modify", provider: "anthropic", model: "claude-haiku-5-5", maxOutputTokens: 32000, inputCostPerMtok: 0.1, outputCostPerMtok: 0.5 },
   developer: { task: "developer", provider: "anthropic", model: "claude-sonnet-5-5", maxOutputTokens: 32000, inputCostPerMtok: 2, outputCostPerMtok: 10 },
   modify: { task: "modify", provider: "anthropic", model: "claude-sonnet-5-5", maxOutputTokens: 32000, inputCostPerMtok: 2, outputCostPerMtok: 10 },
 };

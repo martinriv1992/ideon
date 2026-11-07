@@ -71,9 +71,9 @@ export function buildProposal(spec: SpecLike, plans: PricingPlan[], currency = "
     price,
     currency: cur,
     external_costs: [
-      { name: "Hosting en Ideon (subdominio)", amount: 0, currency: cur, period: "mes", note: "Incluido en la Fase de publicación." },
-      { name: "Dominio propio", amount: null, currency: cur, period: "año", note: "Según el registrador y la extensión elegida (.com, .co…)." },
+      { name: "Plan anual de hosting y mantenimiento", amount: null, currency: cur, period: "año", note: "Se contrata al activar el proyecto (pestaña Publicar); incluye cambios por chat." },
+      { name: "Dominio propio (opcional)", amount: null, currency: cur, period: "año", note: "Se elige y compra al activar el proyecto, según la extensión (.com, .co…)." },
     ],
-    maintenance_option: { price: null, currency: cur, period: "mes", includes: ["Hosting", "Copias de seguridad", "Cambios menores por chat", "Soporte"] },
+    maintenance_option: { price: null, currency: cur, period: "año", includes: ["Hosting", "Certificado SSL", "Cambios por chat incluidos", "Soporte"] },
   };
 }

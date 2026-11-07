@@ -18,11 +18,19 @@ export interface BillingSettings {
   tlds: string[];              // extensiones que se ofrecen
   freeChanges: number;         // cambios por chat gratis en la vista previa
   graceDays: number;           // días tras el vencimiento antes de suspender el sitio
+  previewDailyBudgetUsd: number; // tope diario de gasto de IA en vistas previas gratuitas (toda la plataforma)
+  maxSignupsPerIpDay: number;  // cuentas nuevas por conexión en 24 h
+  includedChanges: number;     // cambios por chat incluidos por año en el paquete anual
+  changePacks: ChangePack[];   // paquetes de cambios adicionales
 }
+
+export interface ChangePack { qty: number; price: number }
 
 export const DEFAULT_BILLING: BillingSettings = {
   currency: "COP", usdRate: 4000, hostingYear: 240000, domainMarkupPct: 30,
   tlds: ["com", "co", "net", "org", "online", "store", "shop"], freeChanges: 2, graceDays: 15,
+  previewDailyBudgetUsd: 5, maxSignupsPerIpDay: 3, includedChanges: 20,
+  changePacks: [{ qty: 10, price: 49000 }, { qty: 30, price: 119000 }],
 };
 
 const num = (v: unknown, d: number) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : typeof v === "string" && v.trim() && Number.isFinite(Number(v)) ? Number(v) : d);
@@ -30,6 +38,10 @@ const num = (v: unknown, d: number) => (typeof v === "number" && Number.isFinite
 export function billingFromSettings(rows: { key: string; value: unknown }[]): BillingSettings {
   const m = new Map(rows.map((r) => [r.key, r.value]));
   const tlds = m.get("domain_tlds");
+  const packs = m.get("change_packs");
+  const changePacks = Array.isArray(packs)
+    ? packs.map((p) => ({ qty: Math.floor(num((p as ChangePack)?.qty, 0)), price: num((p as ChangePack)?.price, 0) })).filter((p) => p.qty > 0 && p.price > 0)
+    : [];
   return {
     currency: typeof m.get("billing_currency") === "string" ? String(m.get("billing_currency")).toUpperCase() : DEFAULT_BILLING.currency,
     usdRate: num(m.get("usd_to_billing_rate"), DEFAULT_BILLING.usdRate),
@@ -38,6 +50,10 @@ export function billingFromSettings(rows: { key: string; value: unknown }[]): Bi
     tlds: Array.isArray(tlds) && tlds.length ? tlds.map((t) => String(t).toLowerCase().replace(/^\./, "")) : DEFAULT_BILLING.tlds,
     freeChanges: Math.floor(num(m.get("free_preview_changes"), DEFAULT_BILLING.freeChanges)),
     graceDays: Math.floor(num(m.get("renewal_grace_days"), DEFAULT_BILLING.graceDays)),
+    previewDailyBudgetUsd: num(m.get("free_preview_daily_budget_usd"), DEFAULT_BILLING.previewDailyBudgetUsd),
+    maxSignupsPerIpDay: Math.floor(num(m.get("max_signups_per_ip_day"), DEFAULT_BILLING.maxSignupsPerIpDay)),
+    includedChanges: Math.floor(num(m.get("included_changes_year"), DEFAULT_BILLING.includedChanges)),
+    changePacks: changePacks.length ? changePacks : DEFAULT_BILLING.changePacks,
   };
 }
 

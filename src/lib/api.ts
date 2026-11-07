@@ -42,6 +42,6 @@ export async function requireUnlocked(access: { user: { id: string }; project: {
 export function errorResponse(e: unknown) {
   const code = (e as { code?: string })?.code ?? "error";
   const message = e instanceof Error ? e.message : String(e);
-  const status = code === "ai_not_configured" || code === "not_configured" ? 503 : code === "invalid_state" ? 409 : code === "payment_required" ? 402 : 500;
+  const status = code === "ai_not_configured" || code === "not_configured" ? 503 : code === "invalid_state" ? 409 : code === "payment_required" ? 402 : code === "preview_paused" ? 429 : 500;
   return fail(code, message, status);
 }
