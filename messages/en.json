@@ -242,7 +242,9 @@
       "invalidCredentials": "Incorrect email or password.",
       "emailTaken": "An account with this email already exists.",
       "generic": "The operation could not be completed. Please try again.",
-      "rateLimited": "Too many attempts. Wait a moment and try again."
+      "rateLimited": "Too many attempts. Wait a moment and try again.",
+      "disposableEmail": "Use a permanent email address (temporary emails are not allowed).",
+      "tooManySignups": "Too many accounts were created from this connection today. Try again tomorrow or contact us."
     }
   },
   "app": {
@@ -433,6 +435,9 @@
         },
         "subscription": {
           "renewed": "Plan renewed"
+        },
+        "changes": {
+          "purchased": "Change pack purchased"
         }
       },
       "kind": "Solution type",
@@ -514,7 +519,7 @@
       "domainPending": "Pending DNS",
       "dnsInstruction": "Create a {type} record: {name} → {value}",
       "verifyDns": "Verify DNS",
-      "domainBuyNote": "If you don't have a domain yet, buy one at a registrar (e.g. Cloudflare, Namecheap, GoDaddy) and point DNS as shown. In-app purchase arrives with the registrar integration.",
+      "domainBuyNote": "If you already own a domain, enter it above and point DNS as shown. If you'd like us to register one for you, contact us from Support.",
       "deployVercel": "Deploy to Vercel",
       "vercelNotConfigured": "Vercel deployment not configured (VERCEL_TOKEN). Ideon hosting doesn't need it.",
       "deployments": "Deployments",
@@ -541,7 +546,9 @@
       "extractNone": "publish only",
       "freeChangesLeft": "Free preview · {n} of {total} changes left",
       "activateProject": "Activate project",
-      "payOnActivate": "This proposal is paid when you activate the project, together with the first year of hosting and domain (Publish tab). Until then the preview is free."
+      "payOnActivate": "This proposal is paid when you activate the project, together with the first year of hosting and domain (Publish tab). Until then the preview is free.",
+      "planChangesLeft": "Plan changes this year: {n} of {total} left",
+      "buyMoreChanges": "Buy more changes"
     },
     "settings": {
       "title": "Settings",
@@ -654,7 +661,11 @@
         "none": "No date"
       },
       "renew": "Renew 1 year",
-      "renewFailed": "Could not start the renewal"
+      "renewFailed": "Could not start the renewal",
+      "changesTitle": "Chat changes",
+      "changesLeft": "{left} of {total} left",
+      "changesHelp": "Your plan includes {n} changes per year. If you need more, buy a pack (used during the current year).",
+      "buyPack": "{qty} changes · {price}"
     }
   },
   "common": {
@@ -754,7 +765,19 @@
       "usage": "Usage by model",
       "calls": "Calls",
       "cost": "Cost",
-      "noUsage": "No usage."
+      "noUsage": "No usage.",
+      "previews": "Free previews",
+      "todayFree": "Free spend today / daily cap",
+      "freeCost14": "AI on previews (14 days)",
+      "paidCost14": "AI on activated projects (14 days)",
+      "conversion14": "Activated / created (14 days)",
+      "previewsHelp": "Preview spend counts calls made before a project is activated. When the daily cap is reached, new previews wait until the next day (activated projects keep running). Change the cap in Settings (free_preview_daily_budget_usd).",
+      "day": "Day",
+      "freeCost": "Free AI",
+      "paidCost": "Paid AI",
+      "created": "Created",
+      "activated": "Activated",
+      "costPerActivation": "Free cost per activation"
     },
     "pricing": {
       "help": "'From' price per plan. Empty = 'priced by scope' on the site and in proposals.",
@@ -800,7 +823,11 @@
       "domainMarkup": "Markup (%) over the registrar's domain cost.",
       "domainTlds": "Domain extensions offered (JSON list).",
       "freeChanges": "Free chat changes in the preview before paying.",
-      "graceDays": "Days after expiry before the site is suspended."
+      "graceDays": "Days after expiry before the site is suspended.",
+      "previewBudget": "Daily cap (USD) on AI spend for free previews across the platform.",
+      "maxSignups": "Maximum new accounts per connection in 24 hours.",
+      "includedChanges": "Chat changes included per year in the annual plan.",
+      "changePacks": "Extra change packs: JSON list of objects with qty (changes) and price (billing currency)."
     }
   },
   "attachments": {

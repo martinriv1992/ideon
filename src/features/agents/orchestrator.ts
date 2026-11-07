@@ -1,6 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { DEFAULT_POLICIES, estimateCostUsd, getProvider, type AgentTask, type ModelPolicy } from "@/lib/ai/provider";
+import { DEFAULT_POLICIES, estimateCostUsd, getProvider, type AgentTask, type ModelPolicy, type PolicyKey } from "@/lib/ai/provider";
 import {
   architectSystem, architectUser, cleanHtml, consultantSystem, consultantUser, developerSystem, developerUser,
   extractJson, isAppKind, isCompleteHtml, modifySystem, modifyUser, normalizeConsultant, parseModifyOutput,
@@ -24,7 +24,7 @@ export class OrchestratorError extends Error {
 }
 
 // ----------------------------------------------------------------- utilidades
-async function getPolicy(db: Admin, task: AgentTask): Promise<ModelPolicy> {
+async function getPolicy(db: Admin, task: PolicyKey): Promise<ModelPolicy> {
   const { data } = await db.from("model_policies").select("*").eq("task", task).maybeSingle();
   if (!data) return DEFAULT_POLICIES[task];
   return { task, provider: data.provider, model: data.model, maxOutputTokens: data.max_output_tokens, inputCostPerMtok: Number(data.input_cost_per_mtok), outputCostPerMtok: Number(data.output_cost_per_mtok) };
@@ -74,9 +74,28 @@ async function setStatus(db: Admin, project: Project, status: ProjectStatus, ext
   project.status = status;
 }
 
+/** El creador del proyecto es administrador de la plataforma (sin límites de la vista previa). */
+async function creatorIsAdmin(db: Admin, project: Project) {
+  if (!project.created_by) return false;
+  const { data } = await db.from("profiles").select("is_platform_admin").eq("id", project.created_by).maybeSingle();
+  return Boolean(data?.is_platform_admin);
+}
+
+async function billing(db: Admin) {
+  return billingFromSettings((await db.from("platform_settings").select("key,value")).data ?? []);
+}
+
 /** Ejecuta una llamada al modelo registrándola como agent_run y en ai_usage. */
 async function callModel(db: Admin, project: Project, conversationId: string, task: AgentTask, agent: AgentType, system: string, user: string) {
-  const policy = await getPolicy(db, task);
+  // Vista previa gratuita: modelos económicos y freno diario de gasto de toda la plataforma.
+  const preview = !project.paid_at;
+  if (preview && !(await creatorIsAdmin(db, project))) {
+    const [s, { data: spend }] = await Promise.all([billing(db), db.rpc("free_preview_spend_today")]);
+    if (Number(spend ?? 0) >= s.previewDailyBudgetUsd) {
+      throw new OrchestratorError("preview_paused", "Hoy hemos alcanzado el cupo de vistas previas gratuitas. Tu proyecto está guardado: vuelve mañana para continuar, o actívalo para seguir sin esperar.");
+    }
+  }
+  const policy = await getPolicy(db, preview && (task === "developer" || task === "modify") ? `${task}_preview` : task);
   const provider = await getProvider();
   const { data: run } = await db.from("agent_runs").insert({
     project_id: project.id, conversation_id: conversationId, agent_type: agent, step: task, provider: provider.name, model: policy.model, status: "running", started_at: new Date().toISOString(),
@@ -250,9 +269,10 @@ export async function handleUserMessage(projectId: string) {
   const last = [...messages].reverse().find((m) => m.role === "user");
   if (!last) return;
   if (project.current_version_id) {
+    const admin = await creatorIsAdmin(db, project);
     // Vista previa gratuita: un número limitado de cambios antes de activar el proyecto.
-    if (!project.paid_at) {
-      const s = billingFromSettings((await db.from("platform_settings").select("key,value")).data ?? []);
+    if (!project.paid_at && !admin) {
+      const s = await billing(db);
       if (project.free_changes_used >= s.freeChanges) {
         await postAssistant(db, conversation.id,
           `Has usado los ${s.freeChanges} cambios incluidos en la vista previa gratuita. Para seguir ajustando tu ${isAppKind(project.kind) ? "aplicación" : "sitio"}, publicarlo y conectar tu dominio, activa el proyecto en la pestaña Publicar.`,
@@ -260,6 +280,20 @@ export async function handleUserMessage(projectId: string) {
         return;
       }
       await db.from("projects").update({ free_changes_used: project.free_changes_used + 1 }).eq("id", projectId);
+    }
+    // Proyecto activado: cambios incluidos por año + paquetes comprados.
+    if (project.paid_at && !admin) {
+      const s = await billing(db);
+      const { data: sub } = await db.from("subscriptions").select("id,changes_used,extra_changes").eq("project_id", projectId).eq("plan", "hosting_domain").maybeSingle();
+      if (sub) {
+        if (sub.changes_used >= s.includedChanges + sub.extra_changes) {
+          await postAssistant(db, conversation.id,
+            `Has usado los ${s.includedChanges + sub.extra_changes} cambios disponibles en tu plan este año. Puedes comprar un paquete de cambios adicionales en la pestaña Publicar y seguimos enseguida.`,
+            "developer", { locked: "changes" });
+          return;
+        }
+        await db.from("subscriptions").update({ changes_used: sub.changes_used + 1 }).eq("id", sub.id);
+      }
     }
     return runModify(projectId, last.content);
   }

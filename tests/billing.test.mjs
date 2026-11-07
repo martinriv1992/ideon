@@ -71,3 +71,20 @@ test("estados e importes de ePayco", () => {
   assert.equal(sameAmount("240000.00", 240000), true);
   assert.equal(sameAmount("240000", "239999"), false);
 });
+
+test("ajustes de vistas previas, registro y paquetes de cambios", () => {
+  const d = billingFromSettings([]);
+  assert.equal(d.previewDailyBudgetUsd, 5);
+  assert.equal(d.maxSignupsPerIpDay, 3);
+  assert.equal(d.includedChanges, 20);
+  assert.deepEqual(d.changePacks, [{ qty: 10, price: 49000 }, { qty: 30, price: 119000 }]);
+  const s = billingFromSettings([
+    { key: "free_preview_daily_budget_usd", value: 2.5 },
+    { key: "included_changes_year", value: "15" },
+    { key: "change_packs", value: [{ qty: 5, price: 25000 }, { qty: 0, price: 1 }, { qty: "x" }] },
+  ]);
+  assert.equal(s.previewDailyBudgetUsd, 2.5);
+  assert.equal(s.includedChanges, 15);
+  assert.deepEqual(s.changePacks, [{ qty: 5, price: 25000 }]); // los paquetes inválidos se descartan
+  assert.deepEqual(billingFromSettings([{ key: "change_packs", value: [] }]).changePacks, d.changePacks);
+});

@@ -242,7 +242,9 @@
       "invalidCredentials": "Correo o contraseña incorrectos.",
       "emailTaken": "Ya existe una cuenta con este correo.",
       "generic": "No se pudo completar la operación. Inténtalo de nuevo.",
-      "rateLimited": "Demasiados intentos. Espera un momento y vuelve a intentarlo."
+      "rateLimited": "Demasiados intentos. Espera un momento y vuelve a intentarlo.",
+      "disposableEmail": "Usa un correo permanente (no se admiten correos temporales).",
+      "tooManySignups": "Se han creado demasiadas cuentas desde esta conexión hoy. Inténtalo mañana o escríbenos."
     }
   },
   "app": {
@@ -433,6 +435,9 @@
         },
         "subscription": {
           "renewed": "Plan renovado"
+        },
+        "changes": {
+          "purchased": "Paquete de cambios comprado"
         }
       },
       "kind": "Tipo de solución",
@@ -514,7 +519,7 @@
       "domainPending": "Pendiente de DNS",
       "dnsInstruction": "Crea un registro {type}: {name} → {value}",
       "verifyDns": "Verificar DNS",
-      "domainBuyNote": "Si aún no tienes dominio, cómpralo en un registrador (p. ej. Cloudflare, Namecheap, GoDaddy) y apunta el DNS como se indica. La compra desde la app llega con la integración de registradores.",
+      "domainBuyNote": "Si ya tienes un dominio, escríbelo arriba y apunta el DNS como se indica. Si prefieres que lo registremos por ti, escríbenos desde Soporte.",
       "deployVercel": "Desplegar en Vercel",
       "vercelNotConfigured": "Despliegue en Vercel no configurado (VERCEL_TOKEN). El hosting en Ideon no lo necesita.",
       "deployments": "Despliegues",
@@ -541,7 +546,9 @@
       "extractNone": "solo para publicar",
       "freeChangesLeft": "Vista previa gratis · te quedan {n} de {total} cambios",
       "activateProject": "Activar proyecto",
-      "payOnActivate": "Esta propuesta se paga al activar el proyecto, junto con el primer año de hosting y dominio (pestaña Publicar). Antes puedes ver la vista previa gratis."
+      "payOnActivate": "Esta propuesta se paga al activar el proyecto, junto con el primer año de hosting y dominio (pestaña Publicar). Antes puedes ver la vista previa gratis.",
+      "planChangesLeft": "Cambios del plan este año: te quedan {n} de {total}",
+      "buyMoreChanges": "Comprar más cambios"
     },
     "settings": {
       "title": "Configuración",
@@ -654,7 +661,11 @@
         "none": "Sin fecha"
       },
       "renew": "Renovar 1 año",
-      "renewFailed": "No se pudo iniciar la renovación"
+      "renewFailed": "No se pudo iniciar la renovación",
+      "changesTitle": "Cambios por chat",
+      "changesLeft": "Quedan {left} de {total}",
+      "changesHelp": "Tu plan incluye {n} cambios al año. Si necesitas más, compra un paquete (se usan durante el año en curso).",
+      "buyPack": "{qty} cambios · {price}"
     }
   },
   "common": {
@@ -754,7 +765,19 @@
       "usage": "Consumo por modelo",
       "calls": "Llamadas",
       "cost": "Coste",
-      "noUsage": "Sin consumo."
+      "noUsage": "Sin consumo.",
+      "previews": "Vistas previas gratuitas",
+      "todayFree": "Gasto gratis hoy / tope diario",
+      "freeCost14": "IA en vistas previas (14 días)",
+      "paidCost14": "IA en proyectos activados (14 días)",
+      "conversion14": "Activados / creados (14 días)",
+      "previewsHelp": "El gasto en vistas previas cuenta las llamadas de proyectos antes de activarse. Al llegar al tope diario, las vistas previas nuevas esperan al día siguiente (los proyectos activados no se detienen). El tope se cambia en Configuración (free_preview_daily_budget_usd).",
+      "day": "Día",
+      "freeCost": "IA gratis",
+      "paidCost": "IA pagada",
+      "created": "Creados",
+      "activated": "Activados",
+      "costPerActivation": "Coste gratis por activación"
     },
     "pricing": {
       "help": "Precio «desde» de cada modalidad. Vacío = «según alcance» en la web y en las propuestas.",
@@ -800,7 +823,11 @@
       "domainMarkup": "Margen (%) sobre el coste del dominio en el registrador.",
       "domainTlds": "Extensiones de dominio que se ofrecen (lista JSON).",
       "freeChanges": "Cambios por chat gratis en la vista previa antes de pagar.",
-      "graceDays": "Días tras el vencimiento antes de suspender el sitio."
+      "graceDays": "Días tras el vencimiento antes de suspender el sitio.",
+      "previewBudget": "Tope diario (USD) de gasto de IA en vistas previas gratuitas de toda la plataforma.",
+      "maxSignups": "Máximo de cuentas nuevas por conexión en 24 horas.",
+      "includedChanges": "Cambios por chat incluidos por año en el plan anual.",
+      "changePacks": "Paquetes de cambios adicionales: lista JSON de objetos con qty (cambios) y price (en la moneda de cobro)."
     }
   },
   "attachments": {

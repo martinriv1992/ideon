@@ -2,6 +2,7 @@
 
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
+import { checkAndRecordSignup, isDisposableEmail } from "./abuse";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import {
@@ -60,6 +61,8 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   if (!parsed.success) return { fieldErrors: fieldErrorsFrom(parsed.error) };
 
   const { fullName, email, password, locale, next } = parsed.data;
+  if (await isDisposableEmail(email)) return { fieldErrors: { email: "disposableEmail" } };
+  if ((await checkAndRecordSignup()) === "too_many") return { error: "tooManySignups" };
   const supabase = await createClient();
   const nextPath = safeNext(next, "/projects/new");
   const { data, error } = await supabase.auth.signUp({

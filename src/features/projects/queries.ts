@@ -34,6 +34,10 @@ export interface ProjectDetail {
   /** Vista previa gratuita: cambios incluidos y si el usuario es administrador de la plataforma. */
   freeChanges: number;
   isPlatformAdmin: boolean;
+  /** Paquete anual: cambios incluidos por año, paquetes en venta y moneda de cobro. */
+  includedChanges: number;
+  changePacks: { qty: number; price: number }[];
+  billingCurrency: string;
   /** Archivos del proyecto (sin el texto extraído, que solo usan los agentes). */
   assets: Omit<ProjectAsset, "text_content">[];
   deployments: Deployment[];
@@ -88,6 +92,7 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
   return {
     project, conversation, messages, events: events ?? [],
     proposal: proposals?.[0] ?? null, specification: specs?.[0] ?? null, versions: versions ?? [], images: images ?? [], assets: assets ?? [], domainOrder: domainOrder ?? null, subscription: subscription ?? null, freeChanges: billingFromSettings(settings ?? []).freeChanges, isPlatformAdmin: Boolean(profile?.is_platform_admin),
+    includedChanges: billingFromSettings(settings ?? []).includedChanges, changePacks: billingFromSettings(settings ?? []).changePacks, billingCurrency: billingFromSettings(settings ?? []).currency,
     deployments: deployments ?? [], site: site ?? null, activeRun,
     aiConfigured: aiProviderName() !== null,
     vercelConfigured: Boolean(process.env.VERCEL_TOKEN),

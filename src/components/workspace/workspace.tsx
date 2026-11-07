@@ -18,7 +18,7 @@ import type { ProjectDetail } from "@/features/projects/queries";
 import type { Json, Message } from "@/types/database.types";
 import { cn, formatDate } from "@/lib/utils";
 import { uploadToProject } from "@/lib/upload-client";
-import { DomainOrderCard, LaunchPanel } from "@/components/workspace/launch-panel";
+import { ChangesCard, DomainOrderCard, LaunchPanel } from "@/components/workspace/launch-panel";
 import { ASSET_ACCEPT, IMAGE_ACCEPT, MAX_ASSETS, MAX_IMAGES, assetTypeFor, classifyUpload, estimateTokens } from "@/lib/uploads";
 
 type LeftTab = "conversation" | "history";
@@ -112,7 +112,11 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
               onOpenProposal={() => setRightTab("proposal")}
               waitingApproval={project.status === "proposal"}
               previewNote={project.current_version_id && !project.paid_at && !detail.isPlatformAdmin
-                ? t("freeChangesLeft", { n: Math.max(0, detail.freeChanges - project.free_changes_used), total: detail.freeChanges }) : null}
+                ? t("freeChangesLeft", { n: Math.max(0, detail.freeChanges - project.free_changes_used), total: detail.freeChanges })
+                : project.paid_at && detail.subscription && !detail.isPlatformAdmin
+                  ? t("planChangesLeft", { n: Math.max(0, detail.includedChanges + detail.subscription.extra_changes - detail.subscription.changes_used), total: detail.includedChanges + detail.subscription.extra_changes })
+                  : null}
+              noteAction={project.paid_at ? t("buyMoreChanges") : t("activateProject")}
               onOpenPublish={() => setRightTab("publish")}
             />
           ) : (
@@ -203,6 +207,7 @@ function errCopy(e: unknown, t: ReturnType<typeof useTranslations>) {
   if (code === "busy") return t("errors.busy");
   if (code === "invalid_json") return t("errors.invalidJson");
   if (code === "truncated") return t("errors.truncated");
+  if (code === "preview_paused") return (e as Error).message;
   return t("errors.generic", { message: (e as Error)?.message ?? "" });
 }
 
@@ -225,10 +230,10 @@ function Field({ label, children }: { label: string; children?: React.ReactNode 
 }
 
 /* ------------------------------------------------------------- conversación */
-function Conversation({ messages, busy, error, disabled, canAnswer, onSend, onRetryBuild, onOpenProposal, waitingApproval, previewNote, onOpenPublish }: {
+function Conversation({ messages, busy, error, disabled, canAnswer, onSend, onRetryBuild, onOpenProposal, waitingApproval, previewNote, onOpenPublish, noteAction }: {
   messages: Message[]; busy: string | null; error: string | null; disabled: boolean; canAnswer: boolean;
   onSend: (c: string) => void; onRetryBuild: () => void; onOpenProposal: () => void; waitingApproval: boolean;
-  previewNote: string | null; onOpenPublish: () => void;
+  previewNote: string | null; onOpenPublish: () => void; noteAction: string;
 }) {
   const t = useTranslations("app.workspace");
   const [text, setText] = useState("");
@@ -320,7 +325,7 @@ function Conversation({ messages, busy, error, disabled, canAnswer, onSend, onRe
         {previewNote && (
           <p className="mb-2 flex items-center justify-between gap-2 text-[12px] text-fg-muted">
             <span>{previewNote}</span>
-            <button type="button" onClick={onOpenPublish} className="text-accent hover:underline shrink-0">{t("activateProject")}</button>
+            <button type="button" onClick={onOpenPublish} className="text-accent hover:underline shrink-0">{noteAction}</button>
           </p>
         )}
         <div className="rounded-[12px] border border-border bg-surface focus-within:border-accent/60 transition-colors">
@@ -634,6 +639,7 @@ function PublishPanelUnlocked({ detail }: { detail: ProjectDetail }) {
   return (
     <div className="space-y-5">
       <DomainOrderCard detail={detail} />
+      <ChangesCard detail={detail} />
       <Field label={t("publishOnIdeon")}>
         <p className="text-fg-muted leading-relaxed mb-2">{t("publishHelp")}</p>
         <div className="flex gap-1.5">
@@ -667,11 +673,12 @@ function PublishPanelUnlocked({ detail }: { detail: ProjectDetail }) {
         )}
       </Field>
 
-      <Field label="Vercel">
-        {vercelConfigured ? (
+      {/* Despliegue en un proyecto propio de Vercel: herramienta interna, solo para administradores. */}
+      {detail.isPlatformAdmin && vercelConfigured && (
+        <Field label="Vercel">
           <Button size="sm" variant="secondary" loading={busy === "vercel"} disabled={!canPublish} onClick={() => go("vercel", () => api(`/api/projects/${project.id}/publish`, { method: "POST", body: JSON.stringify({ target: "vercel", slug: slug || undefined }) }))}><Rocket className="size-4" /> {t("deployVercel")}</Button>
-        ) : <p className="text-fg-muted">{t("vercelNotConfigured")}</p>}
-      </Field>
+        </Field>
+      )}
 
       {deployments.length > 0 && (
         <Field label={t("deployments")}>

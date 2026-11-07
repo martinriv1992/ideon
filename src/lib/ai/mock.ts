@@ -15,7 +15,7 @@ export const mockProvider: AIProvider = {
   async complete(req: CompletionRequest): Promise<CompletionResult> {
     const out = (text: string): CompletionResult => ({
       text,
-      model: "mock-1",
+      model: `mock:${req.model}`, // deja ver en las pruebas qué modelo real se habría usado
       inputTokens: Math.ceil((req.system.length + req.user.length) / 4),
       outputTokens: Math.ceil(text.length / 4),
       truncated: false,

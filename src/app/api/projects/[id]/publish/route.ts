@@ -14,6 +14,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (locked) return locked;
   const body = z.object({ target: z.enum(["ideon", "vercel"]).default("ideon"), slug: z.string().max(40).optional(), versionId: z.string().uuid().optional() }).safeParse(await req.json().catch(() => ({})));
   if (!body.success) return fail("invalid", "Parámetros no válidos");
+  if (body.data.target === "vercel") {
+    // Crear proyectos en la cuenta de Vercel de la plataforma es una herramienta interna.
+    const { data: profile } = await access.supabase.from("profiles").select("is_platform_admin").eq("id", access.user.id).maybeSingle();
+    if (!profile?.is_platform_admin) return fail("forbidden", "No disponible", 403);
+  }
   try {
     return json(await publishProject(id, access.user.id, body.data));
   } catch (e) {
