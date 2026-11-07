@@ -10,7 +10,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { architectSystem, architectUser, cleanHtml, developerSystem, developerUser, extractJson, isCompleteHtml } from "../dist-tests/features/agents/prompts.js";
-import { runQa, qaSummary } from "../dist-tests/features/agents/qa.js";
+import { jsSyntaxErrors, runQa, qaSummary } from "../dist-tests/features/agents/qa.js";
 
 const MODEL = process.env.SHOWCASE_MODEL || "claude-sonnet-5-5";
 const PRICE = { in: 2, out: 10 }; // USD por millón de tokens (Sonnet 5.5)
@@ -37,6 +37,26 @@ const DEMOS = [
     summary: { es: "Productos, entradas y salidas, alertas de stock mínimo y proveedores.", en: "Products, stock in/out, low-stock alerts and suppliers." },
     idea: "Inventario para una ferretería de barrio: productos por categoría, movimientos de entrada y salida, proveedores y alertas de stock bajo.",
     brief: { name: "Ferretería El Tornillo · Inventario", goal: "Saber qué hay, qué falta y qué pedir", roles: ["administrador", "vendedor"], entities: ["productos", "movimientos", "proveedores", "categorías"], features: ["alertas de stock mínimo", "entradas y salidas que actualizan existencias", "valor del inventario", "búsqueda por código"], style: "Funcional, gris grafito con acento naranja", sampleData: true, language: "es" },
+  },
+  {
+    slug: "inventario-produccion", kind: "inventory",
+    title: { es: "Inventario con producción", en: "Inventory with production" },
+    summary: { es: "Insumos, recetas, lotes de producción, pedidos, qué comprar y conteo físico.", en: "Supplies, recipes, production batches, orders, what to buy and stock counts." },
+    idea: "Inventario para una jabonería artesanal que fabrica sus productos: insumos, recetas, producción por lotes, producto terminado, pedidos de clientes y compras.",
+    brief: { name: "Espuma de Monte · Inventario", goal: "Saber qué insumos hay, qué producir y qué comprar sin quedarse sin stock", roles: ["administración", "producción"],
+      entities: ["insumos", "movimientos", "recetas", "lotes de producción", "producto terminado", "pedidos", "proveedores", "conteos físicos"],
+      features: ["insumos con código, categoría, unidad, proveedor, stock mínimo y costo unitario", "entradas y salidas con motivo que actualizan el stock", "recetas: insumos por unidad de cada producto", "registrar un lote de producción descuenta los insumos de la receta y suma producto terminado", "pedidos de clientes con estados pendiente, producido, entregado y cancelado", "lista de qué comprar según stock mínimo y consumo reciente, con texto listo para enviar por WhatsApp al proveedor", "conteo físico con diferencias frente al sistema", "panel con alertas de stock bajo, lo que más sale en 30 días y actividad reciente"],
+      style: "Natural y ordenado: verde salvia, crema y madera", sampleData: true, language: "es", notes: "Datos ficticios; precios en COP." },
+  },
+  {
+    slug: "crm-ventas", kind: "crm",
+    title: { es: "CRM de ventas con cotizaciones", en: "Sales CRM with quotes" },
+    summary: { es: "Embudo por etapas, seguimientos, historial y cotizaciones con descuentos e impuestos.", en: "Stage pipeline, follow-ups, history and quotes with discounts and taxes." },
+    idea: "CRM comercial para una distribuidora mayorista: embudo de ventas, contactos, seguimientos y cotizaciones a clientes.",
+    brief: { name: "Nativa Distribuciones · CRM", goal: "Ordenar la prospección, no olvidar seguimientos y cotizar rápido", roles: ["asesor comercial", "gerente comercial"],
+      entities: ["contactos", "oportunidades", "seguimientos", "interacciones", "cotizaciones", "productos", "cadencias"],
+      features: ["embudo comercial por etapas (nuevo, contactado, interesado, cotizado, negociación, ganado, perdido) con valor estimado y cambio de etapa", "contactos con tipo de negocio, fuente, ciudad, responsable y lista de precios habitual", "seguimientos con fecha y tarea, con vencidos y de hoy destacados", "historial de interacciones por contacto (llamada, WhatsApp, correo, visita)", "cotizaciones: cliente, productos del catálogo con cantidades, lista de precios, descuento sobre precio público, descuento por volumen, descuento adicional, envío, impuestos, validez en días, condiciones y notas, con numeración consecutiva COT-0001", "estados de cotización (borrador, enviada, aceptada, rechazada, vencida) y vista lista para imprimir y texto para WhatsApp", "cadencias de seguimiento con pasos por día y canal", "indicadores: valor del embudo, tasa de cierre, cotizaciones abiertas y seguimientos vencidos", "ajustes: equipo comercial, prefijo y próximo número de cotización, validez por defecto"],
+      style: "Profesional y cálido: verde oliva, arena y blanco roto", sampleData: true, language: "es", notes: "Datos ficticios; precios en COP." },
   },
   {
     slug: "gestion-taller", kind: "erp",
@@ -86,14 +106,28 @@ async function generate(demo) {
   const arch = await call("architect", architectSystem(demo.kind), architectUser({ brief: demo.brief, idea: demo.idea, images: [] }), 8192);
   const spec = extractJson(arch.text);
   if (!spec?.pages) throw new Error(`${demo.slug}: especificación no válida`);
-  const dev = await call("developer", developerSystem(demo.kind), developerUser({ spec, images: [] }) + "\n\nNOTA: es una DEMO pública de Ideon; todos los datos (nombres, teléfonos, direcciones, cifras) deben ser claramente ficticios.", 32000);
-  const html = cleanHtml(dev.text);
-  if (!isCompleteHtml(html) || dev.truncated) throw new Error(`${demo.slug}: HTML incompleto`);
+  const devUser = developerUser({ spec, images: [] }) + "\n\nNOTA: es una DEMO pública de Ideon; todos los datos (nombres, teléfonos, direcciones, cifras) deben ser claramente ficticios.";
+  const MAX = Number(process.env.SHOWCASE_MAX_TOKENS) || 32000;
+  let dev = await call("developer", developerSystem(demo.kind), devUser, MAX);
+  let html = cleanHtml(dev.text);
+  const calls = [arch.usage, dev.usage];
+  // Igual que la plataforma: si el JavaScript sale con errores de sintaxis, un reintento.
+  const jsErr = isCompleteHtml(html) && !dev.truncated ? jsSyntaxErrors(html) : [];
+  if (jsErr.length) {
+    console.log(`${demo.slug}: error de sintaxis (${jsErr[0]}), reintentando`);
+    dev = await call("developer", developerSystem(demo.kind), devUser + `\n\nIMPORTANTE: un intento anterior produjo JavaScript con un error de sintaxis (${jsErr[0]}). Genera de nuevo el HTML completo y revisa que todo el JavaScript sea válido (paréntesis, llaves y comillas equilibrados).`, MAX);
+    html = cleanHtml(dev.text); calls.push(dev.usage);
+  }
+  if (!isCompleteHtml(html) || dev.truncated) {
+    // El intento fallido también se paga: se registra su coste.
+    const lost = calls.reduce((n, u) => n + cost(u), 0);
+    throw new Error(`${demo.slug}: HTML incompleto (${calls.map((u) => `${u.input_tokens}→${u.output_tokens}`).join(", ")} tokens · $${lost.toFixed(3)} gastados)`);
+  }
   const qa = qaSummary(runQa(html, { app: demo.kind !== "web", imageIds: [] }));
   await fs.writeFile(path.join(OUT, `${demo.slug}.html`), html);
-  const usd = cost(arch.usage) + cost(dev.usage);
-  console.log(`${demo.slug}: ${Math.round(html.length / 1024)} KB · QA ${qa.ok}/${qa.total} (${qa.bad} graves) · ${dev.usage.output_tokens} tokens de salida · $${usd.toFixed(3)}`);
-  return { slug: demo.slug, kind: demo.kind, title: demo.title, summary: demo.summary, idea: demo.idea, name: spec.name ?? demo.brief.name, model: MODEL, qa, costUsd: Number(usd.toFixed(4)), generatedAt: new Date().toISOString() };
+  const usd = calls.reduce((n, u) => n + cost(u), 0);
+  console.log(`${demo.slug}: ${Math.round(html.length / 1024)} KB · QA ${qa.ok}/${qa.total} (${qa.bad} graves) · ${calls.length} llamadas · ${calls.map((u) => `${u.input_tokens}→${u.output_tokens}`).join(", ")} tokens · $${usd.toFixed(3)}`);
+  return { slug: demo.slug, kind: demo.kind, title: demo.title, summary: demo.summary, idea: demo.idea, name: spec.name ?? demo.brief.name, model: MODEL, qa, calls: calls.length, costUsd: Number(usd.toFixed(4)), generatedAt: new Date().toISOString() };
 }
 
 await fs.mkdir(OUT, { recursive: true });
