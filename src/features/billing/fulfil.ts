@@ -108,7 +108,8 @@ async function fulfilRenewal(db: Admin, projectId: string, meta: PaymentMeta) {
   // Nuevo año: el contador de cambios se reinicia y los paquetes no usados no se acumulan.
   await db.from("subscriptions").update({ status: "active", current_period_end: addYear(base).toISOString(), changes_used: 0, extra_changes: 0 }).eq("id", sub.id);
   await event(db, projectId, "subscription.renewed", { until: addYear(base).toISOString() });
-  if (sub.domain) {
+  // En modo de pruebas de ePayco el pago es ficticio: no se renueva el dominio real.
+  if (sub.domain && process.env.EPAYCO_TEST !== "true") {
     try {
       const p = await registrar.price(sub.domain);
       if (p.renewalPrice == null) throw new Error("Sin precio de renovación");
@@ -126,6 +127,12 @@ export async function purchaseDomain(orderId: string) {
   const db = createAdminClient();
   const { data: order } = await db.from("domain_orders").update({ status: "purchasing" }).eq("id", orderId).eq("status", "awaiting_payment").select("*").maybeSingle();
   if (!order) return;
+  // Con ePayco en modo de pruebas el pago es ficticio: nunca se compra un dominio real.
+  if (process.env.EPAYCO_TEST === "true") {
+    await db.from("domain_orders").update({ status: "failed", error: "Modo de pruebas de ePayco: el dominio no se compra." }).eq("id", order.id);
+    await event(db, order.project_id, "domain.failed", { domain: order.domain, message: "test_mode" });
+    return;
+  }
   try {
     if (!(await registrar.availability(order.domain))) throw new registrar.RegistrarError("unavailable", "El dominio ya no está disponible");
     const p = await registrar.price(order.domain);
