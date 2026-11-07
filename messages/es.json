@@ -814,7 +814,7 @@
       "requireApproval": "true: el cliente debe aprobar la propuesta antes de construir.",
       "requirePayment": "true: exigir pago antes de construir (requiere pasarela configurada).",
       "currency": "Moneda por defecto de las propuestas.",
-      "siteBase": "URL base de los sitios publicados (opcional, p. ej. https://sites.ideon.app).",
+      "siteBase": "URL base de los sitios publicados (opcional, p. ej. https://sitios.ideonapp.com).",
       "integrations": "Integraciones (variables de entorno)",
       "configured": "configurada",
       "missing": "no configurada",
