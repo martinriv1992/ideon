@@ -44,7 +44,7 @@ export type DeploymentStatus = "pending" | "building" | "live" | "failed" | "rol
 export type DeploymentTarget = "ideon" | "vercel";
 export type ApprovalKind = "deploy" | "custom_domain" | "external_integration" | "spend_over_limit";
 export type ApprovalDecision = "pending" | "approved" | "rejected";
-export type PaymentProvider = "stripe" | "wompi" | "manual";
+export type PaymentProvider = "stripe" | "wompi" | "manual" | "epayco";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 export type SubscriptionStatus = "trialing" | "active" | "past_due" | "cancelled";
 export type TicketStatus = "open" | "in_progress" | "resolved" | "closed";
@@ -124,6 +124,9 @@ export type Project = {
   brief: Json | null;
   current_version_id: string | null;
   active_run_id: string | null;
+  /** Pago de lanzamiento confirmado: fin de la vista previa gratuita. */
+  paid_at: string | null;
+  free_changes_used: number;
   created_at: string;
   updated_at: string;
 };
@@ -135,13 +138,15 @@ export type Specification = { id: string; project_id: string; version: number; c
 export type Proposal = { id: string; project_id: string; specification_id: string | null; plan_key: string | null; complexity: ProjectComplexity; title: string; summary: string | null; items: Json; estimated_days: number | null; price: number | null; currency: string; external_costs: Json; maintenance_option: Json | null; status: ProposalStatus; approved_by: string | null; approved_at: string | null; created_at: string };
 export type ProjectVersion = { id: string; project_id: string; number: number; summary: string | null; run_id: string | null; qa_report: Json | null; created_at: string };
 export type ProjectFile = { id: string; version_id: string; path: string; content: string; content_type: string; size: number };
+export type DomainOrderStatus = "awaiting_payment" | "purchasing" | "configuring" | "active" | "failed" | "cancelled";
+export type DomainOrder = { id: string; organization_id: string; project_id: string; payment_id: string | null; domain: string; years: number; cost_usd: number; status: DomainOrderStatus; vercel_order_id: string | null; contact: Json; error: string | null; expires_at: string | null; created_at: string; updated_at: string };
 export type ProjectAsset = { id: string; project_id: string; name: string; label: string; storage_path: string; mime: string; size: number; use_reference: boolean; use_site: boolean; text_content: string | null; text_chars: number; extract_status: "none" | "ok" | "empty" | "failed" | "unsupported"; created_by: string | null; created_at: string };
 export type ProjectImage = { id: string; project_id: string; label: string; storage_path: string; width: number | null; height: number | null; size: number | null; created_by: string | null; created_at: string };
 export type Approval = { id: string; project_id: string; kind: ApprovalKind; payload: Json; decision: ApprovalDecision; requested_by: string | null; decided_by: string | null; decided_at: string | null; created_at: string };
 export type Deployment = { id: string; project_id: string; version_id: string; target: DeploymentTarget; status: DeploymentStatus; slug: string | null; url: string | null; external_id: string | null; logs: string | null; approval_id: string | null; created_by: string | null; created_at: string; finished_at: string | null };
 export type PublishedSite = { project_id: string; slug: string; version_id: string; custom_domain: string | null; domain_status: string | null; domain_verification: Json | null; published_at: string; updated_at: string };
 export type Payment = { id: string; organization_id: string; project_id: string | null; proposal_id: string | null; provider: PaymentProvider; external_id: string | null; amount: number; currency: string; status: PaymentStatus; metadata: Json; created_at: string; paid_at: string | null };
-export type Subscription = { id: string; organization_id: string; project_id: string | null; provider: PaymentProvider; external_id: string | null; plan: string; amount: number; currency: string; period: string; status: SubscriptionStatus; current_period_end: string | null; created_at: string };
+export type Subscription = { id: string; organization_id: string; project_id: string | null; provider: PaymentProvider; external_id: string | null; plan: string; amount: number; currency: string; period: string; status: SubscriptionStatus; current_period_end: string | null; domain: string | null; renewal_amount: number | null; created_at: string };
 export type Invoice = { id: string; organization_id: string; payment_id: string | null; number: string; amount: number; currency: string; issued_at: string; pdf_url: string | null };
 export type SupportTicket = { id: string; organization_id: string; project_id: string | null; created_by: string | null; subject: string; body: string; status: TicketStatus; created_at: string; updated_at: string };
 export type PlatformSetting = { key: string; value: Json; updated_at: string };
@@ -213,7 +218,7 @@ export type Database = {
       };
       projects: {
         Row: Row<Project>;
-        Insert: Insert<Project, "id" | "created_by" | "category_key" | "status" | "complexity" | "locale" | "archived_at" | "kind" | "brief" | "current_version_id" | "active_run_id" | "created_at" | "updated_at">;
+        Insert: Insert<Project, "id" | "created_by" | "category_key" | "status" | "complexity" | "locale" | "archived_at" | "kind" | "brief" | "current_version_id" | "active_run_id" | "paid_at" | "free_changes_used" | "created_at" | "updated_at">;
         Update: Partial<Project>;
         Relationships: [];
       };
@@ -243,12 +248,13 @@ export type Database = {
       project_versions: { Row: ProjectVersion; Insert: Insert<ProjectVersion, "id" | "summary" | "run_id" | "qa_report" | "created_at">; Update: Partial<ProjectVersion>; Relationships: [] };
       project_files: { Row: ProjectFile; Insert: Insert<ProjectFile, "id" | "content_type" | "size">; Update: Partial<ProjectFile>; Relationships: [] };
       project_images: { Row: ProjectImage; Insert: Insert<ProjectImage, "id" | "width" | "height" | "size" | "created_by" | "created_at">; Update: Partial<ProjectImage>; Relationships: [] };
+      domain_orders: { Row: DomainOrder; Insert: Insert<DomainOrder, "id" | "payment_id" | "years" | "status" | "vercel_order_id" | "error" | "expires_at" | "created_at" | "updated_at">; Update: Partial<DomainOrder>; Relationships: [] };
       project_assets: { Row: ProjectAsset; Insert: Insert<ProjectAsset, "id" | "size" | "use_reference" | "use_site" | "text_content" | "text_chars" | "extract_status" | "created_by" | "created_at">; Update: Partial<ProjectAsset>; Relationships: [] };
       approvals: { Row: Approval; Insert: Insert<Approval, "id" | "payload" | "decision" | "requested_by" | "decided_by" | "decided_at" | "created_at">; Update: Partial<Approval>; Relationships: [] };
       deployments: { Row: Deployment; Insert: Insert<Deployment, "id" | "target" | "status" | "slug" | "url" | "external_id" | "logs" | "approval_id" | "created_by" | "created_at" | "finished_at">; Update: Partial<Deployment>; Relationships: [] };
       published_sites: { Row: PublishedSite; Insert: Insert<PublishedSite, "custom_domain" | "domain_status" | "domain_verification" | "published_at" | "updated_at">; Update: Partial<PublishedSite>; Relationships: [] };
       payments: { Row: Payment; Insert: Insert<Payment, "id" | "project_id" | "proposal_id" | "external_id" | "currency" | "status" | "metadata" | "created_at" | "paid_at">; Update: Partial<Payment>; Relationships: [] };
-      subscriptions: { Row: Subscription; Insert: Insert<Subscription, "id" | "project_id" | "external_id" | "currency" | "period" | "status" | "current_period_end" | "created_at">; Update: Partial<Subscription>; Relationships: [] };
+      subscriptions: { Row: Subscription; Insert: Insert<Subscription, "id" | "project_id" | "external_id" | "currency" | "period" | "status" | "current_period_end" | "domain" | "renewal_amount" | "created_at">; Update: Partial<Subscription>; Relationships: [] };
       invoices: { Row: Invoice; Insert: Insert<Invoice, "id" | "payment_id" | "currency" | "issued_at" | "pdf_url">; Update: Partial<Invoice>; Relationships: [] };
       support_tickets: { Row: SupportTicket; Insert: Insert<SupportTicket, "id" | "project_id" | "created_by" | "status" | "created_at" | "updated_at">; Update: Partial<SupportTicket>; Relationships: [] };
       platform_settings: { Row: PlatformSetting; Insert: Insert<PlatformSetting, "updated_at">; Update: Partial<PlatformSetting>; Relationships: [] };

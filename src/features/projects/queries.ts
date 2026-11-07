@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { aiProviderName } from "@/lib/ai/provider";
+import { billingFromSettings } from "@/features/billing/pricing";
 import type {
-  AgentRun, Conversation, Deployment, Message, Project, ProjectAsset, ProjectEvent, ProjectImage, ProjectVersion, Proposal, PublishedSite, Specification,
+  AgentRun, Conversation, Deployment, DomainOrder, Message, Subscription, Project, ProjectAsset, ProjectEvent, ProjectImage, ProjectVersion, Proposal, PublishedSite, Specification,
 } from "@/types/database.types";
 
 export const ACTIVE_STATUSES = ["approved", "in_development", "review", "ready_to_deploy"] as const;
@@ -27,6 +28,12 @@ export interface ProjectDetail {
   specification: Specification | null;
   versions: ProjectVersion[];
   images: ProjectImage[];
+  /** Último pedido de dominio (no anulado) y paquete anual hosting + dominio. */
+  domainOrder: Omit<DomainOrder, "contact"> | null;
+  subscription: Subscription | null;
+  /** Vista previa gratuita: cambios incluidos y si el usuario es administrador de la plataforma. */
+  freeChanges: number;
+  isPlatformAdmin: boolean;
   /** Archivos del proyecto (sin el texto extraído, que solo usan los agentes). */
   assets: Omit<ProjectAsset, "text_content">[];
   deployments: Deployment[];
@@ -57,6 +64,14 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
   const { data: assets } = await supabase.from("project_assets")
     .select("id,project_id,name,label,storage_path,mime,size,use_reference,use_site,text_chars,extract_status,created_by,created_at")
     .eq("project_id", projectId).order("created_at", { ascending: true });
+  const [{ data: domainOrder }, { data: subscription }, { data: settings }, { data: { user } }] = await Promise.all([
+    supabase.from("domain_orders").select("id,organization_id,project_id,payment_id,domain,years,cost_usd,status,vercel_order_id,error,expires_at,created_at,updated_at")
+      .eq("project_id", projectId).neq("status", "cancelled").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("subscriptions").select("*").eq("project_id", projectId).eq("plan", "hosting_domain").maybeSingle(),
+    supabase.from("platform_settings").select("key,value"),
+    supabase.auth.getUser(),
+  ]);
+  const { data: profile } = user ? await supabase.from("profiles").select("is_platform_admin").eq("id", user.id).maybeSingle() : { data: null };
 
   const conversation = conversations?.[0] ?? null;
   let messages: Message[] = [];
@@ -72,7 +87,7 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
 
   return {
     project, conversation, messages, events: events ?? [],
-    proposal: proposals?.[0] ?? null, specification: specs?.[0] ?? null, versions: versions ?? [], images: images ?? [], assets: assets ?? [],
+    proposal: proposals?.[0] ?? null, specification: specs?.[0] ?? null, versions: versions ?? [], images: images ?? [], assets: assets ?? [], domainOrder: domainOrder ?? null, subscription: subscription ?? null, freeChanges: billingFromSettings(settings ?? []).freeChanges, isPlatformAdmin: Boolean(profile?.is_platform_admin),
     deployments: deployments ?? [], site: site ?? null, activeRun,
     aiConfigured: aiProviderName() !== null,
     vercelConfigured: Boolean(process.env.VERCEL_TOKEN),

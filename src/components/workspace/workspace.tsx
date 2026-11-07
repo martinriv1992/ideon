@@ -18,6 +18,7 @@ import type { ProjectDetail } from "@/features/projects/queries";
 import type { Json, Message } from "@/types/database.types";
 import { cn, formatDate } from "@/lib/utils";
 import { uploadToProject } from "@/lib/upload-client";
+import { DomainOrderCard, LaunchPanel } from "@/components/workspace/launch-panel";
 import { ASSET_ACCEPT, IMAGE_ACCEPT, MAX_ASSETS, MAX_IMAGES, assetTypeFor, classifyUpload, estimateTokens } from "@/lib/uploads";
 
 type LeftTab = "conversation" | "history";
@@ -88,7 +89,7 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
         {isArchived && <Badge tone="warning">{t("archived")}</Badge>}
         <span className="flex-1" />
         {site && <a href={`${detail.siteBaseUrl}/s/${site.slug}`} target="_blank" rel="noreferrer" className="hidden sm:inline-flex"><Button size="sm" variant="secondary"><Globe className="size-4" /> {t("viewLive")}</Button></a>}
-        {currentVersion && <a href={`/api/projects/${project.id}/download`} className="hidden sm:inline-flex"><Button size="sm" variant="ghost"><Download className="size-4" /> ZIP</Button></a>}
+        {currentVersion && (project.paid_at || detail.isPlatformAdmin) && <a href={`/api/projects/${project.id}/download`} className="hidden sm:inline-flex"><Button size="sm" variant="ghost"><Download className="size-4" /> ZIP</Button></a>}
       </div>
 
       {!aiConfigured && (
@@ -110,6 +111,9 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
               onRetryBuild={rebuild}
               onOpenProposal={() => setRightTab("proposal")}
               waitingApproval={project.status === "proposal"}
+              previewNote={project.current_version_id && !project.paid_at && !detail.isPlatformAdmin
+                ? t("freeChangesLeft", { n: Math.max(0, detail.freeChanges - project.free_changes_used), total: detail.freeChanges }) : null}
+              onOpenPublish={() => setRightTab("publish")}
             />
           ) : (
             <div className="flex-1 overflow-y-auto p-4">
@@ -221,9 +225,10 @@ function Field({ label, children }: { label: string; children?: React.ReactNode 
 }
 
 /* ------------------------------------------------------------- conversación */
-function Conversation({ messages, busy, error, disabled, canAnswer, onSend, onRetryBuild, onOpenProposal, waitingApproval }: {
+function Conversation({ messages, busy, error, disabled, canAnswer, onSend, onRetryBuild, onOpenProposal, waitingApproval, previewNote, onOpenPublish }: {
   messages: Message[]; busy: string | null; error: string | null; disabled: boolean; canAnswer: boolean;
   onSend: (c: string) => void; onRetryBuild: () => void; onOpenProposal: () => void; waitingApproval: boolean;
+  previewNote: string | null; onOpenPublish: () => void;
 }) {
   const t = useTranslations("app.workspace");
   const [text, setText] = useState("");
@@ -312,6 +317,12 @@ function Conversation({ messages, busy, error, disabled, canAnswer, onSend, onRe
       </div>
 
       <form className="shrink-0 border-t border-border p-3" onSubmit={(e) => { e.preventDefault(); submit(text); }}>
+        {previewNote && (
+          <p className="mb-2 flex items-center justify-between gap-2 text-[12px] text-fg-muted">
+            <span>{previewNote}</span>
+            <button type="button" onClick={onOpenPublish} className="text-accent hover:underline shrink-0">{t("activateProject")}</button>
+          </p>
+        )}
         <div className="rounded-[12px] border border-border bg-surface focus-within:border-accent/60 transition-colors">
           <textarea value={text} onChange={(e) => setText(e.target.value)} rows={2} maxLength={20000} disabled={disabled || Boolean(busy)}
             placeholder={waitingApproval ? t("inputWaitingApproval") : canAnswer ? t("inputAnswer") : t("inputChange")}
@@ -386,12 +397,10 @@ function ProposalPanel({ detail, busy, onApprove, onRebuild }: { detail: Project
           <p className="text-[12px] text-fg-subtle leading-relaxed">{t("approveNote")}</p>
         </div>
       )}
-      {proposal.status === "approved" && proposal.price != null && (
-        detail.payments.some((p) => p.proposal_id === proposal.id && p.status === "paid")
+      {proposal.status === "approved" && (
+        project.paid_at
           ? <Badge tone="success">{t("paid")}</Badge>
-          : detail.stripeConfigured
-            ? <Button variant="secondary" size="sm" loading={busy} onClick={async () => { const r = await api("/api/billing/checkout", { method: "POST", body: JSON.stringify({ proposalId: proposal.id, locale }) }).catch(() => null); if (r?.url) window.location.href = r.url; }}>{t("payNow")}</Button>
-            : <p className="text-[12px] text-fg-subtle">{t("paymentNotConfigured")}</p>
+          : <p className="text-[12px] text-fg-subtle leading-relaxed">{t("payOnActivate")}</p>
       )}
       {proposal.status === "approved" && ["approved", "review"].includes(project.status) && (
         <Button variant="secondary" size="sm" loading={busy} onClick={onRebuild}><RefreshCw className="size-4" /> {project.current_version_id ? t("regenerate") : t("retryBuild")}</Button>
@@ -605,6 +614,11 @@ function QaPanel({ detail, version }: { detail: ProjectDetail; version: ProjectD
 }
 
 function PublishPanel({ detail }: { detail: ProjectDetail }) {
+  if (!detail.project.paid_at && !detail.isPlatformAdmin) return <LaunchPanel detail={detail} />;
+  return <PublishPanelUnlocked detail={detail} />;
+}
+
+function PublishPanelUnlocked({ detail }: { detail: ProjectDetail }) {
   const t = useTranslations("app.workspace");
   const router = useRouter();
   const { project, site, deployments, vercelConfigured, siteBaseUrl } = detail;
@@ -619,6 +633,7 @@ function PublishPanel({ detail }: { detail: ProjectDetail }) {
 
   return (
     <div className="space-y-5">
+      <DomainOrderCard detail={detail} />
       <Field label={t("publishOnIdeon")}>
         <p className="text-fg-muted leading-relaxed mb-2">{t("publishHelp")}</p>
         <div className="flex gap-1.5">

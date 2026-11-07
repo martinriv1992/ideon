@@ -15,6 +15,7 @@
    - `supabase/migrations/0002_intelligence_build_deploy_billing.sql` (crea también el bucket privado `project-images` y sus políticas).
    - `supabase/migrations/0003_project_assets.sql` (archivos del proyecto: documentos que lee la IA y archivos que se publican; bucket privado `project-files` de 10 MB por archivo).
    - `supabase/migrations/0004_models_sonnet_5_5.sql` (los agentes pasan a `claude-sonnet-5-5`).
+   - `supabase/migrations/0005_launch_domains_epayco.sql` (vista previa gratuita, pagos con ePayco, pedidos de dominio y paquete anual).
 3. **Authentication → Providers → Email**: activa *Email*; decide si exiges confirmación de correo.
 4. **Authentication → URL Configuration**: *Site URL* = `http://localhost:3000` (y la de producción); *Redirect URLs* = `http://localhost:3000/api/auth/callback` y `https://<tu-dominio>/api/auth/callback`.
 5. Para convertirte en administrador de la plataforma, tras registrarte ejecuta en SQL Editor:
@@ -55,3 +56,13 @@ npm run build
 
 ## 7. Tipos de base de datos
 Tras cualquier cambio de esquema: `npx supabase gen types typescript --project-id <id> > src/types/database.types.ts`.
+
+## 8. Vista previa gratuita, pagos y dominios
+
+**Modelo comercial.** El cliente obtiene gratis la primera versión y `free_preview_changes` cambios por chat (2 por defecto). Para publicar, descargar el ZIP, conectar un dominio o seguir pidiendo cambios, **activa el proyecto** desde la pestaña Publicar con un único pago: desarrollo (precio de la propuesta) + primer año de hosting + primer año de dominio (opcional). Después renueva cada año hosting + dominio desde Suscripciones; si no renueva, tras `renewal_grace_days` el sitio muestra «suspendido».
+
+**Precios** (en `/admin/settings`): `billing_currency` (COP), `usd_to_billing_rate`, `hosting_price_year`, `domain_markup_pct`, `domain_tlds`, `free_preview_changes`, `renewal_grace_days`. El precio del desarrollo sale del plan de la propuesta: **define `price_from` en `/admin/pricing`**, o la activación queda en «precio pendiente». El dominio se cotiza con el mayor entre su precio de compra y de renovación en Vercel, más el margen, para que la renovación nunca dé pérdida.
+
+**ePayco.** Variables `EPAYCO_PUBLIC_KEY`, `EPAYCO_P_CUST_ID_CLIENTE`, `EPAYCO_P_KEY` y `EPAYCO_TEST=true` mientras pruebas. La confirmación (servidor a servidor) llega a `/api/billing/epayco/confirmation`; se valida la firma, el importe y la moneda, y es idempotente. Prueba primero en modo de pruebas de ePayco con una tarjeta de prueba.
+
+**Dominios.** Variables `VERCEL_TOKEN` (token dedicado, alcance del equipo), `VERCEL_TEAM_ID` y `VERCEL_PROJECT_ID` (el proyecto de la plataforma). Al confirmarse el pago, el dominio se compra en el registrador de Vercel **a nombre del cliente** (los datos de titular se piden en el checkout), con renovación automática desactivada; se cobra al **método de pago de la cuenta de Vercel**. Después se añade al proyecto (con `www` → redirección), Vercel gestiona DNS y SSL y el middleware sirve el sitio. Si el precio del registrador sube más de un 10 % respecto a lo cotizado, la compra se detiene y el pedido queda «requiere revisión». Cuando el cliente paga su renovación, el dominio se renueva un año.

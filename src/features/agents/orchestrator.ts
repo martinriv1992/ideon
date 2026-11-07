@@ -8,6 +8,7 @@ import {
 } from "./prompts";
 import { runQa, qaSummary } from "./qa";
 import { buildProposal, type SpecLike } from "@/features/proposals/generate";
+import { billingFromSettings } from "@/features/billing/pricing";
 import type { AgentType, Json, Project, ProjectStatus } from "@/types/database.types";
 
 /**
@@ -245,10 +246,23 @@ export async function runModify(projectId: string, instruction: string) {
 /** Punto de entrada tras un mensaje del cliente: decide qué agente actúa. */
 export async function handleUserMessage(projectId: string) {
   const db = createAdminClient();
-  const { project, messages } = await loadProject(db, projectId);
+  const { project, conversation, messages } = await loadProject(db, projectId);
   const last = [...messages].reverse().find((m) => m.role === "user");
   if (!last) return;
-  if (project.current_version_id) return runModify(projectId, last.content);
+  if (project.current_version_id) {
+    // Vista previa gratuita: un número limitado de cambios antes de activar el proyecto.
+    if (!project.paid_at) {
+      const s = billingFromSettings((await db.from("platform_settings").select("key,value")).data ?? []);
+      if (project.free_changes_used >= s.freeChanges) {
+        await postAssistant(db, conversation.id,
+          `Has usado los ${s.freeChanges} cambios incluidos en la vista previa gratuita. Para seguir ajustando tu ${isAppKind(project.kind) ? "aplicación" : "sitio"}, publicarlo y conectar tu dominio, activa el proyecto en la pestaña Publicar.`,
+          "developer", { locked: true });
+        return;
+      }
+      await db.from("projects").update({ free_changes_used: project.free_changes_used + 1 }).eq("id", projectId);
+    }
+    return runModify(projectId, last.content);
+  }
   if (project.status === "proposal") return; // esperando aprobación: el mensaje queda registrado
   return runConsultant(projectId);
 }

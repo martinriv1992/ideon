@@ -385,7 +385,8 @@
         "project": {
           "created": "Project created",
           "archived": "Project archived",
-          "restored": "Project restored"
+          "restored": "Project restored",
+          "activated": "Project activated"
         },
         "message": {
           "sent": "Message sent"
@@ -417,11 +418,21 @@
         },
         "domain": {
           "requested": "Custom domain requested",
-          "verified": "Domain verified"
+          "verified": "Domain verified",
+          "purchasing": "Registering the domain",
+          "failed": "Domain registration failed",
+          "renewed": "Domain renewed",
+          "renew_failed": "Domain renewal failed"
         },
         "asset": {
           "uploaded": "File uploaded",
           "deleted": "File deleted"
+        },
+        "payment": {
+          "received": "Payment received"
+        },
+        "subscription": {
+          "renewed": "Plan renewed"
         }
       },
       "kind": "Solution type",
@@ -527,7 +538,10 @@
       "extractOk": "text read (≈ {tokens} tokens)",
       "extractEmpty": "no readable text (scanned PDF?)",
       "extractFailed": "text could not be read",
-      "extractNone": "publish only"
+      "extractNone": "publish only",
+      "freeChangesLeft": "Free preview · {n} of {total} changes left",
+      "activateProject": "Activate project",
+      "payOnActivate": "This proposal is paid when you activate the project, together with the first year of hosting and domain (Publish tab). Until then the preview is free."
     },
     "settings": {
       "title": "Settings",
@@ -584,6 +598,63 @@
         "send": "Send ticket",
         "sent": "Ticket sent."
       }
+    },
+    "launch": {
+      "needsVersion": "Activation becomes available once the developer generates the first version of your project.",
+      "previewTitle": "Your preview is free",
+      "previewText": "You can see your project and request {n} changes without paying. To publish it online, connect your domain, download it and keep making changes, activate it.",
+      "freeLeft": "Free changes: {n} of {total}",
+      "domainTitle": "Domain",
+      "withDomain": "I want my domain (www.mybusiness.com)",
+      "withoutDomain": "Not now (use the Ideon address)",
+      "domainsNotConfigured": "Domain purchase is not available yet. You can activate without a domain and add it later.",
+      "searchLabel": "Domain name",
+      "search": "Search",
+      "year": "year",
+      "taken": "Unavailable",
+      "contactHelp": "Domain registrant details (the domain is registered in your name). Phone in international format, e.g. +15551234567; 2-letter country code (US, CO, MX…).",
+      "contact": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "phone": "Phone",
+        "companyName": "Company (optional)",
+        "address1": "Address",
+        "city": "City",
+        "state": "State / region",
+        "zip": "Postal code",
+        "country": "Country"
+      },
+      "summary": "Summary",
+      "pendingPrice": "The proposal has no price yet: we'll confirm it before activating the project.",
+      "domainLine": "Domain {domain} (1 year)",
+      "total": "Total today",
+      "renewalNote": "Then {amount} per year for hosting and domain. We'll remind you before each renewal.",
+      "paymentsNotConfigured": "Online payments are not configured on the platform yet.",
+      "pay": "Pay {amount} with ePayco",
+      "payNote": "Secure payment with ePayco. Once confirmed, we publish your site and connect the domain automatically.",
+      "waitingPayment": "We're confirming your payment with ePayco. This page will update by itself.",
+      "orderStatus": {
+        "awaiting_payment": "Awaiting payment",
+        "purchasing": "Registering domain",
+        "configuring": "Connecting",
+        "active": "Active",
+        "failed": "Needs review",
+        "cancelled": "Cancelled"
+      },
+      "orderFailed": "We couldn't register the domain automatically. Our team will review it and contact you; your site is already live at the Ideon address.",
+      "planUntil": "Hosting and domain plan active until {date}.",
+      "planName": "Hosting + domain",
+      "activeUntil": "active until {date}",
+      "expiredOn": "expired on {date}",
+      "state": {
+        "active": "Active",
+        "grace": "Renewal due",
+        "suspended": "Suspended",
+        "none": "No date"
+      },
+      "renew": "Renew 1 year",
+      "renewFailed": "Could not start the renewal"
     }
   },
   "common": {
@@ -722,7 +793,14 @@
       "integrations": "Integrations (environment variables)",
       "configured": "configured",
       "missing": "missing",
-      "envNote": "Keys are set in the server environment (.env.local or Vercel), never from this screen."
+      "envNote": "Keys are set in the server environment (.env.local or Vercel), never from this screen.",
+      "billingCurrency": "Currency charged with ePayco (COP).",
+      "usdRate": "Exchange rate: 1 USD in the billing currency (for domains and USD proposals).",
+      "hostingYear": "Yearly hosting price, in the billing currency.",
+      "domainMarkup": "Markup (%) over the registrar's domain cost.",
+      "domainTlds": "Domain extensions offered (JSON list).",
+      "freeChanges": "Free chat changes in the preview before paying.",
+      "graceDays": "Days after expiry before the site is suspended."
     }
   },
   "attachments": {

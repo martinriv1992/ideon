@@ -31,9 +31,17 @@ export async function requireProjectMember(projectId: string) {
   return access;
 }
 
+/** Bloquea acciones de pago (publicar, descargar, dominio) durante la vista previa gratuita. */
+export async function requireUnlocked(access: { user: { id: string }; project: { paid_at: string | null }; supabase: Awaited<ReturnType<typeof createClient>> }) {
+  if (access.project.paid_at) return null;
+  const { data: profile } = await access.supabase.from("profiles").select("is_platform_admin").eq("id", access.user.id).maybeSingle();
+  if (profile?.is_platform_admin) return null;
+  return fail("payment_required", "Esta acción está disponible al activar el proyecto. Revisa la pestaña Publicar.", 402);
+}
+
 export function errorResponse(e: unknown) {
   const code = (e as { code?: string })?.code ?? "error";
   const message = e instanceof Error ? e.message : String(e);
-  const status = code === "ai_not_configured" ? 503 : code === "invalid_state" ? 409 : 500;
+  const status = code === "ai_not_configured" || code === "not_configured" ? 503 : code === "invalid_state" ? 409 : code === "payment_required" ? 402 : 500;
   return fail(code, message, status);
 }

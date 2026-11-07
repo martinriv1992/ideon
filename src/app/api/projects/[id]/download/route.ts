@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import { requireProjectAccess, fail } from "@/lib/api";
+import { requireProjectAccess, requireUnlocked, fail } from "@/lib/api";
 import { bundleStaticAssets, getVersionFile, slugify } from "@/features/deploy/serve";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +9,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const { id } = await params;
   const access = await requireProjectAccess(id);
   if ("error" in access) return access.error;
+  const locked = await requireUnlocked(access);
+  if (locked) return locked;
   const url = new URL(req.url);
   const versionId = url.searchParams.get("v") || access.project.current_version_id;
   if (!versionId) return fail("not_found", "Sin versión", 404);

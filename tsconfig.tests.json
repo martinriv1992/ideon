@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": { "noEmit": false, "outDir": "dist-tests", "module": "esnext", "moduleResolution": "bundler", "incremental": false, "rootDir": "src" },
-  "include": ["src/features/agents/prompts.ts", "src/features/agents/qa.ts", "src/features/proposals/generate.ts", "src/features/assets/office.ts", "src/lib/uploads.ts"]
+  "include": ["src/features/agents/prompts.ts", "src/features/agents/qa.ts", "src/features/proposals/generate.ts", "src/features/assets/office.ts", "src/lib/uploads.ts", "src/features/billing/pricing.ts", "src/features/billing/epayco-sign.ts"]
 }
