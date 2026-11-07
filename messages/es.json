@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Ideon — Tu idea. Nuestra inteligencia. Tu próximo negocio.",
-    "description": "Describe lo que necesitas. Nuestra inteligencia artificial diseña, desarrolla y convierte tus ideas en soluciones digitales reales."
+    "title": "Ideonapp · Estudio de software con IA",
+    "description": "Un estudio de software impulsado por inteligencia artificial: desarrollo de software a medida, sistemas de inventario, CRM personalizados y software empresarial."
   },
   "nav": {
     "product": "Producto",
@@ -214,7 +214,7 @@
     "privacy": "Privacidad",
     "terms": "Términos",
     "contact": "Contacto",
-    "rights": "© {year} Ideon. Todos los derechos reservados."
+    "rights": "© {year} Ideonapp. Todos los derechos reservados."
   },
   "auth": {
     "loginTitle": "Bienvenido de nuevo",
@@ -710,7 +710,8 @@
       "pricing": "Planes y precios",
       "deployments": "Despliegues",
       "tickets": "Tickets",
-      "settings": "Configuración"
+      "settings": "Configuración",
+      "leads": "Leads"
     },
     "overview": {
       "title": "Resumen del negocio",
@@ -846,6 +847,60 @@
       "maxSignups": "Máximo de cuentas nuevas por conexión en 24 horas.",
       "includedChanges": "Cambios por chat incluidos por año en el plan anual.",
       "changePacks": "Paquetes de cambios adicionales: lista JSON de objetos con qty (cambios) y price (en la moneda de cobro)."
+    },
+    "leads": {
+      "title": "Leads comerciales",
+      "export": "Exportar CSV",
+      "tableMissing": "La tabla de leads aún no existe: aplica la migración 0009.",
+      "emailNotConfigured": "Los avisos por correo no están configurados (RESEND_API_KEY). Los leads se guardan igualmente aquí.",
+      "total": "Leads",
+      "newCount": "{n} nuevos",
+      "open": "Abiertos",
+      "noValue": "sin valor estimado",
+      "overdue": "Seguimientos vencidos",
+      "won": "Ganados",
+      "rate": "{pct} % de cierre",
+      "all": "Todos",
+      "writeEmail": "Escribir correo",
+      "contact": "Contacto",
+      "country": "País",
+      "website": "Web",
+      "solution": "Solución",
+      "budget": "Presupuesto",
+      "timeframe": "Plazo",
+      "meeting": "Quiere reunión",
+      "yes": "Sí",
+      "no": "No",
+      "source": "Origen",
+      "direct": "directo",
+      "landing": "Página de entrada",
+      "referrer": "Referencia",
+      "received": "Recibido",
+      "language": "Idioma",
+      "company": "Empresa",
+      "stage": "Etapa",
+      "value": "Valor estimado",
+      "currency": "Moneda",
+      "lastContact": "Último contacto",
+      "nextFollowUp": "Próximo seguimiento",
+      "notes": "Notas",
+      "save": "Guardar",
+      "saved": "Guardado.",
+      "manage": "Gestionar",
+      "none": "Aún no hay leads.",
+      "bySource": "Origen de los leads",
+      "leadsCol": "Leads",
+      "stages": {
+        "new": "Nuevo",
+        "researched": "Investigado",
+        "contacted": "Contactado",
+        "interested": "Interesado",
+        "meeting": "Reunión",
+        "proposal": "Propuesta",
+        "negotiation": "Negociación",
+        "won": "Ganado",
+        "lost": "Perdido"
+      }
     }
   },
   "attachments": {
@@ -944,5 +999,446 @@
     "how": "Elige tu dominio y cuéntanos qué quieres crear. Lo registramos a tu nombre al activar tu proyecto y se renueva junto con tu plan anual.",
     "cta": "Crear mi proyecto",
     "choose": "Lo quiero"
+  },
+  "site": {
+    "meta": {
+      "homeTitle": "Ideonapp · Estudio de software con IA: software a medida para empresas",
+      "homeDescription": "Un estudio de software impulsado por inteligencia artificial: desarrollo de software a medida, sistemas de inventario, CRM personalizados y software empresarial.",
+      "inventoryTitle": "Sistema de inventarios a medida para distribuidores y pymes",
+      "inventoryDescription": "Control de existencias, pedidos, clientes, alertas de reposición y reportes. Prueba la demostración interactiva de Ideon Inventory.",
+      "crmTitle": "CRM personalizado para equipos comerciales",
+      "crmDescription": "Clientes, embudo de oportunidades, cotizaciones, tareas y metas por vendedor. Un CRM a la medida de tu proceso de venta.",
+      "customTitle": "Desarrollo de software a medida y aplicaciones con IA",
+      "customDescription": "Software empresarial, aplicaciones con inteligencia artificial, plataformas web y automatización de procesos, con alcance y presupuesto claros.",
+      "portfolioTitle": "Portafolio: demostraciones de producto",
+      "portfolioDescription": "Demostraciones funcionales de inventario, CRM y gestión empresarial construidas por Ideonapp.",
+      "contactTitle": "Contacto: agenda una consulta gratuita",
+      "contactDescription": "Cuéntanos qué necesita tu empresa y te respondemos con una propuesta de alcance. Consulta gratuita de 20 minutos."
+    },
+    "nav": {
+      "solutions": "Soluciones",
+      "inventory": "Inventario",
+      "crm": "CRM",
+      "custom": "Software a medida",
+      "portfolio": "Portafolio",
+      "pricing": "Precios",
+      "contact": "Contacto",
+      "consult": "Agenda una consulta",
+      "app": "Crear con IA"
+    },
+    "hero": {
+      "badge": "AI Software Studio",
+      "title": "Construimos el software que tu empresa realmente necesita.",
+      "subtitle": "Desde aplicaciones empresariales hasta sistemas inteligentes de automatización, convertimos necesidades complejas en soluciones digitales reales.",
+      "ctaPrimary": "Agenda una consulta gratuita",
+      "ctaSecondary": "Descubre nuestras soluciones",
+      "selfServe": "¿Prefieres empezar tú mismo? Describe tu idea y recibe una vista previa gratis, o busca tu dominio."
+    },
+    "solutions": {
+      "eyebrow": "Soluciones",
+      "title": "Software para cada parte de tu operación",
+      "description": "Partimos de lo que tu empresa necesita, no de una plantilla. Cada solución se adapta a tus procesos, tus datos y tu equipo.",
+      "items": {
+        "custom": {
+          "title": "Software empresarial a medida",
+          "text": "Aplicaciones internas diseñadas alrededor de tus procesos: roles, flujos de aprobación, reportes e integraciones.",
+          "cta": "Ver software a medida"
+        },
+        "inventory": {
+          "title": "Gestión de inventarios",
+          "text": "Existencias en tiempo real, entradas y salidas, pedidos, alertas de reposición y valor del inventario.",
+          "cta": "Ver Ideon Inventory"
+        },
+        "crm": {
+          "title": "CRM y gestión comercial",
+          "text": "Clientes, embudo de oportunidades, cotizaciones, tareas de seguimiento y metas por vendedor.",
+          "cta": "Ver Ideon CRM"
+        },
+        "business": {
+          "title": "Sistemas de gestión empresarial",
+          "text": "Ventas, facturación, inventario, compras y finanzas conectados en un solo sistema.",
+          "cta": "Ver Business Suite"
+        },
+        "ai": {
+          "title": "Aplicaciones con IA",
+          "text": "Asistentes, clasificación y extracción de información de documentos, integrados en tus flujos de trabajo.",
+          "cta": "Hablemos de tu caso"
+        },
+        "web": {
+          "title": "Plataformas web y e-commerce",
+          "text": "Sitios corporativos, landing pages, catálogos y portales de clientes, publicados con tu dominio.",
+          "cta": "Crear una vista previa"
+        },
+        "automation": {
+          "title": "Automatización de procesos",
+          "text": "Menos trabajo manual: formularios, aprobaciones, notificaciones e integraciones entre tus herramientas.",
+          "cta": "Cuéntanos tu proceso"
+        }
+      }
+    },
+    "featured": {
+      "eyebrow": "Producto destacado · Ideon Inventory",
+      "title": "Toma el control de las operaciones de tu negocio.",
+      "text": "Ideon Inventory reúne en un solo lugar tus productos, existencias, pedidos y clientes. Sabes qué tienes, qué falta y qué debes reponer, sin hojas de cálculo.",
+      "points": [
+        "Existencias en tiempo real con historial de cada movimiento",
+        "Pedidos que descuentan stock y no permiten vender lo que no hay",
+        "Alertas de stock bajo con sugerencia de reposición",
+        "Clientes con su historial de compras",
+        "Reportes de ventas, productos y movimientos con exportación"
+      ],
+      "cta": "Explora la demo",
+      "secondary": "Ver precios y alcance",
+      "demoLabel": "Demostración de producto · NOVA Distribution (empresa ficticia)"
+    },
+    "how": {
+      "eyebrow": "Cómo trabajamos",
+      "title": "Agentes de IA especializados, con supervisión humana",
+      "description": "Los agentes aceleran el trabajo; tú apruebas el alcance antes de construir y, en los proyectos a medida, el fundador supervisa cada fase.",
+      "steps": [
+        {
+          "title": "Descubrir",
+          "text": "Un agente consultor te hace las preguntas clave sobre tu negocio y resume lo que necesitas. En proyectos a medida, empezamos con una llamada."
+        },
+        {
+          "title": "Arquitectura",
+          "text": "Un agente arquitecto define módulos, datos, roles y flujos. Recibes una propuesta con alcance, plazo y precio para aprobar."
+        },
+        {
+          "title": "Diseño",
+          "text": "Definimos estilo visual, navegación y pantallas a partir de tu marca, y lo validas en una vista previa navegable."
+        },
+        {
+          "title": "Construcción",
+          "text": "Un agente desarrollador construye la versión funcional. Cada cambio queda guardado como una versión que puedes restaurar."
+        },
+        {
+          "title": "Pruebas",
+          "text": "Verificaciones automáticas de calidad (estructura, formularios, errores de JavaScript, adaptación a móvil) y revisión humana antes de entregar."
+        },
+        {
+          "title": "Despliegue",
+          "text": "Publicamos con tu dominio y HTTPS, y entregamos el código y la documentación según lo acordado."
+        }
+      ]
+    },
+    "why": {
+      "eyebrow": "Por qué Ideonapp",
+      "title": "Un estudio de software, no un generador de código",
+      "items": [
+        {
+          "title": "Soluciones a medida",
+          "text": "Construidas alrededor de tus procesos, no adaptadas a la fuerza desde una plantilla."
+        },
+        {
+          "title": "Flujos de desarrollo con IA",
+          "text": "Agentes especializados reducen tiempos y costes sin perder estructura."
+        },
+        {
+          "title": "Alcance y presupuesto transparentes",
+          "text": "Sabes qué se construye, cuánto cuesta y cuánto tarda antes de empezar."
+        },
+        {
+          "title": "Supervisión humana",
+          "text": "Las decisiones de alcance y la entrega final las revisa una persona."
+        },
+        {
+          "title": "Arquitectura moderna",
+          "text": "Aplicaciones web rápidas, seguras y adaptadas a móvil."
+        },
+        {
+          "title": "Tú tienes el control",
+          "text": "Apruebas cada paso importante y pides cambios en lenguaje natural."
+        },
+        {
+          "title": "Entrega documentada",
+          "text": "Documentación de lo construido para que tu equipo lo use y lo mantenga."
+        },
+        {
+          "title": "Propiedad del código",
+          "text": "Descargas el código de tu proyecto según los términos del contrato."
+        }
+      ]
+    },
+    "portfolio": {
+      "eyebrow": "Portafolio",
+      "title": "Demostraciones funcionales",
+      "description": "Estas son demostraciones de producto construidas por Ideonapp con datos ficticios, no proyectos de clientes. Puedes usarlas libremente: los cambios se guardan solo en tu navegador.",
+      "badge": "Demostración de producto",
+      "open": "Abrir demostración",
+      "more": "Ver más ejemplos",
+      "items": {
+        "inventory": {
+          "title": "Gestión de inventarios",
+          "text": "NOVA Distribution: productos, movimientos, pedidos, clientes, alertas y reportes."
+        },
+        "crm": {
+          "title": "CRM comercial",
+          "text": "Clientes, embudo kanban, cotizaciones con IVA, tareas y metas por vendedor."
+        },
+        "business": {
+          "title": "Gestión empresarial",
+          "text": "Punto de venta, facturas, inventario, compras, gastos y cartera en un solo sistema."
+        }
+      },
+      "spanishOnly": "Demostración disponible en español."
+    },
+    "pricing": {
+      "eyebrow": "Cómo empezar y precios",
+      "title": "Empieza con una conversación, no con un contrato",
+      "steps": [
+        {
+          "title": "Cuéntanos qué necesitas",
+          "text": "Completa el formulario o agenda una consulta gratuita de 20 minutos."
+        },
+        {
+          "title": "Recibe una propuesta",
+          "text": "Alcance, entregables, plazo y precio por escrito, sin compromiso."
+        },
+        {
+          "title": "Validamos juntos",
+          "text": "Revisas una vista previa funcional y ajustamos lo necesario."
+        },
+        {
+          "title": "Lanzamos",
+          "text": "Publicamos, entregamos documentación y seguimos con soporte."
+        }
+      ],
+      "regionLabel": "Precios para",
+      "regions": {
+        "co": "Colombia (COP)",
+        "intl": "Internacional (USD)"
+      },
+      "tiers": {
+        "web": {
+          "title": "Soluciones web",
+          "text": "Landing pages, sitios corporativos y catálogos."
+        },
+        "systems": {
+          "title": "CRM o inventario",
+          "text": "Sistemas de gestión con los módulos esenciales."
+        },
+        "custom": {
+          "title": "Software empresarial a medida",
+          "text": "Varios módulos, roles, flujos e integraciones."
+        }
+      },
+      "from": "Desde",
+      "note": "Precios indicativos de lanzamiento. La cotización final depende de las funcionalidades, integraciones, infraestructura y alcance de cada proyecto. Hosting y mantenimiento anual aparte.",
+      "cta": "Solicitar una propuesta"
+    },
+    "finalCta": {
+      "title": "Tu próxima solución empresarial empieza aquí.",
+      "text": "Cuéntanos el problema que quieres resolver y te proponemos el camino más directo.",
+      "cta": "Cuéntanos qué necesitas"
+    },
+    "footer": {
+      "tagline": "Un estudio de software impulsado por inteligencia artificial que transforma ideas y necesidades empresariales en productos digitales reales.",
+      "services": "Servicios",
+      "company": "Ideonapp",
+      "legal": "Legal",
+      "contact": "Contacto",
+      "portfolio": "Portafolio",
+      "app": "Crear con IA",
+      "login": "Iniciar sesión",
+      "language": "Idioma"
+    },
+    "inventory": {
+      "eyebrow": "Ideon Inventory",
+      "title": "Un sistema de inventarios hecho para tu operación",
+      "subtitle": "Para distribuidores, mayoristas y comercios que necesitan saber qué tienen, qué venden y qué deben reponer, en tiempo real.",
+      "cta": "Agenda una demostración guiada",
+      "ctaDemo": "Probar la demo",
+      "demoTitle": "Pruébalo ahora: NOVA Distribution",
+      "demoText": "Demostración de producto con datos ficticios. Crea productos, registra movimientos y pedidos: todo se guarda solo en tu navegador.",
+      "demoLoading": "Cargando la demostración…",
+      "demoFullscreen": "Abrir en pantalla completa",
+      "modulesTitle": "Módulos incluidos",
+      "modules": [
+        {
+          "title": "Panel",
+          "text": "Productos, valor del inventario, stock bajo, pedidos pendientes y ventas del mes."
+        },
+        {
+          "title": "Productos",
+          "text": "Catálogo con SKU, categorías, proveedores, costos y precios; búsqueda y filtros."
+        },
+        {
+          "title": "Inventario",
+          "text": "Entradas, salidas y ajustes con responsable y motivo; historial completo."
+        },
+        {
+          "title": "Alertas",
+          "text": "Stock bajo y agotados con sugerencia de reposición."
+        },
+        {
+          "title": "Clientes",
+          "text": "Datos de contacto, condiciones e historial de pedidos."
+        },
+        {
+          "title": "Pedidos",
+          "text": "Pedidos con varias líneas, impuestos, estados y descuento de stock al despachar."
+        },
+        {
+          "title": "Reportes",
+          "text": "Movimientos, rendimiento de productos y ventas, con exportación CSV."
+        }
+      ],
+      "fitTitle": "A la medida de tu negocio",
+      "fit": [
+        "Tus categorías, unidades y campos propios",
+        "Varias bodegas o sedes",
+        "Roles y permisos para tu equipo",
+        "Integración con facturación electrónica u otros sistemas (según alcance)"
+      ],
+      "priceTitle": "Inversión",
+      "priceText": "Implementación personalizada desde {price}. La cotización final depende del alcance."
+    },
+    "crm": {
+      "eyebrow": "Ideon CRM",
+      "title": "Un CRM a la medida de tu proceso de venta",
+      "subtitle": "Para equipos comerciales que quieren dejar de perder oportunidades en hojas de cálculo y chats.",
+      "cta": "Agenda una consulta gratuita",
+      "ctaDemo": "Probar la demo",
+      "modulesTitle": "Qué incluye",
+      "modules": [
+        {
+          "title": "Clientes y contactos",
+          "text": "Empresas, contactos, historial de actividades y vendedor asignado."
+        },
+        {
+          "title": "Embudo de oportunidades",
+          "text": "Tablero kanban por etapas con valor, probabilidad y fecha estimada de cierre."
+        },
+        {
+          "title": "Cotizaciones",
+          "text": "Líneas de producto, descuentos e impuestos, numeración y vista imprimible."
+        },
+        {
+          "title": "Tareas y seguimiento",
+          "text": "Llamadas, reuniones y recordatorios con vencimientos."
+        },
+        {
+          "title": "Metas por vendedor",
+          "text": "Objetivos mensuales y avance de cada persona del equipo."
+        },
+        {
+          "title": "Panel gerencial",
+          "text": "Embudo, ventas ganadas, tasa de cierre y pronóstico."
+        }
+      ],
+      "demoTitle": "Demostración de producto",
+      "demoText": "Ideon CRM con datos ficticios de una empresa B2B.",
+      "priceText": "Implementación personalizada desde {price}. La cotización final depende del alcance."
+    },
+    "custom": {
+      "eyebrow": "Software a medida",
+      "title": "Desarrollo de software a medida para empresas",
+      "subtitle": "Convertimos procesos, ideas y necesidades concretas en aplicaciones que tu equipo usa todos los días.",
+      "cta": "Agenda una consulta gratuita",
+      "ctaSelf": "Crear una vista previa gratis",
+      "areasTitle": "Qué construimos",
+      "areas": [
+        {
+          "id": "business",
+          "title": "Software empresarial",
+          "text": "Aplicaciones internas con roles, flujos de aprobación, reportes e integraciones."
+        },
+        {
+          "id": "ai",
+          "title": "Aplicaciones con IA",
+          "text": "Asistentes, clasificación de solicitudes, extracción de datos de documentos y resúmenes, integrados con modelos de IA."
+        },
+        {
+          "id": "web",
+          "title": "Plataformas web y e-commerce",
+          "text": "Sitios corporativos, catálogos, portales de clientes y tiendas."
+        },
+        {
+          "id": "automation",
+          "title": "Automatización",
+          "text": "Formularios inteligentes, aprobaciones, notificaciones e integraciones entre herramientas."
+        }
+      ],
+      "selfTitle": "¿Quieres verlo antes de hablar?",
+      "selfText": "Describe tu idea y nuestros agentes te muestran una primera versión navegable, gratis y sin compromiso."
+    },
+    "contact": {
+      "eyebrow": "Contacto",
+      "title": "Cuéntanos qué necesita tu empresa",
+      "subtitle": "Te respondemos en menos de un día hábil con los siguientes pasos. Si lo prefieres, agenda directamente una consulta gratuita de 20 minutos.",
+      "meetingTitle": "Consulta gratuita de 20 minutos",
+      "meetingText": "Una videollamada con el fundador para entender tu caso y decirte, con honestidad, si podemos ayudarte.",
+      "meetingCta": "Elegir horario",
+      "meetingPending": "Al enviar el formulario marca «Quiero agendar una consulta» y te proponemos horarios por correo.",
+      "timezone": "Tu zona horaria: {tz}",
+      "whatsapp": "¿Prefieres WhatsApp?",
+      "whatsappCta": "Escríbenos por WhatsApp",
+      "whatsappMessage": "Hola, quiero hablar sobre un proyecto de software para mi empresa."
+    },
+    "lead": {
+      "fullName": "Nombre completo",
+      "company": "Empresa",
+      "email": "Correo de empresa",
+      "country": "País",
+      "website": "Sitio web (opcional)",
+      "solution": "¿Qué necesitas?",
+      "problem": "Describe el problema o la necesidad de tu negocio",
+      "problemHint": "Qué proceso quieres mejorar, quién lo usará y qué usas hoy.",
+      "budget": "Presupuesto aproximado (opcional)",
+      "timeframe": "¿Para cuándo?",
+      "choose": "Selecciona…",
+      "wantsMeeting": "Quiero agendar una consulta gratuita de 20 minutos",
+      "consent": "Acepto que Ideonapp use estos datos para responder a mi solicitud, según la <privacy></privacy>.",
+      "privacy": "política de privacidad",
+      "submit": "Enviar solicitud",
+      "sending": "Enviando…",
+      "successTitle": "¡Gracias! Hemos recibido tu solicitud.",
+      "successText": "Te escribiremos a {email} en menos de un día hábil.",
+      "successMeeting": "Agenda ahora tu consulta de 20 minutos:",
+      "successMeetingPending": "Te propondremos horarios para la consulta por correo.",
+      "another": "Enviar otra solicitud",
+      "solutions": {
+        "inventory": "Sistema de inventarios",
+        "crm": "CRM / gestión comercial",
+        "business": "Sistema de gestión empresarial",
+        "custom": "Software a medida",
+        "ai": "Aplicación con IA",
+        "web": "Plataforma web o e-commerce",
+        "automation": "Automatización de procesos",
+        "other": "Otro"
+      },
+      "budgets": {
+        "lt1k": "Menos de 1.000 USD",
+        "1k-3k": "1.000 – 3.000 USD",
+        "3k-10k": "3.000 – 10.000 USD",
+        "gt10k": "Más de 10.000 USD",
+        "unknown": "Aún no lo sé"
+      },
+      "timeframes": {
+        "asap": "Lo antes posible",
+        "1-3m": "En 1 a 3 meses",
+        "3-6m": "En 3 a 6 meses",
+        "exploring": "Estoy explorando opciones"
+      },
+      "errors": {
+        "name": "Escribe tu nombre completo.",
+        "company": "Escribe el nombre de tu empresa.",
+        "email": "Escribe un correo válido.",
+        "country": "Indica tu país.",
+        "website": "Revisa la dirección del sitio web.",
+        "solution": "Elige una opción.",
+        "problem": "Cuéntanos un poco más (mínimo 20 caracteres).",
+        "timeframe": "Elige un plazo.",
+        "consent": "Necesitamos tu autorización para responderte.",
+        "too_many": "Has enviado varias solicitudes seguidas. Inténtalo más tarde o escríbenos por WhatsApp.",
+        "generic": "No pudimos enviar tu solicitud. Inténtalo de nuevo o escríbenos por WhatsApp."
+      }
+    },
+    "cookies": {
+      "text": "Usamos cookies de analítica para entender cómo se usa el sitio y mejorarlo. No enviamos los datos de tus formularios a la analítica.",
+      "accept": "Aceptar",
+      "reject": "Rechazar"
+    }
   }
 }

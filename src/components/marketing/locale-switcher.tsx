@@ -5,6 +5,7 @@ import { Languages } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { locales } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { track } from "@/lib/analytics";
 
 export function LocaleSwitcher({ className }: { className?: string }) {
   const locale = useLocale();
@@ -25,7 +26,7 @@ export function LocaleSwitcher({ className }: { className?: string }) {
         <button
           key={l}
           type="button"
-          onClick={() => router.replace(pathname, { locale: l })}
+          onClick={() => { if (l !== locale) track("language_selected", { from: locale, to: l }); router.replace(pathname, { locale: l }); }}
           aria-pressed={l === locale}
           className={cn(
             "h-7 px-2.5 rounded-full uppercase tracking-wide transition-colors",

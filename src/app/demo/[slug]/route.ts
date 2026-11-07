@@ -17,5 +17,5 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   const { slug } = await params;
   if (!showcase.some((d) => d.slug === slug)) return new Response("No encontrado", { status: 404 });
   const html = await fs.readFile(path.join(process.cwd(), "src/content/showcase", `${slug}.html`), "utf8");
-  return new Response(withPreviewBadge(html, "Demo · Ideon · datos ficticios"), { headers: siteHeaders("text/html", 3600) });
+  return new Response(withPreviewBadge(html, slug.endsWith("-en") ? "Ideonapp product demo · fictional data" : "Demostración de producto · Ideonapp · datos ficticios"), { headers: siteHeaders("text/html", 3600) });
 }

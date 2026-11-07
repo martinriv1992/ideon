@@ -26,6 +26,7 @@ import { Reveal } from "./reveal";
 import { FaqList } from "./faq";
 import { cn } from "@/lib/utils";
 import { whatsappLink } from "@/lib/contact";
+import { LocaleSwitcher } from "./locale-switcher";
 
 /* ----------------------------------------------------------------------------
  * HERO
@@ -324,31 +325,47 @@ export async function FinalCta() {
  * ------------------------------------------------------------------------- */
 export async function Footer() {
   const t = await getTranslations("footer");
+  const ts = await getTranslations("site.footer");
+  const tn = await getTranslations("site.nav");
+  const tsol = await getTranslations("site.solutions.items");
   const locale = await getLocale();
-  const nav = await getTranslations("nav");
+  const col = "text-[13px] font-medium text-fg mb-3";
+  const link = "hover:text-fg transition-colors";
   return (
     <footer className="border-t border-border py-14">
       <Container>
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div>
             <Logo />
-            <p className="mt-4 text-[14px] text-fg-muted max-w-xs">{t("tagline")}</p>
+            <p className="mt-4 text-[14px] text-fg-muted max-w-xs leading-relaxed">{ts("tagline")}</p>
+            <div className="mt-5"><LocaleSwitcher /></div>
           </div>
           <div>
-            <p className="text-[13px] font-medium text-fg mb-3">{t("product")}</p>
+            <p className={col}>{ts("services")}</p>
             <ul className="space-y-2 text-[14px] text-fg-muted">
-              <li><a href={`/${locale}#process`} className="hover:text-fg transition-colors">{nav("process")}</a></li>
-              <li><a href={`/${locale}#solutions`} className="hover:text-fg transition-colors">{nav("solutions")}</a></li>
-              <li><a href={`/${locale}#pricing`} className="hover:text-fg transition-colors">{nav("pricing")}</a></li>
-              <li><Link href="/login" className="hover:text-fg transition-colors">{nav("login")}</Link></li>
+              <li><a href={`/${locale}/inventory`} className={link}>{tsol("inventory.title")}</a></li>
+              <li><a href={`/${locale}/crm`} className={link}>{tsol("crm.title")}</a></li>
+              <li><a href={`/${locale}/business`} className={link}>{tsol("business.title")}</a></li>
+              <li><a href={`/${locale}/custom-software`} className={link}>{tsol("custom.title")}</a></li>
+              <li><a href={`/${locale}/custom-software#ai`} className={link}>{tsol("ai.title")}</a></li>
             </ul>
           </div>
           <div>
-            <p className="text-[13px] font-medium text-fg mb-3">{t("legal")}</p>
+            <p className={col}>{ts("company")}</p>
             <ul className="space-y-2 text-[14px] text-fg-muted">
-              <li><Link href="/privacy" className="hover:text-fg transition-colors">{t("privacy")}</Link></li>
-              <li><Link href="/terms" className="hover:text-fg transition-colors">{t("terms")}</Link></li>
-              <li><a href={whatsappLink()} target="_blank" rel="noreferrer" className="hover:text-fg transition-colors">{t("contact")} · WhatsApp</a></li>
+              <li><a href={`/${locale}/portfolio`} className={link}>{ts("portfolio")}</a></li>
+              <li><a href={`/${locale}#pricing`} className={link}>{tn("pricing")}</a></li>
+              <li><a href={`/${locale}#start`} className={link}>{ts("app")}</a></li>
+              <li><Link href="/login" className={link}>{ts("login")}</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className={col}>{ts("contact")}</p>
+            <ul className="space-y-2 text-[14px] text-fg-muted">
+              <li><a href={`/${locale}/contact`} className={link}>{tn("contact")}</a></li>
+              <li><a href={whatsappLink()} target="_blank" rel="noreferrer" className={link}>WhatsApp</a></li>
+              <li><Link href="/privacy" className={link}>{t("privacy")}</Link></li>
+              <li><Link href="/terms" className={link}>{t("terms")}</Link></li>
             </ul>
           </div>
         </div>

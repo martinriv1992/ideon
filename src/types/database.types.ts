@@ -148,6 +148,13 @@ export type Approval = { id: string; project_id: string; kind: ApprovalKind; pay
 export type Deployment = { id: string; project_id: string; version_id: string; target: DeploymentTarget; status: DeploymentStatus; slug: string | null; url: string | null; external_id: string | null; logs: string | null; approval_id: string | null; created_by: string | null; created_at: string; finished_at: string | null };
 export type PublishedSite = { project_id: string; slug: string; version_id: string; custom_domain: string | null; domain_status: string | null; domain_verification: Json | null; published_at: string; updated_at: string };
 export type Payment = { id: string; organization_id: string; project_id: string | null; proposal_id: string | null; provider: PaymentProvider; external_id: string | null; amount: number; currency: string; status: PaymentStatus; metadata: Json; created_at: string; paid_at: string | null };
+export type Lead = {
+  id: string; full_name: string; company: string; email: string; country: string; website: string | null; solution: string; problem: string;
+  budget: string | null; timeframe: string; locale: string; consent: boolean; wants_meeting: boolean;
+  source: string | null; medium: string | null; campaign: string | null; term: string | null; content: string | null; referrer: string | null; landing_page: string | null;
+  stage: string; estimated_value: number | null; estimated_currency: string | null; last_contact_at: string | null; next_follow_up_at: string | null; notes: string | null;
+  ip_hash: string | null; notified_at: string | null; created_at: string; updated_at: string;
+};
 export type Subscription = { id: string; organization_id: string; project_id: string | null; provider: PaymentProvider; external_id: string | null; plan: string; amount: number; currency: string; period: string; status: SubscriptionStatus; current_period_end: string | null; domain: string | null; renewal_amount: number | null; changes_used: number; extra_changes: number; created_at: string };
 export type Invoice = { id: string; organization_id: string; payment_id: string | null; number: string; amount: number; currency: string; issued_at: string; pdf_url: string | null };
 export type SupportTicket = { id: string; organization_id: string; project_id: string | null; created_by: string | null; subject: string; body: string; status: TicketStatus; created_at: string; updated_at: string };
@@ -251,6 +258,7 @@ export type Database = {
       project_files: { Row: ProjectFile; Insert: Insert<ProjectFile, "id" | "content_type" | "size">; Update: Partial<ProjectFile>; Relationships: [] };
       project_images: { Row: ProjectImage; Insert: Insert<ProjectImage, "id" | "width" | "height" | "size" | "created_by" | "created_at">; Update: Partial<ProjectImage>; Relationships: [] };
       domain_orders: { Row: DomainOrder; Insert: Insert<DomainOrder, "id" | "payment_id" | "years" | "status" | "vercel_order_id" | "error" | "expires_at" | "created_at" | "updated_at">; Update: Partial<DomainOrder>; Relationships: [] };
+      leads: { Row: Lead; Insert: Insert<Lead, "id" | "website" | "budget" | "locale" | "wants_meeting" | "source" | "medium" | "campaign" | "term" | "content" | "referrer" | "landing_page" | "stage" | "estimated_value" | "estimated_currency" | "last_contact_at" | "next_follow_up_at" | "notes" | "ip_hash" | "notified_at" | "created_at" | "updated_at">; Update: Partial<Lead>; Relationships: [] };
       rate_limits: { Row: { id: number; bucket: string; ip_hash: string; created_at: string }; Insert: { bucket: string; ip_hash: string; created_at?: string }; Update: Partial<{ bucket: string }>; Relationships: [] };
       signup_attempts: { Row: { id: number; ip_hash: string; created_at: string }; Insert: { ip_hash: string; created_at?: string }; Update: Partial<{ ip_hash: string }>; Relationships: [] };
       project_assets: { Row: ProjectAsset; Insert: Insert<ProjectAsset, "id" | "size" | "use_reference" | "use_site" | "text_content" | "text_chars" | "extract_status" | "created_by" | "created_at">; Update: Partial<ProjectAsset>; Relationships: [] };

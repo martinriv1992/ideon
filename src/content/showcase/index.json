@@ -1,5 +1,53 @@
 [
   {
+    "slug": "nova-distribution",
+    "kind": "inventory",
+    "title": {
+      "es": "NOVA Distribution · Inventario",
+      "en": "NOVA Distribution · Inventory"
+    },
+    "summary": {
+      "es": "Inventario, pedidos, clientes, alertas de reposición y reportes para un distribuidor mayorista.",
+      "en": "Inventory, orders, customers, replenishment alerts and reports for a wholesale distributor."
+    },
+    "idea": "Sistema de inventario y pedidos para NOVA Distribution, un distribuidor mayorista de alimentos y bebidas.",
+    "name": "NOVA Distribution · Inventario",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 15,
+      "warn": 0,
+      "bad": 0,
+      "total": 15
+    },
+    "calls": 2,
+    "costUsd": 0.3055,
+    "generatedAt": "2026-11-07T19:14:00.624Z"
+  },
+  {
+    "slug": "nova-distribution-en",
+    "kind": "inventory",
+    "title": {
+      "es": "NOVA Distribution · Inventory (EN)",
+      "en": "NOVA Distribution · Inventory"
+    },
+    "summary": {
+      "es": "Versión en inglés de la demostración de inventario.",
+      "en": "Inventory, orders, customers, replenishment alerts and reports for a wholesale distributor."
+    },
+    "idea": "Inventory and order management system for NOVA Distribution, a food and beverage wholesale distributor.",
+    "name": "NOVA Distribution · Inventory",
+    "model": "claude-sonnet-5-5",
+    "qa": {
+      "ok": 15,
+      "warn": 0,
+      "bad": 0,
+      "total": 15
+    },
+    "calls": 2,
+    "costUsd": 0.5279,
+    "generatedAt": "2026-11-07T19:16:40.103Z"
+  },
+  {
     "slug": "ideon-suite",
     "kind": "erp",
     "title": {

@@ -10,7 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   await requirePlatformAdmin();
   const t = await getTranslations("admin.nav");
   const items = [
-    { href: "/admin", label: t("overview") }, { href: "/admin/clients", label: t("clients") }, { href: "/admin/projects", label: t("projects") },
+    { href: "/admin", label: t("overview") }, { href: "/admin/leads", label: t("leads") }, { href: "/admin/clients", label: t("clients") }, { href: "/admin/projects", label: t("projects") },
     { href: "/admin/runs", label: t("runs") }, { href: "/admin/ai", label: t("ai") }, { href: "/admin/pricing", label: t("pricing") },
     { href: "/admin/deployments", label: t("deployments") }, { href: "/admin/tickets", label: t("tickets") }, { href: "/admin/settings", label: t("settings") },
   ];

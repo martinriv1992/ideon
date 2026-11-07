@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOVA Distribution · Inventory</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#F6F8FB;--fg:#0F1B33;--acc:#0FB5A6;--pri:#12307A;--mut:#64708a;--line:#e3e8f0;--card:#fff;--red:#d64550;--amb:#d98a0b;--grn:#1c9a5b;--sh:0 1px 2px rgba(15,27,51,.06),0 8px 24px rgba(15,27,51,.06)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+.demo{height:28px;background:var(--pri);color:#cfe0ff;font-size:12px;display:flex;align-items:center;justify-content:center;letter-spacing:.03em}
+.app{display:flex;min-height:calc(100vh - 28px)}
+aside{width:236px;background:#fff;border-right:1px solid var(--line);padding:16px 12px;position:sticky;top:0;align-self:flex-start;height:calc(100vh - 28px);display:flex;flex-direction:column;gap:4px;transition:width .2s;overflow:hidden}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px;font-weight:700;color:var(--pri);white-space:nowrap}
+.brand small{display:block;font-weight:500;color:var(--mut);font-size:11px}
+.nv{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--mut);cursor:pointer;border:0;background:none;text-align:left;font-weight:500;white-space:nowrap;width:100%}
+.nv:hover{background:#f0f4fa;color:var(--fg)}
+.nv.on{background:var(--pri);color:#fff}
+.nv svg{flex:none}
+.nv .b{margin-left:auto;background:var(--red);color:#fff;border-radius:99px;font-size:11px;padding:1px 7px}
+.app.col aside{width:68px}
+.app.col .nv span,.app.col .brand div{display:none}
+.app.col .nv .b{display:none}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mainw{flex:1;min-width:0}
+.top{display:flex;align-items:center;gap:12px;padding:14px 24px;background:rgba(246,248,251,.9);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line)}
+.top h1{font-size:20px;margin:0;flex:1}
+main{padding:24px;max-width:1280px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:#b8c3d6}
+.btn.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+.btn.acc{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn.danger{background:var(--red);color:#fff;border-color:var(--red)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.sm{padding:5px 9px;font-size:12px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+select,input,textarea{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(15,181,166,.35);border-color:var(--acc)}
+.top select{width:auto}
+.menu{display:inline-flex}
+.grid{display:grid;gap:16px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:16px}
+.card{background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:18px;border:1px solid #edf0f6}
+.card h2{font-size:15px;margin:0 0 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.kpi .l{color:var(--mut);font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px}
+.kpi .v{font-size:26px;font-weight:700;margin-top:6px;color:var(--pri)}
+.kpi .s{font-size:12px;color:var(--mut)}
+.kpi .ic{width:30px;height:30px;border-radius:9px;background:rgba(15,181,166,.12);color:var(--acc);display:grid;place-items:center}
+.up{color:var(--grn)}.dn{color:var(--red)}
+.two{grid-template-columns:1.6fr 1fr}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.bar>*{flex:1 1 150px}
+.bar .grow{flex:2 1 220px}
+.bar .btn{flex:0 0 auto}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid #f0f3f8;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
+.ok,.delivered{background:#e1f6ec;color:var(--grn)}
+.low,.pending{background:#fff1d6;color:#9a6205}
+.out,.cancelled{background:#fde4e6;color:var(--red)}
+.preparing{background:#e3ecff;color:#2450b8}
+.shipped{background:#e6e4fb;color:#4b3fb5}
+.entry{background:#e1f6ec;color:var(--grn)}.exit{background:#fde4e6;color:var(--red)}.adjustment{background:#e3ecff;color:#2450b8}
+.empty{text-align:center;color:var(--mut);padding:36px 12px}
+.empty b{display:block;color:var(--fg);margin-bottom:4px}
+.ov{position:fixed;inset:0;background:rgba(15,27,51,.5);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:5vh 12px;z-index:50}
+.ov.show{display:flex}
+#confirm{z-index:60;align-items:center}
+.mdl{background:#fff;border-radius:18px;width:100%;max-width:640px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.mdl.wide{max-width:900px}.mdl.sm{max-width:420px}
+.mdl h3{margin:0 0 14px;font-size:18px;display:flex;justify-content:space-between;align-items:center}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f{display:flex;flex-direction:column;gap:4px}
+.f>span{font-size:12px;font-weight:600;color:var(--mut)}
+.f em{font-size:11px;color:var(--mut);font-style:normal}
+.f.full{grid-column:1/-1}
+.err{color:var(--red);font-size:12px;min-height:0}
+.f.bad input,.f.bad select,.f.bad textarea{border-color:var(--red)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row.end{justify-content:flex-end;margin-top:16px}
+.dl{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.dl div span{display:block;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.dl div b{font-weight:600}
+.meter{height:10px;background:#e8edf5;border-radius:9px;overflow:hidden;position:relative}
+.meter i{display:block;height:100%;border-radius:9px;background:var(--acc)}
+.meter i.low{background:var(--amb)}.meter i.out{background:var(--red)}
+.ln{display:grid;grid-template-columns:2.4fr .7fr .8fr .7fr .9fr auto;gap:8px;align-items:center;margin-bottom:6px}
+.ln.h{font-size:11px;color:var(--mut);font-weight:600;text-transform:uppercase}
+.ln small{grid-column:1/-1;font-size:12px;color:var(--mut);margin-top:-4px}
+.ln small.e{color:var(--red)}
+.tot{margin-left:auto;width:260px;margin-top:12px}
+.tot div{display:flex;justify-content:space-between;padding:3px 0}
+.tot .g{font-weight:700;font-size:16px;border-top:1px solid var(--line);margin-top:4px;padding-top:8px;color:var(--pri)}
+.tl{display:flex;gap:0;margin:8px 0 16px;flex-wrap:wrap}
+.tl div{flex:1;min-width:90px;text-align:center;font-size:12px;color:var(--mut);position:relative;padding-top:20px}
+.tl div:before{content:"";position:absolute;top:4px;left:0;right:0;height:3px;background:#e1e7f0}
+.tl div:after{content:"";position:absolute;top:0;left:calc(50% - 6px);width:12px;height:12px;border-radius:50%;background:#e1e7f0}
+.tl .d{color:var(--fg)}.tl .d:before,.tl .d:after{background:var(--acc)}
+.tl .c{color:var(--red)}.tl .c:before,.tl .c:after{background:var(--red)}
+.al{display:grid;grid-template-columns:1.6fr repeat(4,.7fr) auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #f0f3f8}
+.al:last-child{border:0}
+.al small{display:block;color:var(--mut);font-size:11px}
+#toast{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:90}
+#toast div{background:var(--fg);color:#fff;padding:11px 16px;border-radius:12px;box-shadow:var(--sh);max-width:340px;animation:in .2s}
+#toast div.err{background:var(--red)}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+#tip{position:fixed;background:var(--fg);color:#fff;padding:5px 9px;border-radius:8px;font-size:12px;pointer-events:none;display:none;z-index:99}
+svg.ch{width:100%;height:auto;display:block}
+svg.ch text{font-size:11px;fill:#64708a}
+svg.ch rect.bar{fill:var(--pri);transition:fill .15s}
+svg.ch rect.bar:hover{fill:var(--acc)}
+.ml{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid #f0f3f8;align-items:center}
+.ml:last-child{border:0}
+.ml small{color:var(--mut);display:block;font-size:11px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f3f8}
+.cols{grid-template-columns:1fr 1fr}
+textarea.big{min-height:120px;font-family:ui-monospace,monospace;font-size:12px}
+.note{background:#eef6ff;border:1px solid #d3e4fb;color:#244a86;padding:10px 12px;border-radius:10px;margin-bottom:12px;font-size:13px}
+#bnav{display:none}
+@media(max-width:900px){
+aside{display:none}
+#bnav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:30;overflow-x:auto;padding:4px}
+#bnav .nv{flex-direction:column;gap:2px;font-size:10px;padding:6px 10px;width:auto;min-width:64px;align-items:center;position:relative}
+#bnav .nv .b{position:absolute;top:2px;right:8px;margin:0;padding:0 5px}
+main{padding:16px 14px 90px}
+.top{padding:12px 14px}.menu{display:none}
+.two,.cols{grid-template-columns:1fr}
+.al{grid-template-columns:1fr 1fr}
+#toast{bottom:78px}
+}
+@media(max-width:720px){
+.fg,.dl{grid-template-columns:1fr}
+.top .btn span{display:none}
+table.rs,table.rs tbody,table.rs tr,table.rs td{display:block}
+table.rs thead{display:none}
+table.rs tr{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin-bottom:10px;background:#fff}
+table.rs td{display:flex;justify-content:space-between;gap:10px;border:0;padding:5px 0;text-align:right}
+table.rs td:before{content:attr(data-l);color:var(--mut);font-size:11px;text-transform:uppercase;text-align:left;flex:none}
+table.rs td:empty{display:none}
+.ln{grid-template-columns:1fr 1fr}.ln.h{display:none}.ln select{grid-column:1/-1}
+.tot{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="demo">Product demo · fictional data</div>
+<div class="app" id="app">
+<aside><div class="brand"><svg class="i" style="width:30px;height:30px;color:var(--acc)" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M8 15V9l8 6V9"/></svg><div>NOVA Distribution<small>Inventory</small></div></div><div id="nav"></div></aside>
+<div class="mainw">
+<div class="top"><button class="btn ghost menu" data-a="side" aria-label="Toggle sidebar"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><h1 id="title"></h1><select id="role" class="rolesel" aria-label="Role"><option value="admin">Role: Admin</option><option value="warehouse">Role: Warehouse</option><option value="sales">Role: Sales</option></select><button class="btn acc" data-a="ordNew"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Create order</span></button></div>
+<main id="main"></main>
+</div></div>
+<nav id="bnav"></nav>
+<div class="ov" id="modal"></div><div class="ov" id="confirm"></div><div id="toast"></div><div id="tip"></div>
+<script>
+const KEY='nova-distribution-inventory';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur=n=>new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR'}).format(n||0);
+const r2=n=>Math.round(n*100)/100;
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=()=>iso(new Date());
+const nowS=()=>{const d=new Date();return iso(d)+'T'+pad(d.getHours())+':'+pad(d.getMinutes())};
+const fd=s=>String(s).replace('T',' ');
+const USER={admin:'Marta Vega (admin)',warehouse:'Iker Soto (warehouse)',sales:'Carla Nuño (sales)'};
+const PERM={prodAdd:['admin','warehouse'],prodDel:['admin'],mv:['admin','warehouse'],cust:['admin','sales'],ordNew:['admin','sales'],ordCancel:['admin','sales'],ship:['admin','warehouse'],cat:['admin'],sys:['admin']};
+const can=k=>PERM[k].includes(S.role);
+const NEXT={Pending:'Preparing',Preparing:'Shipped',Shipped:'Delivered'};
+const IC={dashboard:'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z',products:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',inventory:'M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3',alerts:'M12 3l10 18H2zM12 10v5M12 18h.01',customers:'M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M22 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8',orders:'M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0',reports:'M4 20V10M10 20V4M16 20v-8M22 20H2',settings:'M12 15a3 3 0 100-6 3 3 0 000 6M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z'};
+const ico=n=>`<svg class="i" viewBox="0 0 24 24"><path d="${IC[n]}"/></svg>`;
+const TITLES={dashboard:'Dashboard',products:'Products',inventory:'Inventory',alerts:'Alerts',customers:'Customers',orders:'Orders',reports:'Reports',settings:'Settings'};
+
+function seed(){
+let a=7;const R=()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const ri=(x,y)=>x+Math.floor(R()*(y-x+1));
+const st={seq:0,role:'admin',categories:[],suppliers:[],products:[],movements:[],customers:[],orders:[]};
+const id=()=>++st.seq;
+const cats=[['Beverages','Water, juices, soft drinks and cold coffee'],['Dairy','Milk, yogurt, butter and cheese'],['Pantry','Dry goods, oils and canned food'],['Snacks','Chips, nuts, cookies and chocolate'],['Frozen','Frozen vegetables, pizza and ice cream'],['Cleaning & Hygiene','Home cleaning and personal hygiene']];
+st.categories=cats.map(c=>({id:id(),name:c[0],description:c[1]}));
+const sups=[['Valle Verde Foods','Teresa Lamas','5'],['Norte Lácteos','Hugo Barrera','2'],['AquaPrima Drinks','Sara Beltrán','3'],['Crunchy Lab','Dani Quirós','7'],['FrostLine Iberia','Olga Ferrán','4'],['BrilloHogar Supplies','Nacho Prieto','6']];
+st.suppliers=sups.map((s,i)=>({id:id(),name:s[0],contact:s[1],email:s[1].split(' ')[0].toLowerCase()+'@example.com',phone:'+34 600 11 '+(2000+i*137),leadTime:+s[2]}));
+const si={Beverages:2,Dairy:1,Pantry:0,Snacks:3,Frozen:4,'Cleaning & Hygiene':5};
+const code={Beverages:'BEV',Dairy:'DAI',Pantry:'PAN',Snacks:'SNK',Frozen:'FRZ','Cleaning & Hygiene':'CLN'};
+const PR=[['Sparkling Water 6x1.5L','Beverages','pack',2.4],['Orange Juice 1L','Beverages','unit',1.1],['Iced Tea Peach 33cl','Beverages','box',7.8],['Cola Zero 33cl','Beverages','box',9.2],['Craft Lemonade 75cl','Beverages','unit',1.9],['Cold Brew Coffee 25cl','Beverages','pack',5.5],
+['Whole Milk 1L (6)','Dairy','box',4.1],['Greek Yogurt 4-pack','Dairy','pack',1.9],['Butter 250g','Dairy','unit',1.85],['Mozzarella 1kg','Dairy','kg',5.9],['Oat Drink 1L','Dairy','unit',1.15],
+['Basmati Rice 5kg','Pantry','unit',6.4],['Spaghetti 500g (12)','Pantry','box',9.6],['Olive Oil 1L','Pantry','litre',5.8],['Tomato Passata 700g (6)','Pantry','box',8.4],['Chickpeas Jar 400g (12)','Pantry','box',7.2],['Sea Salt 1kg','Pantry','unit',.6],['Wheat Flour 1kg','Pantry','kg',.55],
+['Sea Salt Chips 150g (12)','Snacks','box',11.5],['Roasted Almonds 200g','Snacks','pack',3.2],['Oat Cookies 300g (10)','Snacks','box',10.4],['Dark Chocolate 100g (20)','Snacks','box',8.9],
+['Garden Peas 1kg','Frozen','kg',1.7],['Margherita Pizza (8)','Frozen','box',14.2],['Vanilla Ice Cream 1L','Frozen','unit',2.6],['Fish Fingers 750g','Frozen','pack',4.4],
+['Dish Soap 750ml','Cleaning & Hygiene','unit',1.3],['Laundry Detergent 3L','Cleaning & Hygiene','unit',6.9],['Paper Towels 6-roll','Cleaning & Hygiene','pack',3.4],['Hand Soap 500ml','Cleaning & Hygiene','unit',1.6]];
+const mxs=[60,80,100,120,150];
+st.products=PR.map((p,i)=>{const mx=mxs[ri(0,4)],mn=Math.round(mx*.25);let s=Math.round(mx*(.35+R()*.6));
+if([3,11,19,25].includes(i))s=Math.max(1,mn-ri(1,4));if([7,16,27].includes(i))s=0;
+return{id:id(),sku:code[p[1]]+'-'+(100+i),name:p[0],category:p[1],supplier:st.suppliers[si[p[1]]].id,unit:p[2],cost:p[3],price:r2(p[3]*(1.28+R()*.25)),stock:s,minStock:mn,maxStock:mx}});
+const us=Object.values(USER);
+let mv=[];
+for(let i=0;i<40;i++){const p=st.products[ri(0,29)],r=R(),t=r<.45?'Entry':r<.85?'Exit':'Adjustment';
+const q=t==='Adjustment'?(ri(-6,6)||2):ri(5,40);
+mv.push({date:iso(addDays(new Date(),-ri(0,60)))+'T'+pad(ri(8,17))+':'+pad(ri(0,59)),productId:p.id,type:t,qty:q,after:ri(4,p.maxStock),reason:t==='Entry'?(R()<.8?'Purchase':'Return'):t==='Exit'?(R()<.7?'Sale':'Damage'):'Count correction',user:us[ri(0,2)],notes:''})}
+mv.sort((x,y)=>x.date<y.date?-1:1).forEach(m=>{m.id=id();st.movements.push(m)});
+const cu=[['Colmado La Esquina','Store','Ana Ruiz','Valencia','Immediate'],['Supermercados Brisa','Supermarket','Pablo Ferrer','Alicante','60 days'],['Restaurante El Olivo','Restaurant','Lucía Mora','Sevilla','30 days'],['Tienda Granel Norte','Store','Javier Ortiz','Bilbao','15 days'],['Hiper Mercado Sol','Supermarket','Elena Cano','Málaga','60 days'],['Bistró Casa Luna','Restaurant','Mario Díaz','Madrid','30 days'],['Ultramarinos Pepita','Store','Pepita Gil','Zaragoza','Immediate'],['SuperVecino Express','Supermarket','Rafa León','Murcia','30 days'],['Trattoria Il Sole','Restaurant','Giulia Bassi','Barcelona','15 days'],['Mini Market Aurora','Store','Nuria Pons','Girona','Immediate'],['Cantina Los Arcos','Restaurant','Tomás Vera','Granada','30 days'],['Mercado Central Demo','Supermarket','Irene Soler','Valladolid','60 days']];
+st.customers=cu.map((c,i)=>({id:id(),name:c[0],type:c[1],contact:c[2],email:c[2].split(' ')[0].toLowerCase()+'@example.com',phone:'+34 600 55 '+(1000+i*211),city:c[3],paymentTerms:c[4]}));
+const off=[58,55,50,46,42,38,33,29,25,21,17,13,10,7,5,3,2,1];
+const stt=['Delivered','Delivered','Delivered','Delivered','Cancelled','Delivered','Delivered','Delivered','Cancelled','Delivered','Delivered','Delivered','Delivered','Shipped','Shipped','Preparing','Pending','Pending'];
+const seq=['Pending','Preparing','Shipped','Delivered'];
+off.forEach((o,i)=>{const n=ri(1,3),used=[],lines=[];
+while(lines.length<n){const p=st.products[ri(0,29)];if(used.includes(p.id))continue;used.push(p.id);lines.push({pid:p.id,qty:ri(2,24),price:p.price,disc:[0,0,5,10][ri(0,3)]})}
+const date=iso(addDays(new Date(),-o)),s=stt[i];
+const hist=s==='Cancelled'?['Pending','Cancelled']:seq.slice(0,seq.indexOf(s)+1);
+st.orders.push({id:id(),number:'NV-'+(1001+i),customer:st.customers[ri(0,11)].id,date,status:s,lines,...calc(lines),history:hist.map(x=>({s:x,d:date}))})});
+return st}
+function calc(l){const sub=r2(l.reduce((t,x)=>t+x.qty*x.price*(1-x.disc/100),0)),vat=r2(sub*.21);return{subtotal:sub,vat,total:r2(sub+vat)}}
+let S=(()=>{try{const j=localStorage.getItem(KEY);if(j){const o=JSON.parse(j);if(o&&Array.isArray(o.products)&&Array.isArray(o.orders))return o}}catch(e){}return seed()})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const ui={view:'dashboard',pq:'',pcat:'',pst:'',cq:'',ctype:'',oq:'',ost:'',mp:'',mt:'',mu:'',mf:'',mto:'',rp:'month',rf:'',rt:'',mv:null,col:false};
+const prod=id=>S.products.find(p=>p.id==id),cust=id=>S.customers.find(c=>c.id==id),ord=id=>S.orders.find(o=>o.id==id),sup=id=>S.suppliers.find(s=>s.id==id);
+const pName=id=>prod(id)?prod(id).name:'(deleted)';
+const cName=id=>cust(id)?cust(id).name:'(deleted)';
+const pst=p=>p.stock<=0?'Out':p.stock<=p.minStock?'Low':'OK';
+const badge=(t,c)=>`<span class="badge ${(c||t).toLowerCase()}">${esc(t)}</span>`;
+const ab=(a,id,l,c)=>`<button class="btn sm ${c||''}" data-a="${a}" data-id="${id}">${l}</button>`;
+const tbl=(h,rows,cls)=>`<div class="tw"><table class="rs"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td data-l="${h[i]}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const empty=(t,s)=>`<div class="empty"><b>${t}</b>${s||''}</div>`;
+const sgn=m=>m.type==='Exit'?'−'+m.qty:m.type==='Entry'?'+'+m.qty:(m.qty>0?'+':'−')+Math.abs(m.qty);
+const opts=(arr,sel,all)=>(all?`<option value="">${all}</option>`:'')+arr.map(x=>{const[v,l]=Array.isArray(x)?x:[x,x];return`<option value="${esc(v)}" ${String(v)===String(sel)?'selected':''}>${esc(l)}</option>`}).join('');
+function toast(m,t){const d=document.createElement('div');d.textContent=m;if(t)d.className=t;$('#toast').appendChild(d);setTimeout(()=>d.remove(),3800)}
+function guard(k){if(can(k))return true;toast('Your role ('+S.role+') cannot do this action.','err');return false}
+function openModal(h,w){$('#modal').innerHTML=`<div class="mdl ${w||''}">${h}</div>`;$('#modal').classList.add('show')}
+function closeModal(){$('#modal').classList.remove('show');$('#modal').innerHTML=''}
+let cfn=null;
+function confirmBox(t,m,l,fn){cfn=fn;$('#confirm').innerHTML=`<div class="mdl sm"><h3>${esc(t)}</h3><p>${m}</p><div class="row end"><button class="btn" data-a="cno">Keep</button><button class="btn danger" data-a="cyes">${esc(l)}</button></div></div>`;$('#confirm').classList.add('show')}
+function fld(label,name,val,o){o=o||{};const t=o.type||'text';let i;
+if(t==='select')i=`<select name="${name}" ${o.dis?'disabled':''}>${opts(o.opts,val)}</select>`;
+else if(t==='textarea')i=`<textarea name="${name}" rows="3">${esc(val)}</textarea>`;
+else i=`<input name="${name}" type="${t}" value="${esc(val)}" ${o.at||''} ${o.dis?'disabled':''}>`;
+return`<label class="f ${o.cls||''}"><span>${label}${o.req?' *':''}</span>${i}${o.hint?`<em>${o.hint}</em>`:''}<small class="err" data-e="${name}"></small></label>`}
+function showErr(f,er){f.querySelectorAll('[data-e]').forEach(s=>{s.textContent=er[s.dataset.e]||'';s.parentElement.classList.toggle('bad',!!er[s.dataset.e])});return!Object.keys(er).length}
+const num=v=>v===''||v==null?NaN:Number(v);
+const emailOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+function salesIn(f,t){return S.orders.filter(o=>(o.status==='Shipped'||o.status==='Delivered')&&o.date>=f&&o.date<=t)}
+const sumSub=l=>r2(l.reduce((t,o)=>t+o.subtotal,0));
+function reserved(pid,ex){return S.orders.filter(o=>(o.status==='Pending'||o.status==='Preparing')&&o.id!=ex).reduce((t,o)=>t+o.lines.filter(l=>l.pid==pid).reduce((a,l)=>a+l.qty,0),0)}
+const avail=(pid,ex)=>{const p=prod(pid);return p?p.stock-reserved(pid,ex):0};
+const custTotal=id=>r2(S.orders.filter(o=>o.customer==id&&(o.status==='Shipped'||o.status==='Delivered')).reduce((t,o)=>t+o.total,0));
+function alerts(){return S.products.filter(p=>p.stock<=p.minStock).sort((a,b)=>(a.stock<=0?0:1)-(b.stock<=0?0:1)||a.stock/a.minStock-b.stock/b.minStock)}
+function mov(p,type,qty,reason,notes){p.stock+=type==='Exit'?-qty:qty;S.movements.push({id:++S.seq,date:nowS(),productId:p.id,type,qty,after:p.stock,reason,user:USER[S.role],notes:notes||''})}
+
+function barChart(d){const W=640,H=250,L=48,B=30,T=14,mx=Math.max(1,...d.map(x=>x.v)),step=Math.pow(10,Math.floor(Math.log10(mx))),top=Math.ceil(mx/step)*step,ch=H-B-T,bw=(W-L)/d.length;
+let s=`<svg class="ch" viewBox="0 0 ${W} ${H}" role="img" aria-label="Weekly sales bar chart">`;
+for(let i=0;i<=4;i++){const y=T+ch-ch*i/4;s+=`<line x1="${L}" x2="${W}" y1="${y}" y2="${y}" stroke="#e6ebf3"/><text x="${L-6}" y="${y+4}" text-anchor="end">${Math.round(top*i/4/100)/10}k</text>`}
+d.forEach((x,i)=>{const h=ch*x.v/top,bx=L+i*bw+bw*.18;s+=`<rect class="bar" data-tip="${esc(x.tip)}" x="${bx}" y="${T+ch-h}" width="${bw*.64}" height="${Math.max(h,1)}" rx="5"/><text x="${bx+bw*.32}" y="${H-10}" text-anchor="middle">${x.l}</text>`});
+return s+'</svg>'}
+function hbars(it,empt){if(!it.length||!it.some(x=>x.v>0))return empty(empt||'No sales in this period');const mx=Math.max(...it.map(x=>x.v)),n=it.length;
+let s=`<svg class="ch" viewBox="0 0 560 ${n*26+4}">`;
+it.forEach((x,i)=>{const y=i*26+2,w=Math.max(2,290*x.v/mx);s+=`<text x="0" y="${y+16}">${esc(x.l.length>26?x.l.slice(0,25)+'…':x.l)}</text><rect class="bar" data-tip="${esc(x.l)}: ${eur(x.v)}" x="170" y="${y+3}" width="${w}" height="16" rx="4"/><text x="${176+w}" y="${y+16}">${eur(x.v)}</text>`});
+return s+'</svg>'}
+
+function dashboard(){
+const t=new Date(),m=iso(t).slice(0,7),lm=iso(new Date(t.getFullYear(),t.getMonth()-1,1)).slice(0,7);
+const sm=sumSub(salesIn(iso(addDays(t,-29)),iso(t))),sl=sumSub(salesIn(iso(addDays(t,-59)),iso(addDays(t,-30)))),ch=sl?(sm-sl)/sl*100:null;
+const val=S.products.reduce((a,p)=>a+p.stock*p.cost,0),low=S.products.filter(p=>pst(p)==='Low').length,out=S.products.filter(p=>pst(p)==='Out').length;
+const pend=S.orders.filter(o=>o.status==='Pending').length,prep=S.orders.filter(o=>o.status==='Preparing').length;
+const k=(i,l,v,s)=>`<div class="card kpi"><div class="l"><span class="ic">${ico(i)}</span>${l}</div><div class="v">${v}</div><div class="s">${s||'&nbsp;'}</div></div>`;
+const wk=[];for(let i=7;i>=0;i--){const e=addDays(t,-7*i),s=addDays(e,-6),v=sumSub(salesIn(iso(s),iso(e)));wk.push({l:pad(s.getDate())+'/'+pad(s.getMonth()+1),v,tip:'Week of '+iso(s)+': '+eur(v)})}
+const rm=S.movements.slice().sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.id-a.id).slice(0,8);
+return`<div class="grid kpis">${k('products','Total products',S.products.length,S.categories.length+' categories')}${k('inventory','Stock value at cost',eur(val),'Current stock × cost')}${k('alerts','Low-stock products',low,'At or below minimum')}${k('alerts','Out-of-stock products',out,'Need immediate entry')}${k('orders','Pending orders',pend,prep+' in preparation')}${k('reports','Sales (last 30 days)',eur(sm),ch==null?'No data for the previous 30 days':`<span class="${ch>=0?'up':'dn'}">${ch>=0?'▲':'▼'} ${Math.abs(ch).toFixed(1)}%</span> vs ${eur(sl)} previous 30 days`)}</div>
+<div class="grid two"><div class="card"><h2>Weekly sales <small style="color:var(--mut);font-weight:500">last 8 weeks · excl. VAT</small></h2>${barChart(wk)}</div>
+<div class="card"><h2>Recent movements <button class="btn sm" data-a="nav" data-id="inventory">View all</button></h2>${rm.length?rm.map(m=>`<div class="ml"><div><b>${esc(pName(m.productId))}</b><small>${fd(m.date)} · ${esc(m.user)}</small></div><div style="text-align:right">${badge(m.type)}<div><b>${sgn(m)}</b></div></div></div>`).join(''):empty('No movements yet','Record your first entry in Inventory.')}</div></div>
+<p style="color:var(--mut);font-size:12px;margin-top:16px">Sample data for demonstration purposes only. All names and figures are fictional.</p>`}
+
+function products(){return`<div class="card"><h2>Product catalog <button class="btn pri sm" data-a="pnew">+ New product</button></h2><div class="bar"><input class="grow" data-f="pq" placeholder="Search by name or SKU" value="${esc(ui.pq)}"><select data-f="pcat">${opts(S.categories.map(c=>c.name),ui.pcat,'All categories')}</select><select data-f="pst">${opts(['OK','Low','Out'],ui.pst,'All stock statuses')}</select></div><div id="res">${RES.products()}</div></div>`}
+function prodRes(){const q=ui.pq.toLowerCase(),l=S.products.filter(p=>(!q||p.name.toLowerCase().includes(q)||p.sku.toLowerCase().includes(q))&&(!ui.pcat||p.category===ui.pcat)&&(!ui.pst||pst(p)===ui.pst));
+if(!l.length)return empty('No products match','Try another search or clear the filters.');
+return tbl(['SKU','Name','Category','Supplier','Unit','Cost','Price','Stock','Min','Status',''],l.map(p=>[esc(p.sku),`<b>${esc(p.name)}</b>`,esc(p.category),esc(sup(p.supplier)?sup(p.supplier).name:'—'),p.unit,eur(p.cost),eur(p.price),`<b>${p.stock}</b>`,p.minStock,badge(pst(p)),`<div class="acts">${ab('pview',p.id,'View')}${ab('pedit',p.id,'Edit')}${ab('pdel',p.id,'Delete','danger')}</div>`]))}
+
+function pform(id){const p=id?prod(id):{sku:'',name:'',category:S.categories[0]?S.categories[0].name:'',supplier:S.suppliers[0]?S.suppliers[0].id:'',unit:'unit',cost:'',price:'',stock:0,minStock:10,maxStock:100};
+const sc=id&&S.role==='sales';
+openModal(`<h3>${id?'Edit product':'New product'}<button class="btn ghost sm" data-a="close">✕</button></h3><form data-form="prod" data-id="${id||''}" novalidate><div class="fg">${fld('SKU','sku',p.sku,{req:1})}${fld('Name','name',p.name,{req:1})}${fld('Category','category',p.category,{type:'select',opts:S.categories.map(c=>c.name),req:1})}${fld('Supplier','supplier',p.supplier,{type:'select',opts:S.suppliers.map(s=>[s.id,s.name]),req:1})}${fld('Unit','unit',p.unit,{type:'select',opts:['unit','box','pack','kg','litre','pallet'],req:1})}${fld('Cost (EUR)','cost',p.cost,{type:'number',at:'step="0.01" min="0"',req:1,dis:sc,hint:sc?'Sales role cannot edit costs':''})}${fld('Price (EUR)','price',p.price,{type:'number',at:'step="0.01" min="0"',req:1})}${fld(id?'Current stock':'Initial stock','stock',p.stock,{type:'number',at:'min="0" step="1"',req:1,dis:!!id,hint:id?'Use Inventory movements to change stock':''})}${fld('Minimum stock','minStock',p.minStock,{type:'number',at:'min="0" step="1"',req:1})}${fld('Maximum stock','maxStock',p.maxStock,{type:'number',at:'min="0" step="1"',req:1})}</div><div class="row end"><button type="button" class="btn" data-a="close">Cancel</button><button class="btn pri">Save product</button></div></form>`)}
+function pdetail(id){const p=prod(id);if(!p)return;const mg=p.price?(p.price-p.cost)/p.price*100:0,pc=Math.min(100,p.maxStock?p.stock/p.maxStock*100:0),s=pst(p);
+const h=S.movements.filter(m=>m.productId==id).sort((a,b)=>a.date<b.date?1:-1).slice(0,10);
+openModal(`<h3>${esc(p.name)}<button class="btn ghost sm" data-a="close">✕</button></h3><div class="dl"><div><span>SKU</span><b>${esc(p.sku)}</b></div><div><span>Category</span><b>${esc(p.category)}</b></div><div><span>Supplier</span><b>${esc(sup(p.supplier)?sup(p.supplier).name:'—')}</b></div><div><span>Unit</span><b>${p.unit}</b></div><div><span>Cost</span><b>${eur(p.cost)}</b></div><div><span>Price</span><b>${eur(p.price)}</b></div><div><span>Margin</span><b>${mg.toFixed(1)}%</b></div><div><span>Min / Max</span><b>${p.minStock} / ${p.maxStock}</b></div><div><span>Status</span>${badge(s)}</div></div>
+<div class="row" style="justify-content:space-between"><b>Stock level: ${p.stock} ${p.unit}</b><span style="color:var(--mut)">${pc.toFixed(0)}% of max</span></div><div class="meter"><i class="${s.toLowerCase()==='ok'?'':s.toLowerCase()}" style="width:${pc}%"></i></div>
+<h2 style="font-size:15px;margin:18px 0 8px">Movement history</h2>${h.length?tbl(['Date','Type','Qty','Stock after','Reason'],h.map(m=>[fd(m.date),badge(m.type),sgn(m),m.after,esc(m.reason)])):empty('No movements for this product')}
+<div class="row end"><button class="btn" data-a="pedit" data-id="${id}">Edit</button><button class="btn pri" data-a="mvfor" data-id="${id}">Record movement</button></div>`,'wide')}
+
+function inventory(){const m=ui.mv||{};ui.mv=null;const t=m.type||'Entry';
+const form=can('mv')?`<form data-form="mv" novalidate><div class="fg">${fld('Product','product',m.product||'',{type:'select',opts:[['','Select product…']].concat(S.products.map(p=>[p.id,p.name+' · '+p.sku])),req:1,cls:'full',hint:'<span id="mvh"></span>'})}${fld('Type','type',t,{type:'select',opts:['Entry','Exit','Adjustment'],req:1})}${fld(t==='Adjustment'?'New count':'Quantity','quantity',m.qty||'',{type:'number',at:'min="0" step="1"',req:1})}${fld('Reason','reason',m.reason||'Purchase',{type:'select',opts:['Purchase','Return','Damage','Count correction','Other'],req:1})}<div class="f"><span>User</span><input value="${esc(USER[S.role])}" disabled></div>${fld('Notes','notes','',{type:'textarea',cls:'full'})}</div><div class="row end"><button class="btn acc">Record movement</button></div></form>`:`<div class="note">Your role (${S.role}) can view movements but not record them. Switch to Warehouse or Admin in Settings.</div>`;
+const us=[...new Set(S.movements.map(x=>x.user))];
+return`<div class="grid cols" style="grid-template-columns:minmax(0,1fr)"><div class="card"><h2>Record movement</h2>${form}</div><div class="card"><h2>Movement history</h2><div class="bar"><select data-f="mp">${opts(S.products.map(p=>[p.id,p.name]),ui.mp,'All products')}</select><select data-f="mt">${opts(['Entry','Exit','Adjustment'],ui.mt,'All types')}</select><select data-f="mu">${opts(us,ui.mu,'All users')}</select><input type="date" data-f="mf" value="${ui.mf}" aria-label="From"><input type="date" data-f="mto" value="${ui.mto}" aria-label="To"></div><div id="res">${RES.inventory()}</div></div></div>`}
+function invRes(){const l=S.movements.filter(m=>(!ui.mp||m.productId==ui.mp)&&(!ui.mt||m.type===ui.mt)&&(!ui.mu||m.user===ui.mu)&&(!ui.mf||m.date.slice(0,10)>=ui.mf)&&(!ui.mto||m.date.slice(0,10)<=ui.mto)).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.id-a.id);
+if(!l.length)return empty('No movements found','Adjust the filters or record a new movement.');
+return tbl(['Date','Product','Type','Quantity','Stock after','Reason','User'],l.slice(0,100).map(m=>[fd(m.date),esc(pName(m.productId)),badge(m.type),`<b>${sgn(m)}</b>`,m.after,esc(m.reason)+(m.notes?`<br><small style="color:var(--mut)">${esc(m.notes)}</small>`:''),esc(m.user)]))}
+
+function alertsV(){const l=alerts();return`<div class="card"><h2>Replenishment alerts <span class="badge ${l.length?'low':'ok'}">${l.length}</span></h2>${l.length?l.map(p=>{const sg=Math.max(0,p.maxStock-p.stock);return`<div class="al"><div><b>${esc(p.name)}</b><small>${esc(p.sku)} · ${esc(sup(p.supplier)?sup(p.supplier).name:'—')}${sup(p.supplier)?' · lead '+sup(p.supplier).leadTime+'d':''}</small></div><div><small>Stock</small><b>${p.stock}</b> ${badge(pst(p))}</div><div><small>Minimum</small><b>${p.minStock}</b></div><div><small>Maximum</small><b>${p.maxStock}</b></div><div><small>Suggested</small><b>${sg}</b></div>${ab('aent',p.id,'Record entry','acc')}</div>`}).join(''):empty('All stock levels are healthy','No product is at or below its minimum.')}</div>`}
+
+function customers(){return`<div class="card"><h2>Customer list <button class="btn pri sm" data-a="cnew">+ New customer</button></h2><div class="bar"><input class="grow" data-f="cq" placeholder="Search customer, contact or city" value="${esc(ui.cq)}"><select data-f="ctype">${opts(['Store','Supermarket','Restaurant'],ui.ctype,'All types')}</select></div><div id="res">${RES.customers()}</div></div>`}
+function custRes(){const q=ui.cq.toLowerCase(),l=S.customers.filter(c=>(!q||(c.name+c.contact+c.city).toLowerCase().includes(q))&&(!ui.ctype||c.type===ui.ctype));
+if(!l.length)return empty('No customers found');
+return tbl(['Name','Type','Contact','City','Payment terms','Total purchased',''],l.map(c=>[`<b>${esc(c.name)}</b>`,c.type,esc(c.contact),esc(c.city),c.paymentTerms,eur(custTotal(c.id)),`<div class="acts">${ab('cview',c.id,'View')}${ab('cedit',c.id,'Edit')}${ab('cdel',c.id,'Delete','danger')}</div>`]))}
+function cform(id){const c=id?cust(id):{name:'',type:'Store',contact:'',email:'',phone:'',city:'',paymentTerms:'30 days'};
+openModal(`<h3>${id?'Edit customer':'New customer'}<button class="btn ghost sm" data-a="close">✕</button></h3><form data-form="cust" data-id="${id||''}" novalidate><div class="fg">${fld('Business name','name',c.name,{req:1})}${fld('Type','type',c.type,{type:'select',opts:['Store','Supermarket','Restaurant'],req:1})}${fld('Contact person','contact',c.contact,{req:1})}${fld('Email','email',c.email,{type:'email',req:1})}${fld('Phone','phone',c.phone,{type:'tel'})}${fld('City','city',c.city,{req:1})}${fld('Payment terms','paymentTerms',c.paymentTerms,{type:'select',opts:['Immediate','15 days','30 days','60 days'],req:1})}</div><div class="row end"><button type="button" class="btn" data-a="close">Cancel</button><button class="btn pri">Save customer</button></div></form>`)}
+function cdetail(id){const c=cust(id);if(!c)return;const os=S.orders.filter(o=>o.customer==id).sort((a,b)=>a.date<b.date?1:-1);
+openModal(`<h3>${esc(c.name)}<button class="btn ghost sm" data-a="close">✕</button></h3><div class="dl"><div><span>Type</span><b>${c.type}</b></div><div><span>Contact</span><b>${esc(c.contact)}</b></div><div><span>City</span><b>${esc(c.city)}</b></div><div><span>Email</span><b>${esc(c.email)}</b></div><div><span>Phone</span><b>${esc(c.phone||'—')}</b></div><div><span>Payment terms</span><b>${c.paymentTerms}</b></div><div><span>Total purchased</span><b>${eur(custTotal(id))}</b></div><div><span>Orders</span><b>${os.length}</b></div></div>
+<h2 style="font-size:15px;margin:8px 0">Order history</h2>${os.length?tbl(['Order','Date','Status','Total',''],os.map(o=>[o.number,o.date,badge(o.status),eur(o.total),ab('oview',o.id,'View')])):empty('No orders yet')}
+<div class="row end"><button class="btn" data-a="cedit" data-id="${id}">Edit</button>${can('ordNew')?`<button class="btn acc" data-a="onewfor" data-id="${id}">New order</button>`:''}</div>`,'wide')}
+
+function orders(){return`<div class="card"><h2>Orders <button class="btn pri sm" data-a="ordNew">+ New order</button></h2><div class="bar"><input class="grow" data-f="oq" placeholder="Search by customer or order number" value="${esc(ui.oq)}"><select data-f="ost">${opts(['Pending','Preparing','Shipped','Delivered','Cancelled'],ui.ost,'All statuses')}</select></div><div id="res">${RES.orders()}</div></div>`}
+function ordRes(){const q=ui.oq.toLowerCase(),l=S.orders.filter(o=>(!q||o.number.toLowerCase().includes(q)||cName(o.customer).toLowerCase().includes(q))&&(!ui.ost||o.status===ui.ost)).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.id-a.id);
+if(!l.length)return empty('No orders found');
+return tbl(['Number','Customer','Date','Status','Total',''],l.map(o=>[`<b>${o.number}</b>`,esc(cName(o.customer)),o.date,badge(o.status),eur(o.total),`<div class="acts">${ab('oview',o.id,'View')}${NEXT[o.status]?ab('oadv',o.id,'→ '+NEXT[o.status],'acc'):''}${o.status!=='Cancelled'&&o.status!=='Delivered'?ab('ocan',o.id,'Cancel','danger'):''}</div>`]))}
+function odetail(id){const o=ord(id);if(!o)return;const steps=['Pending','Preparing','Shipped','Delivered'],h=o.history||[];
+const tl=steps.map(s=>{const x=h.find(y=>y.s===s);return`<div class="${x?'d':''}">${s}<br><small>${x?x.d:''}</small></div>`}).join('')+(o.status==='Cancelled'?`<div class="c">Cancelled<br><small>${(h.find(y=>y.s==='Cancelled')||{}).d||''}</small></div>`:'');
+openModal(`<h3>Order ${o.number} ${badge(o.status)}<button class="btn ghost sm" data-a="close">✕</button></h3><p style="margin:0 0 8px;color:var(--mut)">${esc(cName(o.customer))} · ${o.date}</p><div class="tl">${tl}</div>
+${tbl(['Product','Qty','Price','Disc.','Line total'],o.lines.map(l=>[esc(pName(l.pid)),l.qty,eur(l.price),l.disc+'%',eur(r2(l.qty*l.price*(1-l.disc/100)))]))}
+<div class="tot"><div><span>Subtotal</span><span>${eur(o.subtotal)}</span></div><div><span>VAT 21%</span><span>${eur(o.vat)}</span></div><div class="g"><span>Total</span><span>${eur(o.total)}</span></div></div>
+<div class="row end">${o.status!=='Cancelled'&&o.status!=='Delivered'?ab('ocan',o.id,'Cancel order','danger'):''}${NEXT[o.status]?`<button class="btn pri" data-a="oadv" data-id="${o.id}">Move to ${NEXT[o.status]}</button>`:''}</div>`,'wide')}
+function lineRow(l){return`<div class="ln"><select name="lp">${S.products.map(p=>`<option value="${p.id}" ${p.id==l.pid?'selected':''}>${esc(p.name)} · ${p.sku}</option>`).join('')}</select><input name="lq" type="number" min="1" step="1" value="${l.qty}"><input name="lpr" type="number" min="0" step="0.01" value="${l.price}"><input name="ld" type="number" min="0" max="100" step="1" value="${l.disc}"><b class="lt"></b><button type="button" class="btn sm ghost" data-a="ldel">✕</button><small></small></div>`}
+function oform(cid){if(!guard('ordNew'))return;if(!S.products.length||!S.customers.length)return toast('Create customers and products first.','err');const p=S.products.find(p=>avail(p.id)>0)||S.products[0];
+openModal(`<h3>New order<button class="btn ghost sm" data-a="close">✕</button></h3><form data-form="order" novalidate>${fld('Customer','customer',cid||'',{type:'select',opts:[['','Select customer…']].concat(S.customers.map(c=>[c.id,c.name])),req:1})}<div style="margin-top:12px"><div class="ln h"><span>Product</span><span>Qty</span><span>Price</span><span>Disc %</span><span>Total</span><span></span></div><div id="lines">${lineRow({pid:p.id,qty:1,price:p.price,disc:0})}</div><button type="button" class="btn sm" data-a="ladd">+ Add line</button><small class="err" data-e="lines" style="display:block"></small></div><div class="tot"><div><span>Subtotal</span><span id="o1"></span></div><div><span>VAT 21%</span><span id="o2"></span></div><div class="g"><span>Total</span><span id="o3"></span></div></div><div class="row end"><button type="button" class="btn" data-a="close">Cancel</button><button class="btn pri">Create order</button></div></form>`,'wide');recalc()}
+function readLines(){return[...document.querySelectorAll('#lines .ln')].map(r=>({r,pid:+r.querySelector('[name=lp]').value,qty:num(r.querySelector('[name=lq]').value),price:num(r.querySelector('[name=lpr]').value),disc:num(r.querySelector('[name=ld]').value)||0}))}
+function recalc(){const ls=readLines(),use={};let ok=true;ls.forEach(l=>{use[l.pid]=(use[l.pid]||0)+(l.qty||0)});
+ls.forEach(l=>{const a=avail(l.pid),sm=l.r.querySelector('small');let m='Available: '+a,e=false;
+if(!(l.qty>0)||l.qty%1){m='Quantity must be a whole number above 0';e=true}else if(!(l.price>=0)||l.disc<0||l.disc>100){m='Check price and discount (0–100%)';e=true}else if(use[l.pid]>a){m='Only '+a+' available — reduce quantity (blocked)';e=true}
+sm.textContent=m;sm.className=e?'e':'';if(e)ok=false;l.r.querySelector('.lt').textContent=eur(r2((l.qty||0)*(l.price||0)*(1-l.disc/100)))});
+const t=calc(ls.map(l=>({qty:l.qty||0,price:l.price||0,disc:l.disc})));$('#o1').textContent=eur(t.subtotal);$('#o2').textContent=eur(t.vat);$('#o3').textContent=eur(t.total);return ok}
+
+function reports(){return`<div class="card" style="margin-bottom:16px"><div class="bar" style="margin:0"><select data-f="rp"><option value="month" ${ui.rp==='month'?'selected':''}>This month</option><option value="last" ${ui.rp==='last'?'selected':''}>Last month</option><option value="90" ${ui.rp==='90'?'selected':''}>Last 90 days</option><option value="custom" ${ui.rp==='custom'?'selected':''}>Custom range</option></select>${ui.rp==='custom'?`<input type="date" data-f="rf" value="${ui.rf}" aria-label="From"><input type="date" data-f="rt" value="${ui.rt}" aria-label="To">`:''}</div></div><div id="res">${RES.reports()}</div>`}
+function range(){const t=new Date();if(ui.rp==='month')return[iso(new Date(t.getFullYear(),t.getMonth(),1)),iso(t)];if(ui.rp==='last')return[iso(new Date(t.getFullYear(),t.getMonth()-1,1)),iso(new Date(t.getFullYear(),t.getMonth(),0))];if(ui.rp==='90')return[iso(addDays(t,-89)),iso(t)];return[ui.rf||iso(addDays(t,-29)),ui.rt||iso(t)]}
+function salesData(){const[f,t]=range(),os=salesIn(f,t),bp={},bc={},bk={};S.products.forEach(p=>bp[p.id]={p,v:0,u:0});
+os.forEach(o=>o.lines.forEach(l=>{const v=l.qty*l.price*(1-l.disc/100),p=prod(l.pid);if(bp[l.pid]){bp[l.pid].v+=v;bp[l.pid].u+=l.qty}bc[o.customer]=(bc[o.customer]||0)+v;if(p)bk[p.category]=(bk[p.category]||0)+v}));
+return{f,t,os,bp:Object.values(bp),bc,bk}}
+function repRes(){const d=salesData(),arr=d.bp.slice().sort((a,b)=>b.v-a.v),rev=sumSub(d.os),units=d.bp.reduce((a,x)=>a+x.u,0);
+const mv=S.movements.filter(m=>m.date.slice(0,10)>=d.f&&m.date.slice(0,10)<=d.t).sort((a,b)=>a.date<b.date?1:-1);
+const sm=t=>mv.filter(m=>m.type===t);
+const ent=sm('Entry'),ex=sm('Exit'),ad=sm('Adjustment');
+const chip=(l,v,s)=>`<div class="card kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+const hb=o=>Object.entries(o).map(([k,v])=>({l:isNaN(k)?k:cName(+k),v})).sort((a,b)=>b.v-a.v).slice(0,8);
+return`<div class="grid kpis">${chip('Net sales',eur(rev),d.f+' → '+d.t)}${chip('Orders shipped/delivered',d.os.length,'In period')}${chip('Units sold',units,'Across all products')}</div>
+<div class="grid cols"><div class="card"><h2>Best-selling products</h2>${hbars(arr.slice(0,6).map(x=>({l:x.p.name,v:r2(x.v)})))}</div><div class="card"><h2>Worst-selling products</h2>${hbars(arr.slice().reverse().slice(0,6).map(x=>({l:x.p.name,v:r2(x.v)})),'')||''}</div>
+<div class="card"><h2>Sales by customer</h2>${hbars(hb(d.bc))}</div><div class="card"><h2>Sales by category</h2>${hbars(hb(d.bk))}</div></div>
+<div class="card" style="margin-top:16px"><h2>Product sales table <button class="btn sm" data-a="csv" data-id="sales">Export CSV</button></h2>${tbl(['Product','Category','Units','Net sales'],arr.slice(0,12).map(x=>[esc(x.p.name),esc(x.p.category),x.u,eur(r2(x.v))]))}</div>
+<div class="card" style="margin-top:16px"><h2>Movements by period <button class="btn sm" data-a="csv" data-id="moves">Export CSV</button></h2><div class="grid kpis">${chip('Entries',ent.length,ent.reduce((a,m)=>a+m.qty,0)+' units in')}${chip('Exits',ex.length,ex.reduce((a,m)=>a+m.qty,0)+' units out')}${chip('Adjustments',ad.length,'Net '+ad.reduce((a,m)=>a+m.qty,0)+' units')}</div>${mv.length?tbl(['Date','Product','Type','Qty','Reason','User'],mv.slice(0,30).map(m=>[fd(m.date),esc(pName(m.productId)),badge(m.type),sgn(m),esc(m.reason),esc(m.user)])):empty('No movements in this period')}</div>`}
+function csv(rows,name){const t=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');const u=URL.createObjectURL(new Blob([t],{type:'text/csv'})),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),500)}
+
+function settings(){const adm=can('cat');
+const lst=(k,a,arr,f)=>arr.map(x=>`<div class="li"><div><b>${esc(x.name)}</b><br><small style="color:var(--mut)">${esc(f(x))}</small></div><div class="acts">${adm?ab(k+'edit',x.id,'Edit')+ab(k+'del',x.id,'Delete','danger'):''}</div></div>`).join('')||empty('Nothing yet');
+return`<div class="grid cols"><div class="card"><h2>Account role</h2><select class="rolesel" id="role2"><option value="admin" ${S.role==='admin'?'selected':''}>Admin — full access</option><option value="warehouse" ${S.role==='warehouse'?'selected':''}>Warehouse — inventory, alerts, shipping</option><option value="sales" ${S.role==='sales'?'selected':''}>Sales — customers and orders</option></select><p style="color:var(--mut);font-size:12px">Current user: ${esc(USER[S.role])}. Warehouse cannot manage customers; sales cannot edit costs or delete products; only admin manages the catalog.</p></div>
+<div class="card"><h2>Demo data</h2><p style="color:var(--mut);margin-top:0">Restore the original sample dataset (products, movements, customers and orders).</p><button class="btn danger" data-a="reset">Reset demo data</button></div>
+<div class="card"><h2>Categories ${adm?'<button class="btn pri sm" data-a="catnew">+ Add</button>':''}</h2>${lst('cat','',S.categories,x=>x.description||'No description')}</div>
+<div class="card"><h2>Suppliers ${adm?'<button class="btn pri sm" data-a="supnew">+ Add</button>':''}</h2>${lst('sup','',S.suppliers,x=>x.contact+' · '+x.email)}</div></div>
+<div class="card" style="margin-top:16px"><h2>Export / import data</h2><textarea class="big" id="io" placeholder="Exported JSON appears here. Paste JSON to import."></textarea><div class="row end"><button class="btn" data-a="exp">Export data</button><button class="btn pri" data-a="imp">Import</button></div></div>`}
+function simple(kind,id){const isC=kind==='cat',x=id?(isC?S.categories:S.suppliers).find(y=>y.id==id):{};
+openModal(`<h3>${id?'Edit':'New'} ${isC?'category':'supplier'}<button class="btn ghost sm" data-a="close">✕</button></h3><form data-form="${kind}" data-id="${id||''}" novalidate><div class="fg">${isC?fld('Name','name',x.name||'',{req:1,cls:'full'})+fld('Description','description',x.description||'',{type:'textarea',cls:'full'}):fld('Company','name',x.name||'',{req:1})+fld('Contact person','contact',x.contact||'',{req:1})+fld('Email','email',x.email||'',{type:'email',req:1})+fld('Phone','phone',x.phone||'',{type:'tel'})+fld('Lead time (days)','leadTime',x.leadTime||'',{type:'number',at:'min="0"'})}</div><div class="row end"><button type="button" class="btn" data-a="close">Cancel</button><button class="btn pri">Save</button></div></form>`)}
+
+const RES={products:prodRes,inventory:invRes,customers:custRes,orders:ordRes,reports:repRes};
+const VIEWS={dashboard,products,inventory,alerts:alertsV,customers,orders,reports,settings};
+function render(){const n=alerts().length;
+const nav=Object.keys(TITLES).map(k=>`<button class="nv ${ui.view===k?'on':''}" data-a="nav" data-id="${k}">${ico(k)}<span>${TITLES[k]}</span>${k==='alerts'&&n?`<em class="b" style="font-style:normal">${n}</em>`:''}</button>`).join('');
+$('#nav').innerHTML=nav;$('#bnav').innerHTML=nav;$('#title').textContent=TITLES[ui.view];$('#main').innerHTML=VIEWS[ui.view]();$('#role').value=S.role}
+function go(v){ui.view=v;render();window.scrollTo(0,0)}
+function upd(){save();render()}
+
+const FORMS={
+prod(f){const id=+f.dataset.id||0,d=Object.fromEntries(new FormData(f)),er={},old=id?prod(id):null;
+const sku=(d.sku||'').trim(),name=(d.name||'').trim();
+if(!sku)er.sku='SKU is required';else if(S.products.some(p=>p.sku.toLowerCase()===sku.toLowerCase()&&p.id!==id))er.sku='This SKU already exists';
+if(!name)er.name='Name is required';
+const cost=d.cost===undefined?old.cost:num(d.cost),price=num(d.price),stock=id?old.stock:num(d.stock),mn=num(d.minStock),mx=num(d.maxStock);
+if(!(cost>=0))er.cost='Enter a valid cost';if(!(price>=0))er.price='Enter a valid price';
+if(!(stock>=0)||stock%1)er.stock='Whole number, 0 or more';if(!(mn>=0)||mn%1)er.minStock='Whole number, 0 or more';
+if(!(mx>0)||mx%1)er.maxStock='Whole number above 0';else if(mx<mn)er.maxStock='Must be at least the minimum';
+if(!d.category)er.category='Select a category';if(!d.supplier)er.supplier='Select a supplier';
+if(!showErr(f,er))return;
+const o={sku,name,category:d.category,supplier:+d.supplier,unit:d.unit,cost,price,minStock:mn,maxStock:mx};
+if(id)Object.assign(old,o);else{const p={id:++S.seq,stock:0,...o};S.products.push(p);if(stock>0)mov(p,'Entry',stock,'Other','Initial stock')}
+closeModal();upd();toast(id?'Product updated':'Product created')},
+cust(f){const id=+f.dataset.id||0,d=Object.fromEntries(new FormData(f)),er={};
+if(!d.name.trim())er.name='Required';if(!d.contact.trim())er.contact='Required';if(!d.city.trim())er.city='Required';
+if(!emailOk(d.email.trim()))er.email='Enter a valid email';if(!showErr(f,er))return;
+const o={name:d.name.trim(),type:d.type,contact:d.contact.trim(),email:d.email.trim(),phone:d.phone.trim(),city:d.city.trim(),paymentTerms:d.paymentTerms};
+if(id)Object.assign(cust(id),o);else S.customers.push({id:++S.seq,...o});closeModal();upd();toast(id?'Customer updated':'Customer created')},
+mv(f){const d=Object.fromEntries(new FormData(f)),er={},p=prod(d.product),q=num(d.quantity);
+if(!p)er.product='Select a product';
+if(!(q>=0)||q%1)er.quantity='Enter a whole number';else if(d.type!=='Adjustment'&&q<1)er.quantity='Must be at least 1';
+else if(p&&d.type==='Exit'&&q>p.stock)er.quantity='Exit exceeds current stock ('+p.stock+')';
+else if(p&&d.type==='Adjustment'&&q===p.stock)er.quantity='New count equals current stock';
+if(!showErr(f,er))return;
+if(d.type==='Adjustment')mov(p,'Adjustment',q-p.stock,d.reason,d.notes);else mov(p,d.type,q,d.reason,d.notes);
+upd();toast('Movement recorded · '+p.name+' stock: '+p.stock)},
+order(f){const cu=f.customer.value;if(!cu){showErr(f,{customer:'Select a customer'});return}showErr(f,{});
+const ls=readLines();if(!recalc()){showErr(f,{lines:'Fix the highlighted lines before saving'});return}
+const lines=ls.map(l=>({pid:l.pid,qty:l.qty,price:l.price,disc:l.disc})),n=S.orders.reduce((m,o)=>Math.max(m,parseInt(o.number.slice(3))||0),1000)+1,d=today();
+S.orders.push({id:++S.seq,number:'NV-'+n,customer:+cu,date:d,status:'Pending',lines,...calc(lines),history:[{s:'Pending',d}]});
+closeModal();ui.view='orders';upd();toast('Order NV-'+n+' created')},
+cat(f){const id=+f.dataset.id||0,n=f.name.value.trim(),er={};if(!n)er.name='Required';else if(S.categories.some(c=>c.name.toLowerCase()===n.toLowerCase()&&c.id!==id))er.name='Already exists';if(!showErr(f,er))return;
+if(id){const c=S.categories.find(c=>c.id===id);S.products.forEach(p=>{if(p.category===c.name)p.category=n});c.name=n;c.description=f.description.value}else S.categories.push({id:++S.seq,name:n,description:f.description.value});closeModal();upd();toast('Category saved')},
+sup(f){const id=+f.dataset.id||0,d=Object.fromEntries(new FormData(f)),er={};if(!d.name.trim())er.name='Required';if(!d.contact.trim())er.contact='Required';if(!emailOk(d.email.trim()))er.email='Enter a valid email';if(!showErr(f,er))return;
+const o={name:d.name.trim(),contact:d.contact.trim(),email:d.email.trim(),phone:d.phone.trim(),leadTime:num(d.leadTime)||0};
+if(id)Object.assign(S.suppliers.find(s=>s.id===id),o);else S.suppliers.push({id:++S.seq,...o});closeModal();upd();toast('Supplier saved')}};
+
+function advance(id){const o=ord(id),n=NEXT[o.status];if(!n)return;
+if(n==='Shipped'){if(!guard('ship'))return;const need={};o.lines.forEach(l=>need[l.pid]=(need[l.pid]||0)+l.qty);
+const bad=Object.keys(need).filter(k=>!prod(k)||prod(k).stock<need[k]);
+if(bad.length){toast('Cannot ship: insufficient stock for '+bad.map(k=>pName(k)+' (need '+need[k]+', have '+(prod(k)?prod(k).stock:0)+')').join('; '),'err');return}
+o.lines.forEach(l=>mov(prod(l.pid),'Exit',l.qty,'Sale','Order '+o.number))}
+o.status=n;o.history.push({s:n,d:today()});closeModal();upd();toast('Order '+o.number+' → '+n)}
+function cancelOrd(id){const o=ord(id);if(!guard('ordCancel'))return;if(o.status==='Delivered')return toast('Delivered orders cannot be cancelled.','err');
+const sh=o.status==='Shipped';
+confirmBox('Cancel order '+o.number+'?',sh?'This order was already shipped. Cancelling will restore stock through Entry movements (reason: Return).':'The order will be marked as cancelled. This cannot be undone.','Cancel order',()=>{
+if(sh)o.lines.forEach(l=>{const p=prod(l.pid);if(p)mov(p,'Entry',l.qty,'Return','Order '+o.number+' cancelled')});
+o.status='Cancelled';o.history.push({s:'Cancelled',d:today()});closeModal();upd();toast('Order cancelled'+(sh?' · stock restored':''))})}
+
+const A={
+nav:v=>go(v),side(){ui.col=!ui.col;$('#app').classList.toggle('col',ui.col)},close:closeModal,cno(){$('#confirm').classList.remove('show')},cyes(){const f=cfn;A.cno();if(f)f()},
+pnew(){if(guard('prodAdd'))pform()},pedit:id=>pform(id),pview:id=>pdetail(id),
+pdel(id){if(!guard('prodDel'))return;const p=prod(id),n=S.orders.filter(o=>o.lines.some(l=>l.pid==id)).length;
+if(n)return toast('Cannot delete "'+p.name+'": it appears in '+n+' order(s).','err');
+confirmBox('Delete product?','"'+esc(p.name)+'" and its movement history will be permanently removed.','Delete',()=>{S.products=S.products.filter(x=>x.id!=id);S.movements=S.movements.filter(m=>m.productId!=id);closeModal();upd();toast('Product deleted')})},
+mvfor(id){closeModal();ui.mv={product:id};go('inventory')},
+aent(id){if(!guard('mv'))return;const p=prod(id);ui.mv={product:id,type:'Entry',qty:Math.max(0,p.maxStock-p.stock),reason:'Purchase'};go('inventory')},
+cnew(){if(guard('cust'))cform()},cedit(id){if(guard('cust'))cform(id)},cview:id=>cdetail(id),
+cdel(id){if(!guard('cust'))return;const c=cust(id),n=S.orders.filter(o=>o.customer==id).length;if(n)return toast('Cannot delete "'+c.name+'": it has '+n+' order(s).','err');
+confirmBox('Delete customer?','"'+esc(c.name)+'" will be permanently removed.','Delete',()=>{S.customers=S.customers.filter(x=>x.id!=id);upd();toast('Customer deleted')})},
+ordNew(){oform()},onewfor(id){closeModal();oform(id)},oview:id=>odetail(id),oadv:id=>advance(id),ocan:id=>cancelOrd(id),
+ladd(){const u=readLines().map(l=>l.pid),p=S.products.find(p=>!u.includes(p.id)&&avail(p.id)>0)||S.products[0];$('#lines').insertAdjacentHTML('beforeend',lineRow({pid:p.id,qty:1,price:p.price,disc:0}));recalc()},
+ldel(id,t){if(document.querySelectorAll('#lines .ln').length>1){t.closest('.ln').remove();recalc()}},
+catnew(){if(guard('cat'))simple('cat')},catedit(id){if(guard('cat'))simple('cat',id)},supnew(){if(guard('cat'))simple('sup')},supedit(id){if(guard('cat'))simple('sup',id)},
+catdel(id){if(!guard('cat'))return;const c=S.categories.find(x=>x.id==id),n=S.products.filter(p=>p.category===c.name).length;if(n)return toast('Cannot delete: '+n+' product(s) use this category.','err');
+confirmBox('Delete category?','"'+esc(c.name)+'" will be removed.','Delete',()=>{S.categories=S.categories.filter(x=>x.id!=id);upd();toast('Category deleted')})},
+supdel(id){if(!guard('cat'))return;const s=sup(id),n=S.products.filter(p=>p.supplier==id).length;if(n)return toast('Cannot delete: '+n+' product(s) use this supplier.','err');
+confirmBox('Delete supplier?','"'+esc(s.name)+'" will be removed.','Delete',()=>{S.suppliers=S.suppliers.filter(x=>x.id!=id);upd();toast('Supplier deleted')})},
+reset(){if(!guard('sys'))return;confirmBox('Reset demo data?','All changes will be lost and the original sample dataset restored.','Reset',()=>{const r=S.role;S=seed();S.role=r;upd();toast('Demo data restored')})},
+exp(){$('#io').value=JSON.stringify(S,null,1);toast('Data exported to the text box')},
+imp(){if(!guard('sys'))return;try{const o=JSON.parse($('#io').value);if(!['categories','suppliers','products','movements','customers','orders'].every(k=>Array.isArray(o[k])))throw 0;
+o.role=['admin','warehouse','sales'].includes(o.role)?o.role:'admin';o.seq=Math.max(o.seq||0,...['categories','suppliers','products','movements','customers','orders'].flatMap(k=>o[k].map(x=>x.id||0)));S=o;upd();toast('Data imported')}catch(e){toast('Invalid JSON: could not import.','err')}},
+csv(k){const d=salesData();if(k==='sales')csv([['SKU','Product','Category','Units','Net sales EUR']].concat(d.bp.sort((a,b)=>b.v-a.v).map(x=>[x.p.sku,x.p.name,x.p.category,x.u,r2(x.v)])),'sales-'+d.f+'_'+d.t+'.csv');
+else csv([['Date','SKU','Product','Type','Quantity','Stock after','Reason','User']].concat(S.movements.filter(m=>m.date.slice(0,10)>=d.f&&m.date.slice(0,10)<=d.t).map(m=>[fd(m.date),prod(m.productId)?prod(m.productId).sku:'',pName(m.productId),m.type,m.qty,m.after,m.reason,m.user])),'movements-'+d.f+'_'+d.t+'.csv');toast('CSV exported')}};
+
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(t){const v=t.dataset.id;A[t.dataset.a]&&A[t.dataset.a](v&&!isNaN(v)?+v:v,t);return}
+if(e.target.id==='modal')closeModal()});
+document.addEventListener('submit',e=>{e.preventDefault();const f=e.target;FORMS[f.dataset.form]&&FORMS[f.dataset.form](f)});
+document.addEventListener('input',e=>{const t=e.target,k=t.dataset.f;
+if(k){ui[k]=t.value;if(k==='rp')return render();const r=$('#res');if(r&&RES[ui.view])r.innerHTML=RES[ui.view]();return}
+if(t.closest('#lines'))recalc()});
+document.addEventListener('change',e=>{const t=e.target;
+if(t.classList.contains('rolesel')){S.role=t.value;upd();toast('Role: '+S.role);return}
+if(t.name==='lp'){const r=t.closest('.ln');r.querySelector('[name=lpr]').value=prod(t.value).price;recalc()}
+const f=t.form;if(f&&f.dataset.form==='mv'){if(t.name==='type'){f.reason.value=t.value==='Adjustment'?'Count correction':t.value==='Entry'?'Purchase':'Damage';f.quantity.closest('.f').firstChild.textContent=(t.value==='Adjustment'?'New count':'Quantity')+' *'}
+if(t.name==='product'){const p=prod(t.value);$('#mvh').textContent=p?'Current stock: '+p.stock+' '+p.unit+' (min '+p.minStock+', max '+p.maxStock+')':''}}});
+const tip=$('#tip');
+document.addEventListener('pointermove',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(t){tip.textContent=t.dataset.tip;tip.style.display='block';tip.style.left=Math.min(e.clientX+12,innerWidth-190)+'px';tip.style.top=(e.clientY+14)+'px'}else tip.style.display='none'});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){A.cno();closeModal()}});
+render();
+</script>
+</body>
+</html>

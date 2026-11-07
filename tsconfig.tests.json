@@ -16,6 +16,8 @@
     "src/lib/uploads.ts",
     "src/features/billing/pricing.ts",
     "src/features/billing/epayco-sign.ts",
-    "src/features/packages/catalog.ts"
+    "src/features/packages/catalog.ts",
+    "src/features/leads/schema.ts",
+    "src/content/commercial/pricing.ts"
   ]
 }

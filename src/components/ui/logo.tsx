@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Marca Ideon: isotipo (nodo que se convierte en producto) + wordmark. */
+/** Marca Ideonapp: isotipo (nodo que se convierte en producto) + wordmark. */
 export function Logo({
   className,
   withText = true,
@@ -39,7 +39,7 @@ export function Logo({
       </svg>
       {withText && (
         <span className="text-[17px] font-semibold tracking-tight text-fg">
-          ideon
+          ideon<span className="text-fg-muted font-medium">app</span>
         </span>
       )}
     </span>

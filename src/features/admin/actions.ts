@@ -57,3 +57,26 @@ export async function updateTicketStatusAction(ticketId: string, status: "open" 
   await db.from("support_tickets").update({ status }).eq("id", ticketId);
   revalidatePath(`/${await getLocale()}/admin/tickets`);
 }
+
+/** Gestión comercial de un lead (etapa, valor, fechas de contacto y notas). */
+export async function updateLeadAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const { leadUpdateSchema } = await import("@/features/leads/schema");
+  const raw = Object.fromEntries(formData) as Record<string, string>;
+  const id = z.string().uuid().safeParse(raw.id);
+  const parsed = leadUpdateSchema.safeParse({
+    stage: raw.stage, estimatedValue: raw.estimatedValue?.trim() ? Number(raw.estimatedValue) : null,
+    estimatedCurrency: raw.estimatedCurrency ?? "", lastContactAt: raw.lastContactAt || undefined, nextFollowUpAt: raw.nextFollowUpAt || undefined, notes: raw.notes,
+  });
+  if (!id.success || !parsed.success) return { error: "invalid" };
+  try {
+    const db = await admin();
+    const d = parsed.data;
+    const { error } = await db.from("leads").update({
+      stage: d.stage, estimated_value: d.estimatedValue ?? null, estimated_currency: d.estimatedCurrency ?? null,
+      last_contact_at: d.lastContactAt, next_follow_up_at: d.nextFollowUpAt, notes: d.notes,
+    }).eq("id", id.data);
+    if (error) return { error: error.message };
+    revalidatePath(`/${await getLocale()}/admin/leads`);
+    return { ok: true };
+  } catch (e) { return { error: (e as Error).message }; }
+}
