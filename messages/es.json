@@ -849,5 +849,9 @@
     "tryDemo": "Probar demo",
     "createLike": "Crear algo así",
     "note": "Las demos usan datos ficticios y guardan los cambios solo en tu navegador. Cada una se generó a partir de una descripción breve, sin retoques manuales; tu proyecto se adapta a tu negocio con el cuestionario del consultor y los cambios que pidas por chat."
+  },
+  "whatsapp": {
+    "label": "Escríbenos por WhatsApp",
+    "message": "Hola, quiero información sobre Ideon."
   }
 }

@@ -849,5 +849,9 @@
     "tryDemo": "Try demo",
     "createLike": "Build something like this",
     "note": "Demos use fictitious data and only save changes in your browser. Each one was generated from a short description with no manual edits; your project adapts to your business through the consultant's questionnaire and the changes you request in chat."
+  },
+  "whatsapp": {
+    "label": "Message us on WhatsApp",
+    "message": "Hi, I'd like to know more about Ideon."
   }
 }
