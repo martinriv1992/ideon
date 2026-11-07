@@ -38,10 +38,21 @@ export interface ModelPolicy {
 }
 
 export const DEFAULT_POLICIES: Record<AgentTask, ModelPolicy> = {
-  consultant: { task: "consultant", provider: "anthropic", model: "claude-sonnet-4-5", maxOutputTokens: 2048, inputCostPerMtok: 3, outputCostPerMtok: 15 },
-  architect: { task: "architect", provider: "anthropic", model: "claude-sonnet-4-5", maxOutputTokens: 4096, inputCostPerMtok: 3, outputCostPerMtok: 15 },
-  developer: { task: "developer", provider: "anthropic", model: "claude-sonnet-4-5", maxOutputTokens: 16000, inputCostPerMtok: 3, outputCostPerMtok: 15 },
-  modify: { task: "modify", provider: "anthropic", model: "claude-sonnet-4-5", maxOutputTokens: 16000, inputCostPerMtok: 3, outputCostPerMtok: 15 },
+  consultant: { task: "consultant", provider: "anthropic", model: "claude-sonnet-5-5", maxOutputTokens: 4096, inputCostPerMtok: 2, outputCostPerMtok: 10 },
+  architect: { task: "architect", provider: "anthropic", model: "claude-sonnet-5-5", maxOutputTokens: 8192, inputCostPerMtok: 2, outputCostPerMtok: 10 },
+  developer: { task: "developer", provider: "anthropic", model: "claude-sonnet-5-5", maxOutputTokens: 32000, inputCostPerMtok: 2, outputCostPerMtok: 10 },
+  modify: { task: "modify", provider: "anthropic", model: "claude-sonnet-5-5", maxOutputTokens: 32000, inputCostPerMtok: 2, outputCostPerMtok: 10 },
+};
+
+/**
+ * Esfuerzo por tarea: controla cuánto razona el modelo (y cuántos tokens de
+ * salida se facturan). El consultor solo formula preguntas: esfuerzo bajo.
+ */
+export const TASK_EFFORT: Record<AgentTask, "low" | "medium" | "high"> = {
+  consultant: "low",
+  architect: "medium",
+  developer: "medium",
+  modify: "medium",
 };
 
 export function estimateCostUsd(p: ModelPolicy, inputTokens: number, outputTokens: number) {
