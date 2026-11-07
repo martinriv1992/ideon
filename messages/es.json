@@ -1,0 +1,406 @@
+{
+  "meta": {
+    "title": "Ideon — Tu idea. Nuestra inteligencia. Tu próximo negocio.",
+    "description": "Describe lo que necesitas. Nuestra inteligencia artificial diseña, desarrolla y convierte tus ideas en soluciones digitales reales."
+  },
+  "nav": {
+    "product": "Producto",
+    "process": "Proceso",
+    "solutions": "Soluciones",
+    "pricing": "Planes",
+    "faq": "Preguntas",
+    "login": "Iniciar sesión",
+    "start": "Comenzar proyecto",
+    "dashboard": "Ir al panel",
+    "language": "Idioma"
+  },
+  "hero": {
+    "badge": "Estudio de software impulsado por IA",
+    "title": "Tu idea. Nuestra inteligencia. Tu próximo negocio.",
+    "subtitle": "Describe lo que necesitas. Nuestra inteligencia artificial diseña, desarrolla y convierte tus ideas en soluciones digitales reales.",
+    "placeholder": "Cuéntanos qué quieres crear. Una aplicación, una web, un CRM o cualquier solución para tu negocio...",
+    "cta": "Comenzar proyecto",
+    "hint": "Sin formularios. Sin compromiso. Tu idea se guarda y continúas donde la dejaste.",
+    "examplesLabel": "O empieza con un ejemplo",
+    "charCount": "{count} / {max}",
+    "errorEmpty": "Escribe al menos unas palabras sobre lo que quieres crear.",
+    "examples": [
+      {
+        "title": "Inventario para un taller",
+        "prompt": "Necesito un sistema de inventario para mi taller: control de insumos, recetas de producción por producto, alertas de stock mínimo y un panel con el consumo mensual."
+      },
+      {
+        "title": "CRM para un equipo comercial",
+        "prompt": "Quiero un CRM sencillo para mi equipo de 5 vendedores: clientes, seguimiento de oportunidades por etapa, recordatorios y cotizaciones en PDF."
+      },
+      {
+        "title": "Tienda online con pagos",
+        "prompt": "Una tienda online para vender productos de bienestar con catálogo, carrito, pagos con tarjeta y PSE, y un panel para gestionar pedidos."
+      },
+      {
+        "title": "Portal de clientes",
+        "prompt": "Un portal donde mis clientes mayoristas puedan ver su catálogo con precios especiales, hacer pedidos y consultar el estado de sus facturas."
+      }
+    ]
+  },
+  "categories": {
+    "eyebrow": "Soluciones",
+    "title": "Cualquier solución digital, sin límites de catálogo",
+    "description": "Estas son las más frecuentes. Si tu idea no encaja en ninguna, descríbela: la IA encontrará la mejor forma de resolverla."
+  },
+  "process": {
+    "eyebrow": "Cómo funciona",
+    "title": "De la idea al producto, con un equipo de agentes especializados",
+    "description": "No usamos una única IA genérica. Seis agentes con roles definidos trabajan en secuencia, y tú apruebas cada paso importante.",
+    "steps": [
+      {
+        "name": "Consultor",
+        "title": "Entiende tu idea",
+        "text": "Analiza tu solicitud, detecta necesidades que no mencionaste y te hace solo las preguntas necesarias."
+      },
+      {
+        "name": "Arquitecto",
+        "title": "La convierte en especificación",
+        "text": "Objetivos, módulos, roles, modelo de datos, integraciones, seguridad y criterios de aceptación."
+      },
+      {
+        "name": "Diseñador",
+        "title": "Diseña la experiencia",
+        "text": "Sistema de diseño, interfaces responsive y prototipos navegables para validar antes de construir."
+      },
+      {
+        "name": "Desarrollador",
+        "title": "Construye el producto",
+        "text": "Frontend, backend, base de datos, APIs y autenticación en un entorno aislado para tu proyecto."
+      },
+      {
+        "name": "QA",
+        "title": "Comprueba que funciona",
+        "text": "Pruebas funcionales, flujos, permisos y responsive. Nada se da por terminado sin verificarse."
+      },
+      {
+        "name": "Despliegue",
+        "title": "Lo publica y mantiene",
+        "text": "Producción, dominio, copias de seguridad y versiones. Las operaciones con coste requieren tu autorización."
+      }
+    ]
+  },
+  "benefits": {
+    "eyebrow": "Por qué Ideon",
+    "title": "Un estudio de desarrollo, no una plantilla",
+    "items": [
+      {
+        "title": "Ejecución real",
+        "text": "La IA no solo propone: escribe, ejecuta y prueba el código en entornos aislados por proyecto."
+      },
+      {
+        "title": "Tú tienes el control",
+        "text": "Apruebas el alcance, el presupuesto y cada despliegue. Nada que genere coste ocurre sin tu autorización."
+      },
+      {
+        "title": "Evoluciona contigo",
+        "text": "Pide un cambio en lenguaje natural y el sistema amplía lo que ya funciona sin reconstruirlo."
+      },
+      {
+        "title": "Transparencia total",
+        "text": "Historial de decisiones, estado de cada tarea y presupuestos claros antes de empezar."
+      },
+      {
+        "title": "Tu producto, tu infraestructura",
+        "text": "Mantén tu solución en nuestra plataforma o llévatela: el código es tuyo."
+      },
+      {
+        "title": "Seguridad desde el diseño",
+        "text": "Datos separados por cliente, permisos por rol, secretos cifrados y registro de actividad."
+      }
+    ]
+  },
+  "useCases": {
+    "eyebrow": "Casos de uso",
+    "title": "Pensado para empresas que necesitan software a su medida",
+    "items": [
+      {
+        "sector": "Comercio y distribución",
+        "text": "Catálogos mayoristas, portales de pedidos, listas de precios por cliente e integración con facturación."
+      },
+      {
+        "sector": "Producción y laboratorios",
+        "text": "Inventario de insumos, recetas, trazabilidad de lotes y control de calidad."
+      },
+      {
+        "sector": "Servicios profesionales",
+        "text": "CRM, cotizaciones, agendas, portales de clientes y automatización de seguimiento."
+      },
+      {
+        "sector": "Startups y SaaS",
+        "text": "MVPs funcionales con autenticación, suscripciones, paneles de administración y analítica."
+      }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Planes",
+    "title": "Tres modalidades, presupuesto transparente",
+    "description": "Antes de cualquier desarrollo recibes una propuesta con alcance, tiempo y precio. Nada empieza sin tu aprobación.",
+    "fromLabel": "Desde {price}",
+    "quoteLabel": "Precio según alcance",
+    "cta": "Pedir propuesta",
+    "footnote": "Además: suscripción opcional de hosting, mantenimiento y evolución de tu producto en nuestra infraestructura.",
+    "features": {
+      "single_module": "Un módulo o sitio web",
+      "responsive": "Diseño responsive",
+      "basic_auth": "Autenticación básica",
+      "hosting_optional": "Hosting opcional",
+      "multi_module": "Varios módulos",
+      "roles": "Roles y permisos",
+      "database": "Base de datos propia",
+      "integrations": "Integraciones estándar",
+      "qa": "QA y pruebas",
+      "maintenance_optional": "Mantenimiento opcional",
+      "dedicated_architecture": "Arquitectura dedicada",
+      "advanced_integrations": "Integraciones avanzadas",
+      "sla": "Acuerdo de nivel de servicio",
+      "dedicated_support": "Soporte dedicado"
+    }
+  },
+  "faq": {
+    "eyebrow": "Preguntas frecuentes",
+    "title": "Lo que suelen preguntarnos",
+    "items": [
+      {
+        "q": "¿La IA realmente construye el software o solo genera código en un chat?",
+        "a": "Construye. Cada proyecto tiene su propio entorno aislado donde los agentes escriben, ejecutan y prueban el código. Ves una vista previa real y puedes pedir cambios sobre lo que ya funciona."
+      },
+      {
+        "q": "¿Cuánto cuesta?",
+        "a": "Depende del alcance. Tras la conversación inicial recibes una propuesta con funcionalidades, tiempo estimado y precio. No se inicia ningún trabajo de pago sin tu aprobación."
+      },
+      {
+        "q": "¿Qué pasa si mi idea no encaja en ninguna categoría?",
+        "a": "Las categorías son orientativas. Describe el problema con tus palabras y el consultor de IA propondrá la solución más adecuada."
+      },
+      {
+        "q": "¿Puedo pedir cambios después?",
+        "a": "Sí. Desde el espacio de trabajo escribes, por ejemplo, «quiero añadir un módulo de proveedores» y el sistema analiza tu proyecto, planifica el cambio y lo ejecuta."
+      },
+      {
+        "q": "¿De quién es el código?",
+        "a": "Tuyo. Puedes mantener tu producto en nuestra infraestructura con una suscripción o llevártelo."
+      },
+      {
+        "q": "¿Y si algo no puede automatizarse?",
+        "a": "La plataforma lo identifica y solicita intervención humana. Nunca marca algo como terminado si no se ha comprobado."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Empieza por describir tu idea",
+    "description": "En menos de un minuto tendrás tu proyecto creado y una conversación abierta con nuestro consultor de IA.",
+    "cta": "Comenzar proyecto"
+  },
+  "footer": {
+    "tagline": "Estudio de desarrollo de software impulsado por inteligencia artificial.",
+    "product": "Producto",
+    "company": "Empresa",
+    "legal": "Legal",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "contact": "Contacto",
+    "rights": "© {year} Ideon. Todos los derechos reservados."
+  },
+  "auth": {
+    "loginTitle": "Bienvenido de nuevo",
+    "loginSubtitle": "Inicia sesión para continuar con tus proyectos.",
+    "registerTitle": "Crea tu cuenta",
+    "registerSubtitle": "Un minuto y tu idea estará guardada como proyecto.",
+    "forgotTitle": "Recuperar contraseña",
+    "forgotSubtitle": "Te enviaremos un enlace para restablecerla.",
+    "resetTitle": "Nueva contraseña",
+    "resetSubtitle": "Elige una contraseña segura para tu cuenta.",
+    "fullName": "Nombre completo",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "passwordHint": "Mínimo 8 caracteres.",
+    "login": "Iniciar sesión",
+    "register": "Crear cuenta",
+    "sendLink": "Enviar enlace",
+    "savePassword": "Guardar contraseña",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "backToLogin": "Volver a iniciar sesión",
+    "pendingIdea": "Tu idea está guardada. Al crear la cuenta se convertirá en tu primer proyecto.",
+    "checkEmail": "Revisa tu correo",
+    "checkEmailText": "Te enviamos un enlace a {email}. Ábrelo para confirmar tu cuenta y continuar.",
+    "resetSent": "Si existe una cuenta con ese correo, recibirás un enlace para restablecer la contraseña.",
+    "terms": "Al crear la cuenta aceptas los términos de servicio y la política de privacidad.",
+    "notConfigured": "La autenticación aún no está configurada en este entorno. Define las variables de Supabase en .env.local (ver .env.example).",
+    "errors": {
+      "invalidEmail": "Introduce un correo válido.",
+      "shortPassword": "La contraseña debe tener al menos 8 caracteres.",
+      "shortName": "Introduce tu nombre.",
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "emailTaken": "Ya existe una cuenta con este correo.",
+      "generic": "No se pudo completar la operación. Inténtalo de nuevo.",
+      "rateLimited": "Demasiados intentos. Espera un momento y vuelve a intentarlo."
+    }
+  },
+  "app": {
+    "nav": {
+      "dashboard": "Panel",
+      "projects": "Mis proyectos",
+      "newProject": "Nuevo proyecto",
+      "conversations": "Conversaciones",
+      "files": "Archivos",
+      "proposals": "Presupuestos",
+      "billing": "Facturación",
+      "subscriptions": "Suscripciones",
+      "support": "Soporte",
+      "settings": "Configuración",
+      "logout": "Cerrar sesión",
+      "backToSite": "Volver al sitio"
+    },
+    "dashboard": {
+      "greeting": "Hola, {name}",
+      "subtitle": "Este es el estado de tus proyectos.",
+      "statsAll": "Proyectos",
+      "statsActive": "En desarrollo",
+      "statsLive": "Publicados",
+      "statsDraft": "Por definir",
+      "recent": "Proyectos recientes",
+      "viewAll": "Ver todos",
+      "empty": {
+        "title": "Aún no tienes proyectos",
+        "text": "Describe tu idea y la convertiremos en tu primer proyecto.",
+        "cta": "Crear mi primer proyecto"
+      }
+    },
+    "projects": {
+      "title": "Mis proyectos",
+      "subtitle": "Todos los proyectos de tu organización.",
+      "new": "Nuevo proyecto",
+      "filterAll": "Todos",
+      "filterActive": "Activos",
+      "filterArchived": "Archivados",
+      "created": "Creado {date}",
+      "updated": "Actualizado <date></date>",
+      "open": "Abrir",
+      "emptyFiltered": "No hay proyectos en esta vista."
+    },
+    "newProject": {
+      "title": "Nuevo proyecto",
+      "subtitle": "Describe lo que quieres crear. Cuanto más contexto, mejor podrá ayudarte el consultor.",
+      "nameLabel": "Nombre del proyecto",
+      "namePlaceholder": "Por ejemplo: Inventario del taller",
+      "nameHint": "Opcional. Si lo dejas vacío lo deducimos de tu idea.",
+      "ideaLabel": "Tu idea",
+      "ideaPlaceholder": "Cuéntanos qué quieres crear, para quién y qué problema resuelve...",
+      "submit": "Crear proyecto",
+      "restored": "Hemos recuperado la idea que escribiste antes de registrarte."
+    },
+    "status": {
+      "draft": "Borrador",
+      "discovery": "Descubrimiento",
+      "specification": "Especificación",
+      "proposal": "Propuesta",
+      "approved": "Aprobado",
+      "in_development": "En desarrollo",
+      "review": "En revisión",
+      "ready_to_deploy": "Listo para publicar",
+      "live": "Publicado",
+      "maintenance": "Mantenimiento",
+      "on_hold": "En pausa",
+      "cancelled": "Cancelado"
+    },
+    "workspace": {
+      "conversation": "Conversación",
+      "history": "Historial",
+      "preview": "Vista previa",
+      "structure": "Proyecto",
+      "desktop": "Escritorio",
+      "mobile": "Móvil",
+      "refresh": "Actualizar",
+      "inputPlaceholder": "Escribe un mensaje o una instrucción para el proyecto...",
+      "send": "Enviar",
+      "consultantPending": {
+        "title": "El consultor de IA se activa en la Fase 2",
+        "text": "Tu idea y tus mensajes quedan guardados en el proyecto. Cuando el motor de agentes esté conectado, el consultor analizará todo el contexto y continuará la conversación aquí."
+      },
+      "previewPending": {
+        "title": "Sin vista previa todavía",
+        "text": "La vista previa aparece cuando el agente desarrollador genera la primera versión del producto (Fase 3)."
+      },
+      "overview": "Resumen",
+      "idea": "Idea inicial",
+      "category": "Categoría",
+      "noCategory": "Por definir con el consultor",
+      "complexity": "Complejidad",
+      "noComplexity": "Por determinar",
+      "features": "Funcionalidades",
+      "noFeatures": "Se definen en la fase de especificación.",
+      "files": "Archivos",
+      "noFiles": "Aún no hay archivos generados.",
+      "settings": "Ajustes",
+      "events": "Actividad",
+      "noEvents": "Sin actividad registrada.",
+      "sent": "Mensaje enviado",
+      "you": "Tú",
+      "system": "Sistema",
+      "eventTypes": {
+        "project.created": "Proyecto creado",
+        "message.sent": "Mensaje enviado",
+        "status.changed": "Estado cambiado a {to}",
+        "project.archived": "Proyecto archivado",
+        "project.restored": "Proyecto restaurado"
+      },
+      "archive": "Archivar proyecto",
+      "restore": "Restaurar proyecto",
+      "archived": "Este proyecto está archivado.",
+      "createdAt": "Creado"
+    },
+    "placeholder": {
+      "proposals": {
+        "title": "Presupuestos",
+        "text": "Aquí verás las propuestas que genere la IA para cada proyecto, con alcance, tiempo y precio. Se activa en la Fase 2 (inteligencia)."
+      },
+      "billing": {
+        "title": "Facturación",
+        "text": "Facturas y pagos de tus proyectos. El módulo de pagos (Stripe y Wompi) se activa en la Fase 5."
+      },
+      "subscriptions": {
+        "title": "Suscripciones",
+        "text": "Hosting, mantenimiento y evolución de tus productos. Se activa en la Fase 5."
+      },
+      "files": {
+        "title": "Archivos",
+        "text": "Documentos, especificaciones y entregables de tus proyectos. El almacenamiento se activa en la Fase 3."
+      },
+      "support": {
+        "title": "Soporte",
+        "text": "Tickets y ayuda. Mientras tanto, escríbenos a soporte@ideon.app."
+      },
+      "notAvailable": "Módulo no disponible todavía"
+    },
+    "settings": {
+      "title": "Configuración",
+      "profile": "Perfil",
+      "organization": "Organización",
+      "fullName": "Nombre completo",
+      "locale": "Idioma",
+      "orgName": "Nombre de la organización",
+      "save": "Guardar cambios",
+      "saved": "Cambios guardados.",
+      "email": "Correo",
+      "role": "Rol"
+    }
+  },
+  "common": {
+    "loading": "Cargando…",
+    "error": "Algo salió mal.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "back": "Volver",
+    "notFound": "No encontrado",
+    "notFoundText": "La página que buscas no existe o no tienes acceso.",
+    "goHome": "Ir al inicio"
+  }
+}

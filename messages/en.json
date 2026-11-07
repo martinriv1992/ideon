@@ -1,0 +1,406 @@
+{
+  "meta": {
+    "title": "Ideon — Your idea. Our intelligence. Your next business.",
+    "description": "Describe what you need. Our artificial intelligence designs, builds and turns your ideas into real digital solutions."
+  },
+  "nav": {
+    "product": "Product",
+    "process": "Process",
+    "solutions": "Solutions",
+    "pricing": "Plans",
+    "faq": "FAQ",
+    "login": "Sign in",
+    "start": "Start a project",
+    "dashboard": "Go to dashboard",
+    "language": "Language"
+  },
+  "hero": {
+    "badge": "AI-powered software studio",
+    "title": "Your idea. Our intelligence. Your next business.",
+    "subtitle": "Describe what you need. Our artificial intelligence designs, builds and turns your ideas into real digital solutions.",
+    "placeholder": "Tell us what you want to build. An app, a website, a CRM or any solution for your business...",
+    "cta": "Start a project",
+    "hint": "No forms. No commitment. Your idea is saved and you pick up where you left off.",
+    "examplesLabel": "Or start from an example",
+    "charCount": "{count} / {max}",
+    "errorEmpty": "Write at least a few words about what you want to build.",
+    "examples": [
+      {
+        "title": "Inventory for a workshop",
+        "prompt": "I need an inventory system for my workshop: supply tracking, production recipes per product, low-stock alerts and a dashboard with monthly consumption."
+      },
+      {
+        "title": "CRM for a sales team",
+        "prompt": "I want a simple CRM for my team of 5 sales reps: customers, pipeline tracking by stage, reminders and PDF quotes."
+      },
+      {
+        "title": "Online store with payments",
+        "prompt": "An online store to sell wellness products with catalog, cart, card payments and an admin panel to manage orders."
+      },
+      {
+        "title": "Customer portal",
+        "prompt": "A portal where my wholesale customers can see their catalog with special pricing, place orders and check invoice status."
+      }
+    ]
+  },
+  "categories": {
+    "eyebrow": "Solutions",
+    "title": "Any digital solution, no catalog limits",
+    "description": "These are the most common ones. If your idea doesn't fit any, just describe it: the AI will find the best way to solve it."
+  },
+  "process": {
+    "eyebrow": "How it works",
+    "title": "From idea to product, with a team of specialized agents",
+    "description": "We don't use a single generic AI. Six agents with defined roles work in sequence, and you approve every important step.",
+    "steps": [
+      {
+        "name": "Consultant",
+        "title": "Understands your idea",
+        "text": "Analyzes your request, spots needs you didn't mention and asks only the necessary questions."
+      },
+      {
+        "name": "Architect",
+        "title": "Turns it into a specification",
+        "text": "Goals, modules, roles, data model, integrations, security and acceptance criteria."
+      },
+      {
+        "name": "Designer",
+        "title": "Designs the experience",
+        "text": "Design system, responsive interfaces and navigable prototypes to validate before building."
+      },
+      {
+        "name": "Developer",
+        "title": "Builds the product",
+        "text": "Frontend, backend, database, APIs and authentication in an isolated environment for your project."
+      },
+      {
+        "name": "QA",
+        "title": "Verifies it works",
+        "text": "Functional tests, flows, permissions and responsive checks. Nothing is done until it's verified."
+      },
+      {
+        "name": "Deployment",
+        "title": "Publishes and maintains it",
+        "text": "Production, domain, backups and versions. Operations with cost require your authorization."
+      }
+    ]
+  },
+  "benefits": {
+    "eyebrow": "Why Ideon",
+    "title": "A development studio, not a template",
+    "items": [
+      {
+        "title": "Real execution",
+        "text": "The AI doesn't just propose: it writes, runs and tests the code in per-project isolated environments."
+      },
+      {
+        "title": "You stay in control",
+        "text": "You approve the scope, the budget and every deployment. Nothing that costs money happens without your authorization."
+      },
+      {
+        "title": "Evolves with you",
+        "text": "Ask for a change in plain language and the system extends what already works without rebuilding it."
+      },
+      {
+        "title": "Full transparency",
+        "text": "Decision history, status of every task and clear budgets before starting."
+      },
+      {
+        "title": "Your product, your infrastructure",
+        "text": "Keep your solution on our platform or take it with you: the code is yours."
+      },
+      {
+        "title": "Security by design",
+        "text": "Data separated per customer, role-based permissions, encrypted secrets and activity logs."
+      }
+    ]
+  },
+  "useCases": {
+    "eyebrow": "Use cases",
+    "title": "Built for companies that need tailored software",
+    "items": [
+      {
+        "sector": "Retail & distribution",
+        "text": "Wholesale catalogs, order portals, per-customer price lists and invoicing integration."
+      },
+      {
+        "sector": "Production & labs",
+        "text": "Supply inventory, recipes, batch traceability and quality control."
+      },
+      {
+        "sector": "Professional services",
+        "text": "CRM, quotes, scheduling, customer portals and follow-up automation."
+      },
+      {
+        "sector": "Startups & SaaS",
+        "text": "Functional MVPs with authentication, subscriptions, admin panels and analytics."
+      }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Plans",
+    "title": "Three models, transparent budget",
+    "description": "Before any development you receive a proposal with scope, timeline and price. Nothing starts without your approval.",
+    "fromLabel": "From {price}",
+    "quoteLabel": "Priced by scope",
+    "cta": "Request a proposal",
+    "footnote": "Plus: optional subscription for hosting, maintenance and evolution of your product on our infrastructure.",
+    "features": {
+      "single_module": "One module or website",
+      "responsive": "Responsive design",
+      "basic_auth": "Basic authentication",
+      "hosting_optional": "Optional hosting",
+      "multi_module": "Multiple modules",
+      "roles": "Roles and permissions",
+      "database": "Dedicated database",
+      "integrations": "Standard integrations",
+      "qa": "QA and testing",
+      "maintenance_optional": "Optional maintenance",
+      "dedicated_architecture": "Dedicated architecture",
+      "advanced_integrations": "Advanced integrations",
+      "sla": "Service level agreement",
+      "dedicated_support": "Dedicated support"
+    }
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "What people usually ask",
+    "items": [
+      {
+        "q": "Does the AI really build the software or just generate code in a chat?",
+        "a": "It builds. Each project has its own isolated environment where the agents write, run and test the code. You see a real preview and can request changes on top of what already works."
+      },
+      {
+        "q": "How much does it cost?",
+        "a": "It depends on scope. After the initial conversation you receive a proposal with features, estimated time and price. No paid work starts without your approval."
+      },
+      {
+        "q": "What if my idea doesn't fit any category?",
+        "a": "Categories are just a guide. Describe the problem in your own words and the AI consultant will propose the most suitable solution."
+      },
+      {
+        "q": "Can I request changes later?",
+        "a": "Yes. From the workspace you write, for example, \"I want to add a suppliers module\" and the system analyzes your project, plans the change and executes it."
+      },
+      {
+        "q": "Who owns the code?",
+        "a": "You do. You can keep your product on our infrastructure with a subscription or take it with you."
+      },
+      {
+        "q": "What if something can't be automated?",
+        "a": "The platform identifies it and requests human intervention. It never marks something as done if it hasn't been verified."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Start by describing your idea",
+    "description": "In under a minute you'll have your project created and a conversation open with our AI consultant.",
+    "cta": "Start a project"
+  },
+  "footer": {
+    "tagline": "AI-powered software development studio.",
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact",
+    "rights": "© {year} Ideon. All rights reserved."
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to continue with your projects.",
+    "registerTitle": "Create your account",
+    "registerSubtitle": "One minute and your idea will be saved as a project.",
+    "forgotTitle": "Reset password",
+    "forgotSubtitle": "We'll send you a link to reset it.",
+    "resetTitle": "New password",
+    "resetSubtitle": "Choose a secure password for your account.",
+    "fullName": "Full name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters.",
+    "login": "Sign in",
+    "register": "Create account",
+    "sendLink": "Send link",
+    "savePassword": "Save password",
+    "forgot": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "backToLogin": "Back to sign in",
+    "pendingIdea": "Your idea is saved. When you create your account it becomes your first project.",
+    "checkEmail": "Check your inbox",
+    "checkEmailText": "We sent a link to {email}. Open it to confirm your account and continue.",
+    "resetSent": "If an account exists for that email, you'll receive a link to reset the password.",
+    "terms": "By creating an account you accept the terms of service and privacy policy.",
+    "notConfigured": "Authentication is not configured in this environment yet. Set the Supabase variables in .env.local (see .env.example).",
+    "errors": {
+      "invalidEmail": "Enter a valid email.",
+      "shortPassword": "Password must be at least 8 characters.",
+      "shortName": "Enter your name.",
+      "invalidCredentials": "Incorrect email or password.",
+      "emailTaken": "An account with this email already exists.",
+      "generic": "The operation could not be completed. Please try again.",
+      "rateLimited": "Too many attempts. Wait a moment and try again."
+    }
+  },
+  "app": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "projects": "My projects",
+      "newProject": "New project",
+      "conversations": "Conversations",
+      "files": "Files",
+      "proposals": "Proposals",
+      "billing": "Billing",
+      "subscriptions": "Subscriptions",
+      "support": "Support",
+      "settings": "Settings",
+      "logout": "Sign out",
+      "backToSite": "Back to site"
+    },
+    "dashboard": {
+      "greeting": "Hi, {name}",
+      "subtitle": "Here's the status of your projects.",
+      "statsAll": "Projects",
+      "statsActive": "In development",
+      "statsLive": "Live",
+      "statsDraft": "To define",
+      "recent": "Recent projects",
+      "viewAll": "View all",
+      "empty": {
+        "title": "No projects yet",
+        "text": "Describe your idea and we'll turn it into your first project.",
+        "cta": "Create my first project"
+      }
+    },
+    "projects": {
+      "title": "My projects",
+      "subtitle": "All projects in your organization.",
+      "new": "New project",
+      "filterAll": "All",
+      "filterActive": "Active",
+      "filterArchived": "Archived",
+      "created": "Created {date}",
+      "updated": "Updated <date></date>",
+      "open": "Open",
+      "emptyFiltered": "No projects in this view."
+    },
+    "newProject": {
+      "title": "New project",
+      "subtitle": "Describe what you want to build. The more context, the better the consultant can help.",
+      "nameLabel": "Project name",
+      "namePlaceholder": "For example: Workshop inventory",
+      "nameHint": "Optional. If left empty we derive it from your idea.",
+      "ideaLabel": "Your idea",
+      "ideaPlaceholder": "Tell us what you want to build, for whom and what problem it solves...",
+      "submit": "Create project",
+      "restored": "We restored the idea you wrote before signing up."
+    },
+    "status": {
+      "draft": "Draft",
+      "discovery": "Discovery",
+      "specification": "Specification",
+      "proposal": "Proposal",
+      "approved": "Approved",
+      "in_development": "In development",
+      "review": "In review",
+      "ready_to_deploy": "Ready to deploy",
+      "live": "Live",
+      "maintenance": "Maintenance",
+      "on_hold": "On hold",
+      "cancelled": "Cancelled"
+    },
+    "workspace": {
+      "conversation": "Conversation",
+      "history": "History",
+      "preview": "Preview",
+      "structure": "Project",
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "refresh": "Refresh",
+      "inputPlaceholder": "Write a message or an instruction for the project...",
+      "send": "Send",
+      "consultantPending": {
+        "title": "The AI consultant activates in Phase 2",
+        "text": "Your idea and messages are saved in the project. Once the agent engine is connected, the consultant will analyze the full context and continue the conversation here."
+      },
+      "previewPending": {
+        "title": "No preview yet",
+        "text": "The preview appears when the developer agent generates the first version of the product (Phase 3)."
+      },
+      "overview": "Overview",
+      "idea": "Initial idea",
+      "category": "Category",
+      "noCategory": "To be defined with the consultant",
+      "complexity": "Complexity",
+      "noComplexity": "To be determined",
+      "features": "Features",
+      "noFeatures": "Defined during the specification phase.",
+      "files": "Files",
+      "noFiles": "No generated files yet.",
+      "settings": "Settings",
+      "events": "Activity",
+      "noEvents": "No activity recorded.",
+      "sent": "Message sent",
+      "you": "You",
+      "system": "System",
+      "eventTypes": {
+        "project.created": "Project created",
+        "message.sent": "Message sent",
+        "status.changed": "Status changed to {to}",
+        "project.archived": "Project archived",
+        "project.restored": "Project restored"
+      },
+      "archive": "Archive project",
+      "restore": "Restore project",
+      "archived": "This project is archived.",
+      "createdAt": "Created"
+    },
+    "placeholder": {
+      "proposals": {
+        "title": "Proposals",
+        "text": "Here you'll see the proposals the AI generates for each project, with scope, timeline and price. Activates in Phase 2 (intelligence)."
+      },
+      "billing": {
+        "title": "Billing",
+        "text": "Invoices and payments for your projects. The payments module (Stripe and Wompi) activates in Phase 5."
+      },
+      "subscriptions": {
+        "title": "Subscriptions",
+        "text": "Hosting, maintenance and evolution of your products. Activates in Phase 5."
+      },
+      "files": {
+        "title": "Files",
+        "text": "Documents, specifications and deliverables for your projects. Storage activates in Phase 3."
+      },
+      "support": {
+        "title": "Support",
+        "text": "Tickets and help. In the meantime, write to support@ideon.app."
+      },
+      "notAvailable": "Module not available yet"
+    },
+    "settings": {
+      "title": "Settings",
+      "profile": "Profile",
+      "organization": "Organization",
+      "fullName": "Full name",
+      "locale": "Language",
+      "orgName": "Organization name",
+      "save": "Save changes",
+      "saved": "Changes saved.",
+      "email": "Email",
+      "role": "Role"
+    }
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong.",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "notFound": "Not found",
+    "notFoundText": "The page you're looking for doesn't exist or you don't have access.",
+    "goHome": "Go home"
+  }
+}

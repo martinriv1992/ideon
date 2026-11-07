@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ideon
 
-## Getting Started
+**Tu idea. Nuestra inteligencia. Tu próximo negocio.**
+Plataforma SaaS para convertir ideas en productos digitales reales mediante un sistema multiagente de IA.
 
-First, run the development server:
+Estado: **Fase 1 — Fundación** (identidad visual, homepage bilingüe, autenticación, dashboard, proyectos, conversación persistente, base de datos con RLS).
+
+## Documentación
+
+- [`docs/01-ARQUITECTURA.md`](docs/01-ARQUITECTURA.md) — análisis de arquitectura, estructura de carpetas, decisiones técnicas y seguridad.
+- [`docs/02-MODELO-DE-DATOS.md`](docs/02-MODELO-DE-DATOS.md) — modelo de datos (Fase 1 y contrato de fases 2–5), políticas RLS.
+- [`docs/03-FLUJOS-Y-PLAN.md`](docs/03-FLUJOS-Y-PLAN.md) — flujos de usuario y plan de implementación por fases.
+- [`docs/04-PUESTA-EN-MARCHA.md`](docs/04-PUESTA-EN-MARCHA.md) — cómo configurar Supabase, variables de entorno y desplegar.
+
+## Stack
+
+Next.js 15 (App Router, Server Actions) · TypeScript · Tailwind CSS 4 · next-intl (ES/EN) · Supabase (Postgres + RLS, Auth, Storage) · Zod · Framer Motion · Lucide.
+
+## Comandos
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # completar con las claves de Supabase
+npm run dev                  # http://localhost:3000
+npm run build && npm start   # producción
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Principios de desarrollo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Nada se simula: lo que aún no existe se muestra con su estado real (p. ej. "El consultor de IA se activa en la Fase 2").
+- Toda mutación pasa por Server Actions validadas con Zod y queda registrada en `project_events`.
+- RLS en todas las tablas; la clave `service_role` nunca llega al navegador.
+- Textos de interfaz solo en `messages/*.json`.
