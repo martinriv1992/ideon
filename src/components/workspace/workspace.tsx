@@ -19,6 +19,7 @@ import type { Json, Message } from "@/types/database.types";
 import { cn, formatDate } from "@/lib/utils";
 import { uploadToProject } from "@/lib/upload-client";
 import { BuyDomainCard, ChangesCard, DomainOrderCard, LaunchPanel } from "@/components/workspace/launch-panel";
+import { AppTeamCard } from "@/components/workspace/app-team-card";
 import { ASSET_ACCEPT, IMAGE_ACCEPT, MAX_ASSETS, MAX_IMAGES, assetTypeFor, classifyUpload, estimateTokens } from "@/lib/uploads";
 
 type LeftTab = "conversation" | "history";
@@ -640,6 +641,7 @@ function PublishPanelUnlocked({ detail }: { detail: ProjectDetail }) {
     <div className="space-y-5">
       <DomainOrderCard detail={detail} />
       <BuyDomainCard detail={detail} />
+      {project.kind !== "web" && site && <AppTeamCard detail={detail} />}
       <ChangesCard detail={detail} />
       <Field label={t("publishOnIdeon")}>
         <p className="text-fg-muted leading-relaxed mb-2">{t("publishHelp")}</p>

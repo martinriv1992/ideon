@@ -77,6 +77,10 @@ export function runQa(html: string, opts: { app: boolean; imageIds: string[]; fi
     doc.querySelectorAll("form, input, select").length || /<(form|input|select)[\s>]/i.test(html) ? ok("Formularios y campos de captura presentes.") : bad("No hay formularios de captura.");
     doc.querySelectorAll("table, [role=table]").length || /<table[\s>]/i.test(html) ? ok("Listados en tabla presentes.") : warn("No se detectan tablas de listado.");
     /\bconfirm\(|\balert\(|\bprompt\(/.test(html) ? warn("Usa diálogos nativos (alert/confirm).") : ok("Sin diálogos nativos del navegador.");
+    // Ideon Data: datos en la nube y usuarios reales en la app publicada.
+    if (/\bIdeonDB\s*\.\s*ready\s*\(/.test(html)) {
+      /localStorage\s*\.\s*setItem/.test(html) ? warn("Usa Ideon Data pero también guarda datos en localStorage.") : ok("Datos persistentes y compartidos con Ideon Data.");
+    } else warn("La aplicación guarda los datos solo en el navegador (no usa Ideon Data).");
   }
   const jsErrors = jsSyntaxErrors(html);
   if (doc.querySelectorAll("script").length) jsErrors.length ? bad(`Error de sintaxis en JavaScript: ${jsErrors[0]}`) : ok("JavaScript sin errores de sintaxis.");

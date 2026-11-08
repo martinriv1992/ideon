@@ -684,6 +684,40 @@
       "buyDomainCta": "Buscar dominio",
       "buyDomainHelp": "Consigue www.tunegocio.com: lo registramos a tu nombre, lo conectamos a tu sitio con HTTPS y se renueva junto con tu plan anual.",
       "buyDomainNote": "Pagas hoy el primer año del dominio. Desde la próxima renovación, el dominio va incluido en el pago anual de tu plan."
+    },
+    "appData": {
+      "title": "Equipo y datos de la app",
+      "cloudOn": "Datos en la nube",
+      "cloudOff": "Datos solo en el navegador",
+      "help": "Da acceso a las personas de tu equipo. Cada una entra a la app con su correo y contraseña; todos ven los mismos datos, guardados en la nube con copias de seguridad.",
+      "localOnly": "Esta versión de la app guarda los datos solo en el navegador de cada persona. Para compartirlos con tu equipo, pide en el chat: «Guarda los datos en la nube con usuarios».",
+      "lastLogin": "último acceso {date}",
+      "neverLogged": "aún no ha entrado",
+      "role": "Rol",
+      "roles": {
+        "admin": "Administrador",
+        "member": "Miembro"
+      },
+      "resetPassword": "Generar contraseña nueva",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar el acceso de {name}? Sus registros se conservan.",
+      "credentialsTitle": "Acceso de {name}",
+      "address": "Dirección",
+      "email": "Correo",
+      "password": "Contraseña",
+      "emailed": "Le enviamos estos datos por correo.",
+      "notEmailed": "Compártele estos datos: la contraseña no se volverá a mostrar.",
+      "copy": "Copiar acceso",
+      "copied": "Copiado",
+      "name": "Nombre",
+      "namePh": "Nombre",
+      "emailPh": "correo@empresa.com",
+      "add": "Dar acceso",
+      "sendEmail": "Enviarle el acceso por correo",
+      "records": "{n} registros guardados",
+      "export": "Descargar copia de los datos (JSON)"
     }
   },
   "common": {

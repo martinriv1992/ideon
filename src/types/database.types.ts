@@ -148,6 +148,9 @@ export type Approval = { id: string; project_id: string; kind: ApprovalKind; pay
 export type Deployment = { id: string; project_id: string; version_id: string; target: DeploymentTarget; status: DeploymentStatus; slug: string | null; url: string | null; external_id: string | null; logs: string | null; approval_id: string | null; created_by: string | null; created_at: string; finished_at: string | null };
 export type PublishedSite = { project_id: string; slug: string; version_id: string; custom_domain: string | null; domain_status: string | null; domain_verification: Json | null; published_at: string; updated_at: string };
 export type Payment = { id: string; organization_id: string; project_id: string | null; proposal_id: string | null; provider: PaymentProvider; external_id: string | null; amount: number; currency: string; status: PaymentStatus; metadata: Json; created_at: string; paid_at: string | null };
+export type AppUserRow = { id: string; project_id: string; email: string; name: string; role: string; password_hash: string; active: boolean; created_by: string | null; last_login_at: string | null; created_at: string; updated_at: string };
+export type AppSession = { id: string; user_id: string; project_id: string; token_hash: string; expires_at: string; created_at: string };
+export type AppRecord = { id: string; project_id: string; collection: string; data: Json; created_by: string | null; updated_by: string | null; created_at: string; updated_at: string; deleted_at: string | null };
 export type Lead = {
   id: string; full_name: string; company: string; email: string; country: string; website: string | null; solution: string; problem: string;
   budget: string | null; timeframe: string; locale: string; consent: boolean; wants_meeting: boolean;
@@ -258,6 +261,9 @@ export type Database = {
       project_files: { Row: ProjectFile; Insert: Insert<ProjectFile, "id" | "content_type" | "size">; Update: Partial<ProjectFile>; Relationships: [] };
       project_images: { Row: ProjectImage; Insert: Insert<ProjectImage, "id" | "width" | "height" | "size" | "created_by" | "created_at">; Update: Partial<ProjectImage>; Relationships: [] };
       domain_orders: { Row: DomainOrder; Insert: Insert<DomainOrder, "id" | "payment_id" | "years" | "status" | "vercel_order_id" | "error" | "expires_at" | "created_at" | "updated_at">; Update: Partial<DomainOrder>; Relationships: [] };
+      app_users: { Row: AppUserRow; Insert: Insert<AppUserRow, "id" | "role" | "active" | "created_by" | "last_login_at" | "created_at" | "updated_at">; Update: Partial<AppUserRow>; Relationships: [] };
+      app_sessions: { Row: AppSession; Insert: Insert<AppSession, "id" | "created_at">; Update: Partial<AppSession>; Relationships: [] };
+      app_records: { Row: AppRecord; Insert: Insert<AppRecord, "data" | "created_by" | "updated_by" | "created_at" | "updated_at" | "deleted_at">; Update: Partial<AppRecord>; Relationships: [] };
       leads: { Row: Lead; Insert: Insert<Lead, "id" | "website" | "budget" | "locale" | "wants_meeting" | "source" | "medium" | "campaign" | "term" | "content" | "referrer" | "landing_page" | "stage" | "estimated_value" | "estimated_currency" | "last_contact_at" | "next_follow_up_at" | "notes" | "ip_hash" | "notified_at" | "created_at" | "updated_at">; Update: Partial<Lead>; Relationships: [] };
       rate_limits: { Row: { id: number; bucket: string; ip_hash: string; created_at: string }; Insert: { bucket: string; ip_hash: string; created_at?: string }; Update: Partial<{ bucket: string }>; Relationships: [] };
       signup_attempts: { Row: { id: number; ip_hash: string; created_at: string }; Insert: { ip_hash: string; created_at?: string }; Update: Partial<{ ip_hash: string }>; Relationships: [] };
@@ -279,6 +285,8 @@ export type Database = {
       };
       project_org: { Args: { p_id: string }; Returns: string };
       free_preview_spend_today: { Args: Record<string, never>; Returns: number };
+      app_record_patch: { Args: { p_project: string; p_collection: string; p_id: string; p_patch: Json; p_user: string | null }; Returns: AppRecord[] };
+      app_record_increment: { Args: { p_project: string; p_collection: string; p_id: string; p_field: string; p_delta: number; p_user: string | null }; Returns: AppRecord[] };
     };
     Enums: {
       org_role: OrgRole;

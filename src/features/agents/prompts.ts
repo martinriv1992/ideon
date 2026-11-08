@@ -149,6 +149,22 @@ export function architectUser(args: { brief: unknown; idea: string; images: Imag
   return `BRIEF:\n${JSON.stringify(args.brief)}\n\nIDEA ORIGINAL:\n${args.idea}${args.images.length ? `\n\nEl cliente ha subido estas fotos (planifica dónde usarlas): ${args.images.map((i) => `"${i.label}"`).join(", ")}` : ""}${files.length ? `\n\nEl cliente quiere publicar estos archivos para descarga (planifica dónde enlazarlos): ${files.map((f) => `"${f.label}" (${f.name})`).join(", ")}` : ""}${referenceDocs(args.docs ?? [], DOC_BUDGET.architect)}\n\nResponde ÚNICAMENTE con el objeto JSON.`;
 }
 
+// ----------------------------------------------------------------- Ideon Data
+/**
+ * Persistencia de las apps generadas: SDK IdeonDB (public/ideon-data.js), que la
+ * plataforma inyecta en la página. En la app publicada los datos viven en la nube
+ * con usuarios reales; en la vista previa, en el navegador con datos de ejemplo.
+ */
+export const IDEON_DATA_GUIDE = `- DATOS (obligatorio): usa el SDK IdeonDB, que la plataforma ya carga en la página (no lo incluyas, no lo implementes, no añadas <script src>). En la app publicada guarda los datos en la nube y obliga a iniciar sesión al equipo del cliente; en la vista previa usa el navegador. NUNCA uses localStorage, sessionStorage ni IndexedDB para los datos.
+  Arranque: IdeonDB.ready().then(function (db) { window.db = db; /* datos iniciales y primer render aquí dentro */ });
+  Lectura (síncrona): db.all('col') → array de objetos {id, ...campos, createdAt, updatedAt, createdBy} · db.get('col', id) · db.find('col', fn) · db.count('col').
+  Escritura (síncrona; se guarda sola en segundo plano y devuelve el registro): db.insert('col', {campos}) (el id lo genera el SDK: guárdalo para relacionar registros) · db.update('col', id, {campos a cambiar}) · db.remove('col', id) · db.increment('col', id, 'campo', delta).
+  Colecciones = entidades, nombres en minúsculas sin acentos ni espacios (p. ej. 'productos', 'movimientos', 'clientes'). Los campos son JSON simple; las relaciones se guardan como ids (productoId: p.id).
+  Nunca modifiques directamente los objetos devueltos ni guardes un estado global completo: cada cambio es un db.insert/update/remove/increment. Para cantidades acumuladas que cambian por movimientos (stock, saldos, puntos) usa SIEMPRE db.increment, nunca leer-sumar-update (dos personas pueden registrar a la vez).
+  Datos iniciales: db.seed('col', [...]) para configuración que la app real necesita (categorías, estados, bodegas, tipos); se crea una sola vez. db.sample('col', [...]) para registros de ejemplo (sampleCount de la especificación): solo aparecen en la vista previa, la app real empieza vacía. En seed/sample puedes fijar ids legibles (id: 'p1') para relacionar registros entre sí. Llama a seed/sample al arrancar, antes del primer render. Diseña estados vacíos claros (la app real empieza sin registros).
+  Equipo: db.user = {id, name, email, role: 'admin'|'member'}; muestra db.user.name en la barra lateral. Limita a role 'admin' las acciones de administración (borrar, ajustes, configuración). Para elegir responsables: db.users().then(lista de {id, name, role}). El inicio y cierre de sesión los gestiona el SDK (botón redondo abajo a la derecha: deja libre esa esquina, sin botones flotantes ahí): no crees pantallas de login ni usuarios simulados.
+  Otros usuarios trabajan a la vez: registra db.on('change', function () { render(); }) para refrescar la vista actual cuando lleguen cambios de otros.`;
+
 // ----------------------------------------------------------------- desarrollador
 const COMMON_TECH = `Requisitos técnicos obligatorios:
 - Documento completo: <!DOCTYPE html>, <html lang>, <head> con <meta charset>, <meta name="viewport" content="width=device-width, initial-scale=1">, <title>, y todo el CSS y JS inline (sin archivos externos).
@@ -165,8 +181,8 @@ ${COMMON_TECH}
   return `Eres el DESARROLLADOR de Ideon. Construye la aplicación descrita en la especificación como UN ÚNICO archivo HTML: una aplicación web REAL y funcional (no una maqueta).
 ${COMMON_TECH}
 - Estructura: barra lateral (o menú superior en móvil) con una vista por módulo, un panel de indicadores (KPIs calculados a partir de los datos reales de la app) y, por cada entidad, un listado con búsqueda y filtros, formulario de alta/edición en modal o panel, y borrado con confirmación en la página (nunca confirm() nativo).
-- Los datos viven en memoria en un objeto de estado con los registros de ejemplo que indique la especificación (sampleCount), claramente etiquetados como datos de ejemplo. Persiste el estado en localStorage bajo una clave con el nombre de la app (con try/catch) para que sobreviva recargas. Todas las acciones deben funcionar de verdad.
-- Incluye en Ajustes "Exportar datos" (JSON en textarea) e "Importar".
+${IDEON_DATA_GUIDE}
+- Todas las acciones deben funcionar de verdad. En Ajustes incluye "Exportar datos" con db.downloadJSON('nombre-app').
 - Los gráficos se dibujan con SVG o canvas inline, sin librerías. Tamaño objetivo: menos de 70 KB. Código limpio, sin errores de JavaScript.`;
 }
 
@@ -191,7 +207,9 @@ Formato de respuesta EXACTO:
 RESPUESTA: <una o dos frases para el cliente explicando qué hiciste o respondiendo>
 ===HTML===
 <el HTML completo, solo si hubo cambios>
-Si no hay cambios, omite la línea ===HTML=== y el HTML.`;
+Si no hay cambios, omite la línea ===HTML=== y el HTML.${app ? `
+DATOS: si la app usa IdeonDB (IdeonDB.ready), mantén ese sistema y su API para todo cambio de datos; nunca vuelvas a localStorage. Si es una app antigua que guarda en localStorage y el cliente pide que los datos se compartan entre personas, se guarden en la nube o tengan usuarios, migra la persistencia a IdeonDB:
+${IDEON_DATA_GUIDE}` : ""}`;
 }
 
 export function modifyUser(args: { recent: TranscriptMessage[]; instruction: string; html: string; versionNumber: number; images: ImageRef[]; docs?: DocRef[]; files?: FileRef[] }) {
