@@ -1,11 +1,15 @@
 import { z } from "zod";
 import { requireProjectAccess, requireUnlocked, json, fail, errorResponse } from "@/lib/api";
 import { publishProject } from "@/features/deploy/publish";
+import { requestPublish } from "@/features/deploy/review";
 
 export const maxDuration = 120;
 export const dynamic = "force-dynamic";
 
-/** Publica la versión actual (o la indicada) en Ideon o Vercel. La llamada del cliente es la autorización. */
+/**
+ * Publica la versión actual (o la indicada). En Ideon, con revisión manual activa,
+ * el cliente crea una solicitud que un administrador aprueba; Vercel es solo para administradores.
+ */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const access = await requireProjectAccess(id);
@@ -20,7 +24,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (!profile?.is_platform_admin) return fail("forbidden", "No disponible", 403);
   }
   try {
-    return json(await publishProject(id, access.user.id, body.data));
+    if (body.data.target === "vercel") return json(await publishProject(id, access.user.id, body.data));
+    return json(await requestPublish(id, access.user.id, { slug: body.data.slug, versionId: body.data.versionId, origin: "client" }));
   } catch (e) {
     return errorResponse(e);
   }

@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { invoiceNumber } from "./stripe";
 import { billingFromSettings, type BillingSettings } from "./pricing";
 import * as registrar from "@/features/domains/registrar";
-import { publishProject } from "@/features/deploy/publish";
+import { requestPublish } from "@/features/deploy/review";
 import type { DomainOrder, Json, Project } from "@/types/database.types";
 
 /**
@@ -96,8 +96,9 @@ async function fulfilLaunch(db: Admin, projectId: string, orgId: string, _amount
     });
   }
 
-  // Publicación en el hosting de Ideon (el dominio se conecta cuando termina su compra).
-  try { await publishProject(projectId, meta.user_id, { target: "ideon" }); }
+  // Publicación en el hosting de Ideon: con revisión manual queda pendiente de aprobación
+  // (el dominio se conecta al terminar su compra o al aprobar la publicación).
+  try { await requestPublish(projectId, meta.user_id, { origin: "payment" }); }
   catch (e) { await event(db, projectId, "deploy.failed", { message: e instanceof Error ? e.message : String(e) }); }
 
   if (meta.domain_order_id) await purchaseDomain(meta.domain_order_id);

@@ -7,10 +7,11 @@ import { AdminNav } from "@/components/admin/nav";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await connection();
-  await requirePlatformAdmin();
+  const { db } = await requirePlatformAdmin();
   const t = await getTranslations("admin.nav");
+  const { count: pendingReviews } = await db.from("approvals").select("id", { count: "exact", head: true }).eq("kind", "deploy").eq("decision", "pending");
   const items = [
-    { href: "/admin", label: t("overview") }, { href: "/admin/leads", label: t("leads") }, { href: "/admin/clients", label: t("clients") }, { href: "/admin/projects", label: t("projects") },
+    { href: "/admin", label: t("overview") }, { href: "/admin/reviews", label: pendingReviews ? `${t("reviews")} (${pendingReviews})` : t("reviews") }, { href: "/admin/leads", label: t("leads") }, { href: "/admin/clients", label: t("clients") }, { href: "/admin/projects", label: t("projects") },
     { href: "/admin/runs", label: t("runs") }, { href: "/admin/ai", label: t("ai") }, { href: "/admin/pricing", label: t("pricing") },
     { href: "/admin/deployments", label: t("deployments") }, { href: "/admin/tickets", label: t("tickets") }, { href: "/admin/settings", label: t("settings") },
   ];

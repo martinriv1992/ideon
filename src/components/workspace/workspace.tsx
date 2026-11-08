@@ -90,7 +90,7 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
         {isArchived && <Badge tone="warning">{t("archived")}</Badge>}
         <span className="flex-1" />
         {site && <a href={`${detail.siteBaseUrl}/s/${site.slug}`} target="_blank" rel="noreferrer" className="hidden sm:inline-flex"><Button size="sm" variant="secondary"><Globe className="size-4" /> {t("viewLive")}</Button></a>}
-        {currentVersion && (project.paid_at || detail.isPlatformAdmin) && <a href={`/api/projects/${project.id}/download`} className="hidden sm:inline-flex"><Button size="sm" variant="ghost"><Download className="size-4" /> ZIP</Button></a>}
+        {currentVersion && ((project.paid_at && detail.site) || detail.isPlatformAdmin) && <a href={`/api/projects/${project.id}/download`} className="hidden sm:inline-flex"><Button size="sm" variant="ghost"><Download className="size-4" /> ZIP</Button></a>}
       </div>
 
       {!aiConfigured && (
@@ -636,18 +636,35 @@ function PublishPanelUnlocked({ detail }: { detail: ProjectDetail }) {
   const canPublish = Boolean(project.current_version_id);
   const go = async (label: string, fn: () => Promise<unknown>) => { setBusy(label); setMsg(null); try { await fn(); } catch (e) { setMsg((e as Error).message); } finally { setBusy(null); router.refresh(); } };
   const verification = site?.domain_verification as { type?: string; name?: string; value?: string; note?: string } | null;
+  // Revisión manual: el cliente envía a revisión; un administrador aprueba y publica.
+  const reviewed = detail.reviewRequired && !detail.isPlatformAdmin;
+  const review = detail.publishReview;
+  const tr = useTranslations("app.review");
 
   return (
     <div className="space-y-5">
+      {reviewed && review?.decision === "pending" && (
+        <Card className="p-3 space-y-1 border-warning/40">
+          <p className="font-semibold flex items-center gap-1.5"><Loader2 className="size-4 animate-spin text-warning" /> {tr("pendingTitle")}</p>
+          <p className="text-[12.5px] text-fg-muted leading-relaxed">{tr("pendingText", { n: review.versionNumber ?? "" })}</p>
+        </Card>
+      )}
+      {reviewed && review?.decision === "rejected" && review.note && (
+        <Card className="p-3 space-y-1 border-accent/40">
+          <p className="font-semibold">{tr("changesTitle")}</p>
+          <p className="text-[13px] whitespace-pre-wrap rounded-[8px] bg-surface-2 p-2.5">{review.note}</p>
+          <p className="text-[12px] text-fg-muted">{tr("changesText")}</p>
+        </Card>
+      )}
       <DomainOrderCard detail={detail} />
       <BuyDomainCard detail={detail} />
       {project.kind !== "web" && site && <AppTeamCard detail={detail} />}
       <ChangesCard detail={detail} />
       <Field label={t("publishOnIdeon")}>
-        <p className="text-fg-muted leading-relaxed mb-2">{t("publishHelp")}</p>
+        <p className="text-fg-muted leading-relaxed mb-2">{reviewed ? tr("help") : t("publishHelp")}</p>
         <div className="flex gap-1.5">
           <Input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="mi-negocio" className="h-9" maxLength={40} />
-          <Button size="sm" loading={busy === "ideon"} disabled={!canPublish} onClick={() => go("ideon", () => api(`/api/projects/${project.id}/publish`, { method: "POST", body: JSON.stringify({ target: "ideon", slug: slug || undefined }) }))}><Rocket className="size-4" /> {site ? t("republish") : t("publishNow")}</Button>
+          <Button size="sm" loading={busy === "ideon"} disabled={!canPublish} onClick={() => go("ideon", () => api(`/api/projects/${project.id}/publish`, { method: "POST", body: JSON.stringify({ target: "ideon", slug: slug || undefined }) }))}><Rocket className="size-4" /> {reviewed ? (review?.decision === "pending" ? tr("resend") : tr("send")) : site ? t("republish") : t("publishNow")}</Button>
         </div>
         {!canPublish && <p className="text-[12px] text-fg-subtle mt-1.5">{t("publishNeedsVersion")}</p>}
         {site && <p className="mt-2"><a className="text-accent hover:underline inline-flex items-center gap-1" href={`${siteBaseUrl}/s/${site.slug}`} target="_blank" rel="noreferrer">{siteBaseUrl}/s/{site.slug} <ExternalLink className="size-3" /></a><span className="text-fg-subtle"> · <RelativeTime value={site.published_at} /></span></p>}
@@ -697,9 +714,12 @@ function PublishPanelUnlocked({ detail }: { detail: ProjectDetail }) {
         </Field>
       )}
       {msg && <p className="text-[13px] text-danger" role="alert">{msg}</p>}
-      <Field label={t("download")}>
-        <a href={`/api/projects/${project.id}/download`}><Button size="sm" variant="secondary" disabled={!canPublish}><Download className="size-4" /> {t("downloadZip")}</Button></a>
-      </Field>
+      {(site || !reviewed) && (
+        <Field label={t("download")}>
+          <a href={`/api/projects/${project.id}/download`}><Button size="sm" variant="secondary" disabled={!canPublish}><Download className="size-4" /> {t("downloadZip")}</Button></a>
+          {reviewed && <p className="text-[12px] text-fg-subtle mt-1.5">{tr("downloadNote")}</p>}
+        </Field>
+      )}
     </div>
   );
 }
