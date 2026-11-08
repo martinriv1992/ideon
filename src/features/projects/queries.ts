@@ -38,6 +38,9 @@ export interface ProjectDetail {
   includedChanges: number;
   changePacks: { qty: number; price: number }[];
   billingCurrency: string;
+  /** Revisión manual antes de publicar: ¿activa?, y última solicitud de publicación del proyecto. */
+  reviewRequired: boolean;
+  publishReview: { id: string; decision: string; note: string | null; versionNumber: number | null; createdAt: string; decidedAt: string | null } | null;
   /** Archivos del proyecto (sin el texto extraído, que solo usan los agentes). */
   assets: Omit<ProjectAsset, "text_content">[];
   deployments: Deployment[];
@@ -76,6 +79,10 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
     supabase.auth.getUser(),
   ]);
   const { data: profile } = user ? await supabase.from("profiles").select("is_platform_admin").eq("id", user.id).maybeSingle() : { data: null };
+  const { data: review } = await supabase.from("approvals").select("id,decision,payload,created_at,decided_at").eq("project_id", projectId).eq("kind", "deploy")
+    .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const reviewPayload = (review?.payload ?? {}) as { note?: string; version_number?: number; superseded?: boolean };
+  const reviewSetting = (settings ?? []).find((r) => r.key === "publish_review_required")?.value;
 
   const conversation = conversations?.[0] ?? null;
   let messages: Message[] = [];
@@ -93,6 +100,8 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
     project, conversation, messages, events: events ?? [],
     proposal: proposals?.[0] ?? null, specification: specs?.[0] ?? null, versions: versions ?? [], images: images ?? [], assets: assets ?? [], domainOrder: domainOrder ?? null, subscription: subscription ?? null, freeChanges: billingFromSettings(settings ?? []).freeChanges, isPlatformAdmin: Boolean(profile?.is_platform_admin),
     includedChanges: billingFromSettings(settings ?? []).includedChanges, changePacks: billingFromSettings(settings ?? []).changePacks, billingCurrency: billingFromSettings(settings ?? []).currency,
+    reviewRequired: reviewSetting !== false && reviewSetting !== "false",
+    publishReview: review && !reviewPayload.superseded ? { id: review.id, decision: review.decision, note: reviewPayload.note ?? null, versionNumber: reviewPayload.version_number ?? null, createdAt: review.created_at, decidedAt: review.decided_at } : null,
     deployments: deployments ?? [], site: site ?? null, activeRun,
     aiConfigured: aiProviderName() !== null,
     vercelConfigured: Boolean(process.env.VERCEL_TOKEN),

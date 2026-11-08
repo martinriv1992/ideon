@@ -653,7 +653,7 @@
       "renewalNote": "Después, {amount} al año por hosting y dominio. Te avisaremos antes de cada renovación.",
       "paymentsNotConfigured": "Los pagos en línea aún no están configurados en la plataforma.",
       "pay": "Pagar {amount} con ePayco",
-      "payNote": "Pago seguro con ePayco: tarjeta, PSE, Nequi y otros medios. Al confirmarse, publicamos tu sitio y conectamos el dominio automáticamente.",
+      "payNote": "Pago seguro con ePayco: tarjeta, PSE, Nequi y otros medios. Al confirmarse, revisamos tu proyecto, lo publicamos y conectamos el dominio.",
       "waitingPayment": "Estamos confirmando tu pago con ePayco. Esta página se actualizará sola.",
       "orderStatus": {
         "awaiting_payment": "Esperando pago",
@@ -718,6 +718,16 @@
       "sendEmail": "Enviarle el acceso por correo",
       "records": "{n} registros guardados",
       "export": "Descargar copia de los datos (JSON)"
+    },
+    "review": {
+      "pendingTitle": "En revisión",
+      "pendingText": "Nuestro equipo está revisando la versión {n} antes de publicarla. Te avisaremos por correo cuando esté en línea (normalmente en menos de un día hábil).",
+      "changesTitle": "Ajustes antes de publicar",
+      "changesText": "Pide estos ajustes en el chat y, cuando estén listos, vuelve a enviar a revisión.",
+      "help": "Antes de publicar, un experto de Ideonapp revisa tu proyecto. Cuando lo aprobemos quedará en línea y te avisaremos por correo.",
+      "send": "Enviar a revisión",
+      "resend": "Enviar la versión actual a revisión",
+      "downloadNote": "Descarga la versión aprobada y publicada."
     }
   },
   "common": {
@@ -745,7 +755,8 @@
       "deployments": "Despliegues",
       "tickets": "Tickets",
       "settings": "Configuración",
-      "leads": "Leads"
+      "leads": "Leads",
+      "reviews": "Revisiones"
     },
     "overview": {
       "title": "Resumen del negocio",
@@ -935,6 +946,41 @@
         "won": "Ganado",
         "lost": "Perdido"
       }
+    },
+    "reviews": {
+      "title": "Revisiones",
+      "on": "Revisión manual activa",
+      "off": "Revisión manual desactivada",
+      "intro": "Ninguna publicación ni actualización del sitio o la app de un cliente sale sin tu aprobación. Abre la vista previa, compruébala y aprueba (se publica y se avisa al cliente por correo) o pide cambios con una nota que le llega al cliente.",
+      "none": "No hay publicaciones pendientes de revisión.",
+      "approve": "Aprobar y publicar",
+      "changes": "Pedir cambios",
+      "notePh": "Qué debe ajustar el cliente antes de publicar (le llega por correo y lo ve en su proyecto)…",
+      "send": "Enviar al cliente",
+      "cancel": "Cancelar",
+      "noteError": "Escribe una nota de al menos 5 caracteres.",
+      "done": "Listo.",
+      "originPayment": "Recién pagado",
+      "originClient": "Pedido por el cliente",
+      "client": "Cliente",
+      "requested": "Solicitado",
+      "kind": "Tipo",
+      "warnings": "avisos",
+      "errors": "errores",
+      "summary": "Versión",
+      "live": "Publicado ahora",
+      "notLive": "aún no publicado",
+      "openPreview": "Abrir la versión a revisar",
+      "recent": "Decisiones recientes",
+      "decided": "Fecha",
+      "project": "Proyecto",
+      "result": "Resultado",
+      "note": "Nota",
+      "approved": "Aprobado y publicado",
+      "changesRequested": "Cambios pedidos",
+      "noneRecent": "Aún no hay decisiones.",
+      "settingTitle": "Revisión manual",
+      "settingHelp": "true = toda publicación de un cliente espera tu aprobación (recomendado). false = los clientes publican al instante."
     }
   },
   "attachments": {

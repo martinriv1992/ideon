@@ -653,7 +653,7 @@
       "renewalNote": "Then {amount} per year for hosting and domain. We'll remind you before each renewal.",
       "paymentsNotConfigured": "Online payments are not configured on the platform yet.",
       "pay": "Pay {amount} with ePayco",
-      "payNote": "Secure payment with ePayco. Once confirmed, we publish your site and connect the domain automatically.",
+      "payNote": "Secure payment with ePayco: card, PSE, Nequi and more. Once confirmed, we review your project, publish it and connect the domain.",
       "waitingPayment": "We're confirming your payment with ePayco. This page will update by itself.",
       "orderStatus": {
         "awaiting_payment": "Awaiting payment",
@@ -718,6 +718,16 @@
       "sendEmail": "Email them their access",
       "records": "{n} records stored",
       "export": "Download a data backup (JSON)"
+    },
+    "review": {
+      "pendingTitle": "In review",
+      "pendingText": "Our team is reviewing version {n} before publishing it. We'll email you when it's live (usually within one business day).",
+      "changesTitle": "Adjustments before publishing",
+      "changesText": "Ask for these adjustments in the chat and, once they're ready, send it for review again.",
+      "help": "Before publishing, an Ideonapp expert reviews your project. Once approved it goes live and we'll email you.",
+      "send": "Send for review",
+      "resend": "Send the current version for review",
+      "downloadNote": "Downloads the approved, published version."
     }
   },
   "common": {
@@ -745,7 +755,8 @@
       "deployments": "Deployments",
       "tickets": "Tickets",
       "settings": "Settings",
-      "leads": "Leads"
+      "leads": "Leads",
+      "reviews": "Reviews"
     },
     "overview": {
       "title": "Business overview",
@@ -935,6 +946,41 @@
         "won": "Won",
         "lost": "Lost"
       }
+    },
+    "reviews": {
+      "title": "Reviews",
+      "on": "Manual review on",
+      "off": "Manual review off",
+      "intro": "No client site or app is published or updated without your approval. Open the preview, check it and approve (it's published and the client is emailed) or request changes with a note sent to the client.",
+      "none": "No publications waiting for review.",
+      "approve": "Approve and publish",
+      "changes": "Request changes",
+      "notePh": "What the client should adjust before publishing (emailed and shown in their project)…",
+      "send": "Send to client",
+      "cancel": "Cancel",
+      "noteError": "Write a note of at least 5 characters.",
+      "done": "Done.",
+      "originPayment": "Just paid",
+      "originClient": "Requested by client",
+      "client": "Client",
+      "requested": "Requested",
+      "kind": "Type",
+      "warnings": "warnings",
+      "errors": "errors",
+      "summary": "Version",
+      "live": "Live now",
+      "notLive": "not published yet",
+      "openPreview": "Open the version to review",
+      "recent": "Recent decisions",
+      "decided": "Date",
+      "project": "Project",
+      "result": "Result",
+      "note": "Note",
+      "approved": "Approved and published",
+      "changesRequested": "Changes requested",
+      "noneRecent": "No decisions yet.",
+      "settingTitle": "Manual review",
+      "settingHelp": "true = every client publication waits for your approval (recommended). false = clients publish instantly."
     }
   },
   "attachments": {

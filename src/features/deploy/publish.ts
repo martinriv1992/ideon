@@ -10,11 +10,12 @@ export class PublishError extends Error {
 }
 
 /**
- * Publica la versión actual del proyecto. La acción del cliente ES la autorización:
- * se registra en `approvals` y en `deployments`, y el sitio queda servido en
- * /s/<slug> (y, si se pide, en Vercel).
+ * Publica la versión actual del proyecto (o la indicada) y deja el sitio servido en
+ * /s/<slug> (y, si se pide, en Vercel). Con revisión manual activa, solo se llama
+ * desde la aprobación del administrador (`approvalId`) o por un administrador;
+ * los clientes pasan por requestPublish (src/features/deploy/review.ts).
  */
-export async function publishProject(projectId: string, userId: string, opts: { target: "ideon" | "vercel"; slug?: string; versionId?: string }) {
+export async function publishProject(projectId: string, userId: string, opts: { target: "ideon" | "vercel"; slug?: string; versionId?: string; approvalId?: string }) {
   const db = createAdminClient();
   const { data: project } = await db.from("projects").select("*").eq("id", projectId).single();
   if (!project) throw new PublishError("not_found", "Proyecto no encontrado");
@@ -30,10 +31,13 @@ export async function publishProject(projectId: string, userId: string, opts: { 
     if (clash) slug = `${slug}-${projectId.slice(0, 4)}`;
   }
 
-  const { data: approval } = await db.from("approvals").insert({
-    project_id: projectId, kind: "deploy", payload: { target: opts.target, slug, version_id: versionId } as Json,
-    decision: "approved", requested_by: userId, decided_by: userId, decided_at: new Date().toISOString(),
-  }).select("*").single();
+  // Aprobación: la solicitud revisada (pending → approved) o, si publica un administrador directamente, una nueva.
+  const { data: approval } = opts.approvalId
+    ? await db.from("approvals").update({ decision: "approved", decided_by: userId, decided_at: new Date().toISOString() }).eq("id", opts.approvalId).select("*").single()
+    : await db.from("approvals").insert({
+      project_id: projectId, kind: "deploy", payload: { target: opts.target, slug, version_id: versionId } as Json,
+      decision: "approved", requested_by: userId, decided_by: userId, decided_at: new Date().toISOString(),
+    }).select("*").single();
   const { data: deployment } = await db.from("deployments").insert({
     project_id: projectId, version_id: versionId, target: opts.target, status: "building", slug, approval_id: approval!.id, created_by: userId,
   }).select("*").single();
@@ -47,7 +51,13 @@ export async function publishProject(projectId: string, userId: string, opts: { 
     if (opts.target !== "ideon") ({ html, assets } = await bundleStaticAssets(projectId, html));
     const result = await provider.deploy({ slug, html, assets });
     if (opts.target === "ideon") {
-      await db.from("published_sites").upsert({ project_id: projectId, slug, version_id: versionId, custom_domain: existing?.custom_domain ?? null, domain_status: existing?.domain_status ?? null, domain_verification: existing?.domain_verification ?? null, published_at: new Date().toISOString() });
+      // Primera publicación tras una revisión: si el dominio comprado ya quedó activo, se conecta ahora.
+      let domain = { custom_domain: existing?.custom_domain ?? null, domain_status: existing?.domain_status ?? null, domain_verification: existing?.domain_verification ?? null };
+      if (!existing?.custom_domain) {
+        const { data: order } = await db.from("domain_orders").select("domain").eq("project_id", projectId).eq("status", "active").order("created_at", { ascending: false }).limit(1).maybeSingle();
+        if (order) domain = { custom_domain: order.domain, domain_status: "verified", domain_verification: { type: "registrar", provider: "vercel" } as Json };
+      }
+      await db.from("published_sites").upsert({ project_id: projectId, slug, version_id: versionId, ...domain, published_at: new Date().toISOString() });
     }
     await db.from("deployments").update({ status: "live", url: result.url, external_id: result.externalId ?? null, logs: result.logs ?? null, finished_at: new Date().toISOString() }).eq("id", deployment!.id);
     if (project.status === "review" || project.status === "ready_to_deploy") await db.from("projects").update({ status: "live" }).eq("id", projectId);
@@ -61,7 +71,8 @@ export async function publishProject(projectId: string, userId: string, opts: { 
 }
 
 export async function rollbackTo(projectId: string, userId: string, versionId: string) {
-  return publishProject(projectId, userId, { target: "ideon", versionId });
+  const { requestPublish } = await import("./review");
+  return requestPublish(projectId, userId, { versionId, origin: "client" });
 }
 
 const HOSTNAME = /^(?=.{4,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;

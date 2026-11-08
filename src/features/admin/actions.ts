@@ -80,3 +80,27 @@ export async function updateLeadAction(_prev: ActionState, formData: FormData): 
     return { ok: true };
   } catch (e) { return { error: (e as Error).message }; }
 }
+
+/** Revisión manual: aprobar (publica la versión revisada) o pedir cambios con una nota para el cliente. */
+export async function approvePublishAction(approvalId: string): Promise<ActionState> {
+  const ctx = await getCurrentContext();
+  if (!ctx?.profile.is_platform_admin) return { error: "forbidden" };
+  try {
+    const { approvePublish } = await import("@/features/deploy/review");
+    await approvePublish(approvalId, ctx.user.id);
+    revalidatePath(`/${await getLocale()}/admin/reviews`);
+    return { ok: true };
+  } catch (e) { return { error: (e as Error).message }; }
+}
+
+export async function rejectPublishAction(approvalId: string, note: string): Promise<ActionState> {
+  const ctx = await getCurrentContext();
+  if (!ctx?.profile.is_platform_admin) return { error: "forbidden" };
+  if (note.trim().length < 5) return { error: "note" };
+  try {
+    const { rejectPublish } = await import("@/features/deploy/review");
+    await rejectPublish(approvalId, ctx.user.id, note);
+    revalidatePath(`/${await getLocale()}/admin/reviews`);
+    return { ok: true };
+  } catch (e) { return { error: (e as Error).message }; }
+}
