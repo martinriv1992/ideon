@@ -8,6 +8,17 @@ function getClient() {
   return client;
 }
 
+/**
+ * Generar o modificar el HTML completo es una sola respuesta sin herramientas. Con el
+ * razonamiento activo, Haiku 5.5 llegó a gastar 55.000 de 64.000 tokens pensando y
+ * dejaba la app cortada; sin él, la genera completa (~18.000 tokens). Haiku acepta
+ * «disabled» con esfuerzo medium o inferior. Sonnet 5.5 sigue con razonamiento adaptativo.
+ */
+function thinkingFor(req: CompletionRequest): { thinking?: { type: "disabled" } } {
+  const heavyOutput = req.task === "developer" || req.task === "modify";
+  return heavyOutput && req.model.startsWith("claude-haiku") ? { thinking: { type: "disabled" } } : {};
+}
+
 export const anthropicProvider: AIProvider = {
   name: "anthropic",
   async complete(req: CompletionRequest): Promise<CompletionResult> {
@@ -16,6 +27,7 @@ export const anthropicProvider: AIProvider = {
       model: req.model,
       max_tokens: req.maxOutputTokens,
       output_config: { effort: TASK_EFFORT[req.task] },
+      ...thinkingFor(req),
       system: req.system,
       messages: [{ role: "user", content: req.user }],
     }).finalMessage();

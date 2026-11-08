@@ -684,6 +684,40 @@
       "buyDomainCta": "Find a domain",
       "buyDomainHelp": "Get www.yourbusiness.com: we register it in your name, connect it to your site with HTTPS and it renews with your annual plan.",
       "buyDomainNote": "You pay the domain's first year today. From the next renewal, the domain is included in your plan's annual payment."
+    },
+    "appData": {
+      "title": "App team and data",
+      "cloudOn": "Cloud data",
+      "cloudOff": "Browser-only data",
+      "help": "Give your team access. Each person signs in to the app with their email and password; everyone sees the same data, stored in the cloud with backups.",
+      "localOnly": "This app version stores data only in each person's browser. To share it with your team, ask in the chat: “Store the data in the cloud with users”.",
+      "lastLogin": "last sign-in {date}",
+      "neverLogged": "hasn't signed in yet",
+      "role": "Role",
+      "roles": {
+        "admin": "Admin",
+        "member": "Member"
+      },
+      "resetPassword": "Generate a new password",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "delete": "Delete",
+      "confirmDelete": "Remove {name}'s access? Their records are kept.",
+      "credentialsTitle": "{name}'s access",
+      "address": "Address",
+      "email": "Email",
+      "password": "Password",
+      "emailed": "We emailed these details to them.",
+      "notEmailed": "Share these details: the password won't be shown again.",
+      "copy": "Copy access",
+      "copied": "Copied",
+      "name": "Name",
+      "namePh": "Name",
+      "emailPh": "name@company.com",
+      "add": "Give access",
+      "sendEmail": "Email them their access",
+      "records": "{n} records stored",
+      "export": "Download a data backup (JSON)"
     }
   },
   "common": {

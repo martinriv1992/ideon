@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getVersionFile, resolveImageMarkers, siteHeaders } from "@/features/deploy/serve";
+import { getVersionFile, injectDataSdk, resolveImageMarkers, siteBaseUrl, siteHeaders } from "@/features/deploy/serve";
+import { usesIdeonData } from "@/features/appdata/core";
 import { billingFromSettings, subscriptionState } from "@/features/billing/pricing";
 
 const page = (title: string, text: string, status: number) => new Response(
@@ -9,8 +10,14 @@ const page = (title: string, text: string, status: number) => new Response(
 export const dynamic = "force-dynamic";
 
 /** Sitio publicado en Ideon: público, sirve la versión publicada del proyecto. */
-export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  // Las apps se sirven desde el dominio de sitios (o su dominio propio), nunca desde el del panel:
+  // así su código no comparte origen con la sesión de Ideonapp.
+  const appHost = new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost").host;
+  const siteHost = new URL(siteBaseUrl()).host;
+  const host = req.headers.get("host") ?? "";
+  if (host === appHost && siteHost !== appHost) return Response.redirect(`${siteBaseUrl()}/s/${encodeURIComponent(slug.toLowerCase())}`, 308);
   const db = createAdminClient();
   const { data: site } = await db.from("published_sites").select("version_id,project_id").eq("slug", slug.toLowerCase()).maybeSingle();
   if (!site) return page("No encontrado", "Este sitio no existe o no está publicado.", 404);
@@ -23,5 +30,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   }
   const file = await getVersionFile(site.version_id);
   if (!file) return new Response("Sin contenido", { status: 404 });
-  return new Response(resolveImageMarkers(file.content), { headers: siteHeaders(file.content_type, 60) });
+  const html = resolveImageMarkers(file.content);
+  // App con Ideon Data: datos en la nube del proyecto (connect-src 'self' solo para estas apps, sin caché pública).
+  if (usesIdeonData(html)) return new Response(injectDataSdk(html, { mode: "live", projectId: site.project_id }), { headers: siteHeaders(file.content_type, 0, { connect: "self" }) });
+  return new Response(html, { headers: siteHeaders(file.content_type, 60) });
 }

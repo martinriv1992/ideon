@@ -3,6 +3,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { publicEnv } from "@/lib/env";
 
 import { safeFileName } from "@/lib/uploads";
+import { usesIdeonData } from "@/features/appdata/core";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 /**
  * Servicio de archivos de una versión: resuelve los marcadores {{IMG:id}} y
@@ -18,6 +21,19 @@ export function resolveImageMarkers(html: string, base = "") {
 export function withPreviewBadge(html: string, label = "Vista previa · Ideon") {
   const badge = `<div style="position:fixed;z-index:2147483647;right:12px;bottom:12px;padding:6px 12px;border-radius:999px;background:rgba(17,17,20,.86);color:#fff;font:600 12px/1.4 system-ui,sans-serif;letter-spacing:.02em;box-shadow:0 4px 18px rgba(0,0,0,.25);pointer-events:none">${label}</div>`;
   return /<\/body>/i.test(html) ? html.replace(/<\/body>(?![\s\S]*<\/body>)/i, `${badge}</body>`) : html + badge;
+}
+
+/**
+ * Ideon Data: carga el SDK de datos antes de los scripts de la app (solo si la app lo usa).
+ * live = app publicada (datos en la nube) · demo = vista previa · local = archivo descargado.
+ */
+export function injectDataSdk(html: string, opts: { mode: "live" | "demo" | "local"; projectId?: string; src?: string }) {
+  if (!usesIdeonData(html)) return html;
+  const tag = `<script src="${opts.src ?? "/ideon-data.js"}" data-ideon-data data-mode="${opts.mode}"${opts.projectId ? ` data-project="${opts.projectId}"` : ""}></script>`;
+  const head = html.search(/<\/head>/i);
+  const firstScript = html.search(/<script[\s>]/i);
+  const at = firstScript >= 0 && (head < 0 || firstScript < head) ? firstScript : head;
+  return at >= 0 ? html.slice(0, at) + tag + html.slice(at) : tag + html;
 }
 
 /**
@@ -48,6 +64,12 @@ export async function bundleStaticAssets(projectId: string, html: string) {
     html = html.split(`{{FILE:${f.id}}}`).join(path);
   }
   html = html.replace(/\{\{(?:IMG|FILE):[a-z0-9-]+\}\}/gi, "");
+  // App con Ideon Data: el archivo descargado funciona sin servidor (datos en el navegador).
+  if (usesIdeonData(html)) {
+    const sdk = await fs.readFile(path.join(process.cwd(), "public", "ideon-data.js"));
+    assets.push({ path: "ideon-data.js", data: new Uint8Array(sdk), contentType: "text/javascript" });
+    html = injectDataSdk(html, { mode: "local", src: "ideon-data.js" });
+  }
   return { html, assets };
 }
 
@@ -57,14 +79,17 @@ export async function getVersionFile(versionId: string, path = "index.html") {
   return data;
 }
 
-/** Cabeceras de seguridad para contenido generado (aislado del panel). */
-export function siteHeaders(contentType: string, cacheSeconds = 0) {
+/**
+ * Cabeceras de seguridad para contenido generado (aislado del panel).
+ * connect-src solo se abre ('self') en apps publicadas que usan Ideon Data, nunca en la vista previa.
+ */
+export function siteHeaders(contentType: string, cacheSeconds = 0, opts: { connect?: "self" | "none" } = {}) {
   return {
     "Content-Type": contentType.startsWith("text/html") ? "text/html; charset=utf-8" : contentType,
     "Cache-Control": cacheSeconds ? `public, max-age=${cacheSeconds}` : "no-store",
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "no-referrer",
-    "Content-Security-Policy": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline'; connect-src 'none'; frame-ancestors 'self'; form-action 'self'",
+    "Content-Security-Policy": `default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline'; connect-src ${opts.connect === "self" ? "'self'" : "'none'"}; frame-ancestors 'self'; form-action 'self'`,
   };
 }
 

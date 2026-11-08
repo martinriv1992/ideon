@@ -1,5 +1,5 @@
 import { requireProjectAccess, fail } from "@/lib/api";
-import { getVersionFile, resolveImageMarkers, siteHeaders, withPreviewBadge } from "@/features/deploy/serve";
+import { getVersionFile, injectDataSdk, resolveImageMarkers, siteHeaders, withPreviewBadge } from "@/features/deploy/serve";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +17,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const file = await getVersionFile(versionId, (path ?? []).join("/") || "index.html");
   if (!file) return fail("not_found", "Archivo no encontrado", 404);
   if (!file.content_type.startsWith("text/html")) return new Response(file.content, { headers: siteHeaders(file.content_type) });
-  const html = resolveImageMarkers(file.content);
+  // Vista previa: Ideon Data en modo demostración (datos de ejemplo en el navegador, sin red).
+  const html = injectDataSdk(resolveImageMarkers(file.content), { mode: "demo", projectId: id });
   return new Response(access.project.paid_at ? html : withPreviewBadge(html), { headers: siteHeaders(file.content_type) });
 }
