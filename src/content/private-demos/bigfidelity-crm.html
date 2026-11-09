@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big Fidelity · CRM (demo)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--act:#fff;--sfg:#cfe3e8;--sfgon:#fff;--non:rgba(255,255,255,.16);--nhov:rgba(255,255,255,.08);--pt:#0E4A5C;--p:#0E4A5C;--fg:#12303A;--ac:#FF6B57;--bg:#F4F8F9;--mut:#5d7882;--bd:#dfe9ec;--ok:#1f9d74;--warn:#e8a317}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.45}
+#app{display:flex;min-height:100vh}
+.side{width:236px;background:var(--p);color:#fff;padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto;flex:none;display:flex;flex-direction:column;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 12px;font-weight:800;font-size:15px;line-height:1.1}
+.brand small{display:block;font-weight:500;opacity:.7;font-size:11px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;gap:10px;align-items:center;width:100%;background:none;border:0;color:var(--sfg);padding:10px 12px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;text-align:left}
+.nav button:hover{background:var(--nhov)}
+.nav button.on{background:var(--non);color:var(--sfgon)}
+.nav svg,.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sfoot{margin-top:auto;font-size:12px;color:var(--sfg)}
+.sfoot select{width:100%;margin:6px 0;background:rgba(0,0,0,.25);color:#fff;border:1px solid rgba(255,255,255,.25)}
+main{flex:1;min-width:0;padding:24px 30px 40px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+h1{margin:0;font-size:24px;font-weight:800;color:var(--pt)}
+h2{font-size:16px;margin:0 0 12px;font-weight:700}
+h3{margin:0 0 14px;font-size:18px;color:var(--pt)}
+.mut{color:var(--mut);margin:2px 0 0;font-size:13px}
+.ha{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:18px;margin-bottom:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--p)}
+.kpi.hot:before{background:#d64545}
+.kpi span{font-size:12px;color:var(--mut);font-weight:600}
+.kpi b{display:block;font-size:22px;margin-top:4px;color:var(--pt)}
+.kpi.hot b{color:#d64545}
+.kpi small{color:var(--mut)}
+.g2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
+.btn{border:0;background:var(--ac);color:var(--act);font:inherit;font-weight:700;padding:9px 16px;border-radius:10px;cursor:pointer}
+.btn:hover{filter:brightness(.95)}
+.btn.sec{background:var(--p);color:#fff}
+.btn.ghost{background:#fff;color:var(--pt);border:1px solid var(--bd)}
+.btn.danger{background:#d6402c}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:8px}
+input,select,textarea{font:inherit;color:var(--fg);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;background:#fff;max-width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(14,74,92,.25);border-color:var(--pt)}
+label{display:block;font-weight:600;font-size:12px;color:var(--mut);margin-bottom:12px}
+label input,label select,label textarea{display:block;width:100%;margin-top:4px;font-weight:400;font-size:14px}
+.fb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.fb input{min-width:200px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);padding:8px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid #eef3f5;vertical-align:middle}
+tr.cl{cursor:pointer}tr.cl:hover td{background:#f7fbfc}
+.num{text-align:right;white-space:nowrap}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700;background:#e6f0f3;color:var(--pt)}
+.chip.ok{background:#dcf4ea;color:#157a58}.chip.bad{background:#ffe3df;color:#c2402e}.chip.w{background:#fff1d1;color:#9a6a00}
+.row{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;background:#fff}
+.row.late{border-color:#f0a59a;background:#fff3f1}
+.row.now{border-color:#f3c46a;background:#fffaf0}
+.grow{flex:1;min-width:0}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--bd);background:#fff;padding:7px 14px;border-radius:99px;font:inherit;font-weight:600;cursor:pointer;color:var(--mut)}
+.tabs button.on{background:var(--p);color:#fff;border-color:var(--pt)}
+.kan{display:grid;grid-template-columns:repeat(6,minmax(230px,1fr));gap:12px;overflow-x:auto;padding-bottom:10px}
+.col{background:#e9f1f3;border-radius:14px;padding:10px;min-height:200px}
+.col h4{margin:2px 4px 8px;font-size:13px;display:flex;justify-content:space-between;color:var(--pt)}
+.col .tot{font-size:11px;color:var(--mut);margin:0 4px 8px}
+.kc{background:#fff;border-radius:12px;padding:10px;margin-bottom:8px;border:1px solid var(--bd);cursor:grab;box-shadow:0 1px 2px rgba(14,74,92,.05)}
+.kc b{display:block;font-size:13px}
+.kc .m{font-size:12px;color:var(--mut);display:flex;justify-content:space-between;margin-top:4px}
+.kc select{width:100%;margin-top:6px;padding:3px 6px;font-size:12px}
+.bar{height:8px;background:#e3edf0;border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--p);border-radius:9px}
+.bar i.c{background:var(--ac)}
+.tl{border-left:2px solid var(--bd);margin-left:6px;padding-left:14px}
+.tl div{position:relative;margin-bottom:12px}
+.tl div:before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--ac)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+#modal{position:fixed;inset:0;background:rgba(18,48,58,.55);display:none;justify-content:center;align-items:flex-start;padding:28px 12px;overflow:auto;z-index:50}
+#modal.on{display:flex}
+.box{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.box.wide{max-width:880px}
+.btns{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+.err{color:#c2402e;font-weight:600;min-height:18px}
+.totals{margin:12px 0 0 auto;max-width:300px}
+.totals div{display:flex;justify-content:space-between;padding:4px 0}
+.totals .t{border-top:2px solid var(--p);font-weight:800;font-size:17px;color:var(--pt);margin-top:4px;padding-top:8px}
+.doc h2{font-size:22px;color:var(--pt)}
+.doc .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--ac);padding-bottom:12px;margin-bottom:14px}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--fg);color:#fff;padding:10px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:.3s;z-index:99}
+#toast.on{opacity:1}
+.demo{background:#fff1ee;color:#b0412f;border:1px dashed var(--ac);border-radius:10px;padding:6px 12px;font-size:12px;font-weight:600;margin-bottom:16px;display:inline-block}
+textarea.big{width:100%;min-height:160px;font-family:monospace;font-size:12px}
+.empty{text-align:center;color:var(--mut);padding:24px}
+@media(max-width:860px){
+#app{flex-direction:column}
+.side{width:100%;height:auto;position:static;padding:10px;flex-direction:column}
+.nav{flex-direction:row;overflow-x:auto;gap:4px}
+.nav button{width:auto;white-space:nowrap;padding:8px 12px}
+.brand{padding-bottom:4px}
+.sfoot{margin:0}
+main{padding:16px 14px 30px}
+.g2,.grid2{grid-template-columns:1fr}
+}
+@media print{
+#app,#toast{display:none!important}
+body{background:#fff}
+#modal{position:static;background:none;padding:0;display:block}
+.box{box-shadow:none;max-width:none;padding:0}
+.noprint{display:none!important}
+}
+
+.blogo{display:inline-flex;align-items:center;justify-content:center;flex:none;border-radius:11px;background:var(--ac);color:var(--act);font-weight:800;overflow:hidden}
+.blogo img{width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
+#bfBtn{position:fixed;right:16px;bottom:16px;z-index:60;border:0;border-radius:99px;padding:10px 14px;background:#111;color:#fff;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:.35}
+#bfBtn:hover{opacity:1}
+#bfPanel{position:fixed;right:16px;bottom:64px;z-index:61;width:300px;background:#fff;border:1px solid var(--bd);border-radius:14px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.2);display:none}
+#bfPanel.on{display:block}#bfPanel h4{margin:0 0 10px}#bfPanel label{display:block;margin:0 0 10px;font-size:12px;font-weight:600}
+#bfPanel input[type=text]{width:100%}#bfPanel input[type=color]{width:100%;height:34px;border:1px solid var(--bd);border-radius:8px;padding:2px}
+.side .blogo img{background:#fff}
+</style>
+</head>
+<body>
+<div id="app">
+<aside class="side">
+<div class="brand"><span class="blogo" data-s="34"></span><div><span class="bname" style="font-size:18px;letter-spacing:-.3px">big fidelity</span><small>CRM · demo de Ideonapp</small></div></div>
+<nav class="nav" id="nav"></nav>
+<div class="sfoot"><label style="color:var(--sfg);margin:0">Usuario de demostración<select id="usel" onchange="setUser(this.value)"></select></label>Datos de ejemplo ficticios.</div>
+</aside>
+<main id="main"></main>
+</div>
+<div id="modal" onclick="if(event.target===this)closeM()"></div>
+<div id="toast"></div>
+<script>
+const KEY='ideon-crm-bigfidelity-v1';
+const ETAPAS=['Prospecto','Contactado','Propuesta','Negociación','Ganada','Perdida'];
+const SUG={Prospecto:10,Contactado:25,Propuesta:50,'Negociación':75,Ganada:100,Perdida:0};
+const TIPOS=['Llamada','Reunión','Correo','WhatsApp'];
+const SECT=['Cafeterías','Gastronomía','Belleza y estética','Retail','Gimnasios','Heladerías','Farmacias'];
+const CIU=['Buenos Aires','Córdoba','Rosario','Mendoza','La Plata','Mar del Plata'];
+const PRE={clientes:'c',contactos:'p',oportunidades:'o',vendedores:'v',tareas:'t',productos:'g',cotizaciones:'q'};
+const $=s=>document.querySelector(s);
+const pad=(n,l=4)=>String(n).padStart(l,'0');
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const today=()=>iso(new Date());
+const dd=n=>{const d=new Date();d.setDate(d.getDate()+n);return iso(d)};
+const cop=n=>'$ '+Math.round(n||0).toLocaleString('es-AR');
+const fd=s=>s?s.split('-').reverse().join('/'):'—';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const noacc=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+function seed(){
+const s={seq:1000,user:'v1',iva:21,emp:{nombre:'Big Fidelity (demo)',nit:'30-00000000-0',dir:'Av. Ficticia 123, Buenos Aires',tel:'11 5555 0100',email:'ventas@bigfidelity.example'}};
+s.vendedores=[['v1','Laura Benítez','Gerente comercial','Buenos Aires',0],['v2','Andrés Romero','Vendedor','Buenos Aires',2e6],['v3','Camila Ortiz','Vendedor','Córdoba',1.8e6],['v4','Julián Pereyra','Vendedor','Rosario',2.5e6],['v5','Martina Duarte','Vendedor','Mendoza',1.5e6]].map(([id,n,r,c,m])=>({id,nombre:n,email:noacc(n.split(' ')[0].toLowerCase())+'@bigfidelity.example',rol:r,ciudad:c,metaMensual:m,estado:'Activo'}));
+const SV=['v2','v3','v4','v5'];
+const EMP=['Café Tostado Norte','Burger Patio','Estudio Glow Belleza','Tienda Andén','Gimnasio Pulso','Helados Brisa','Farmacia del Parque','Café Medialuna','Parrilla La Esquina','Nails & Co. Studio','Almacén Ceibo','Fit Box Centro'];
+s.clientes=EMP.map((e,i)=>({id:'c'+(i+1),empresa:e,nit:`30-71${100+i}${200+i}-${i%9}`,sector:SECT[i%7],ciudad:CIU[i%6],vendedor:SV[i%4],estado:['Activo','Activo','Prospecto','Activo','Inactivo','Activo'][i%6]}));
+const NOM=['Sofía Acosta','Mateo Fernández','Valentina Ríos','Santiago Peña','Delfina Cruz','Felipe Aguirre','Isabella Gómez','Joaquín Lara','Natalia Paz','Tomás Giménez','Paula Molina','Diego Sosa','Julieta Mora','Bautista Herrera','Lucía Franco','Agustín Duarte','Mariana Toro','Nicolás Bravo','Florencia Luna','Ricardo Pinto'];
+const CAR=['Dueño/a','Encargada de marketing','Gerente de sucursal','Socio/a','Administración','Responsable de operaciones'];
+s.contactos=NOM.map((n,i)=>({id:'p'+(i+1),nombre:n,cliente:'c'+(i%12+1),cargo:CAR[i%6],email:noacc(n.split(' ')[0].toLowerCase())+'.'+i+'@demo.example',telefono:'11 5555 01'+pad(i,2)}));
+const ET=['Prospecto','Contactado','Propuesta','Negociación','Ganada','Prospecto','Contactado','Propuesta','Negociación','Perdida','Ganada','Prospecto','Contactado','Propuesta','Negociación','Ganada','Perdida','Prospecto','Contactado','Propuesta','Negociación','Ganada','Contactado','Propuesta'];
+const VAL=[12,8,25,40,6,18,30,9,22,15,35,5],TT=['Plan Pro anual','Tarjeta de sellos digital','Programa de puntos','Multi-sucursal','Campaña de cumpleaños','Cupones y referidos','Integración con POS','Renovación anual'];
+const dom=new Date().getDate();
+s.oportunidades=ET.map((e,i)=>({id:'o'+(i+1),titulo:TT[i%8]+' — '+EMP[i%12].split(' ')[0],cliente:'c'+(i%12+1),valor:VAL[i%12]*1e5,probabilidad:SUG[e],etapa:e,cierre:dd(5+i*3),vendedor:SV[i%4],motivoPerdida:e==='Perdida'?'Prefirieron seguir con tarjetas de cartón (ejemplo)':'',creada:dd(-(10+i*2)),cerradaEn:e==='Ganada'?(i===21?dd(-dom-3):dd(-(i%dom))):''}));
+const PR=[['Plan Inicial (mensual)','Suscripción',45000],['Plan Pro (mensual)','Suscripción',89000],['Plan Multi-sucursal (mensual)','Suscripción',160000],['Diseño de tarjeta Google/Apple Wallet','Servicios',120000],['Campaña de lanzamiento','Servicios',80000],['Integración con POS','Servicios',250000],['Capacitación del equipo','Servicios',40000],['Display QR de mostrador','Material',15000]];
+s.productos=PR.map((p,i)=>({id:'g'+(i+1),sku:'BF-'+pad(i+1,3),nombre:p[0],categoria:p[1],precio:p[2],estado:i===7?'Inactivo':'Activo'}));
+const OFF=[-4,-2,0,0,1,3,-1,0,5,8],TA=['Llamar para confirmar propuesta','Enviar cotización actualizada','Mostrar la tarjeta en el local','Escribir por WhatsApp para agendar demo','Revisar alta del programa con el dueño'];
+s.tareas=Array.from({length:30},(_,i)=>{const h=i%5===4;return{id:'t'+(i+1),titulo:TA[i%5],tipo:TIPOS[i%4],fecha:h?dd(-(i%4+1)):dd(OFF[i%10]),cliente:'c'+(i%12+1),opp:i<24?'o'+(i+1):'',vendedor:SV[i%4],estado:h?'Hecha':'Pendiente',resultado:h?'Cliente confirmó interés (ejemplo)':''}});
+const qc=(L,p)=>{let sub=0,de=0;L.forEach(l=>{sub+=l.q*l.pr;de+=l.q*l.pr*l.d/100});const b=sub-de,iv=b*p/100;return{sub,desc:de,base:b,iva:iv,total:b+iv}};
+s.cotizaciones=Array.from({length:10},(_,i)=>{const es=['Borrador','Enviada','Aceptada','Rechazada'][i%4];const lines=[0,1].slice(0,i%2+1).map(k=>{const p=PR[(i+k*3)%8];return{p:'g'+((i+k*3)%8+1),n:p[0],q:(i%3)+1,pr:p[2],d:(i%4)*5}});const c=qc(lines,21);return{id:'q'+(i+1),numero:'COT-'+pad(i+1),cliente:'c'+(i+1),opp:es==='Aceptada'?'':'o'+(i+1),fecha:dd(-(i*3+1)),lines,items:lines.map(l=>l.q+'× '+l.n).join('; '),descuento:c.sub?Math.round(c.desc/c.sub*100):0,ivaP:21,total:c.total,estado:es}});
+const RES=['Quedó en revisar la propuesta (ejemplo)','Pidió precio para 3 sucursales (ejemplo)','Le gustó la tarjeta en Wallet (ejemplo)','Confirmó reunión con su socio (ejemplo)'];
+s.acts=Array.from({length:16},(_,i)=>({id:'a'+i,tipo:TIPOS[i%4],fecha:dd(-(i+1)),cliente:'c'+(i%12+1),vendedor:SV[i%4],resultado:RES[i%4]}));
+s.campanas=seedCamp(s);
+return s}
+
+function load(){try{const j=localStorage.getItem(KEY);if(j){const o=JSON.parse(j);if(o&&o.clientes&&o.vendedores&&o.acts)return o}}catch(e){}return seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load(),ui={view:'dashboard',f:{},fv:'',tab:'Hoy',cli:null,etapa:'',q:null,qid:''};
+if(!S.campanas){S.campanas=seedCamp(S)}
+const byId=(l,id)=>S[l].find(x=>x.id===id);
+const cn=id=>(byId('clientes',id)||{}).empresa||'—';
+const vn=id=>(byId('vendedores',id)||{}).nombre||'—';
+const cur=()=>byId('vendedores',S.user)||S.vendedores[0];
+const mgr=()=>cur().rol==='Gerente comercial';
+const sv=()=>mgr()?ui.fv:cur().id;
+const sellers=()=>S.vendedores.filter(v=>v.rol==='Vendedor');
+const uid=p=>p+(++S.seq);
+const okV=v=>!sv()||v===sv();
+const oppS=()=>S.oportunidades.filter(o=>okV(o.vendedor));
+const cliS=()=>S.clientes.filter(c=>okV(c.vendedor));
+const tarS=()=>S.tareas.filter(t=>okV(t.vendedor));
+const actS=()=>S.acts.filter(a=>okV(a.vendedor));
+const contS=()=>S.contactos.filter(p=>okV((byId('clientes',p.cliente)||{}).vendedor));
+const cotS=()=>S.cotizaciones.filter(q=>okV((byId('clientes',q.cliente)||{}).vendedor));
+const ventasMes=(vid,m)=>S.oportunidades.filter(o=>o.etapa==='Ganada'&&(o.cerradaEn||'').startsWith(m)&&(!vid||o.vendedor===vid)).reduce((s,o)=>s+o.valor,0);
+const logAct=(tipo,cliente,vendedor,resultado)=>S.acts.unshift({id:uid('a'),tipo,fecha:today(),cliente,vendedor,resultado});
+const qcalc=(L,p)=>{let sub=0,de=0;L.forEach(l=>{sub+=l.q*l.pr;de+=l.q*l.pr*l.d/100});const b=sub-de,iv=b*p/100;return{sub,desc:de,base:b,iva:iv,total:b+iv}};
+const F=k=>ui.f[ui.view+k]||'';
+function setF(k,v){ui.f[ui.view+k]=v;render()}
+const so=(L,sel)=>L.map(x=>{const a=Array.isArray(x)?x:[x,x];return`<option value="${esc(a[0])}" ${a[0]==sel?'selected':''}>${esc(a[1])}</option>`}).join('');
+const fsel=(k,l,L)=>`<select id="s_${k}" onchange="setF('${k}',this.value)"><option value="">${l}</option>${so(L,F(k))}</select>`;
+const chipE=e=>`<span class="chip ${{Ganada:'ok',Aceptada:'ok',Activo:'ok',Hecha:'ok',Perdida:'bad',Rechazada:'bad',Inactivo:'bad',Enviada:'w',Propuesta:'w','Negociación':'w'}[e]||''}">${esc(e)}</span>`;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200)}
+function modal(h,w){$('#modal').innerHTML=`<div class="box ${w?'wide':''}">${h}</div>`;$('#modal').classList.add('on')}
+function closeM(){$('#modal').classList.remove('on');$('#modal').innerHTML=''}
+function ask(msg,fn,lbl){ask.fn=fn;modal(`<h3>Confirmar</h3><p>${msg}</p><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn danger" onclick="const f=ask.fn;closeM();f()">${lbl||'Eliminar'}</button></div>`)}
+
+const IC={prospeccion:'M11 4a7 7 0 100 14 7 7 0 000-14zM21 21l-5-5M8 11h6M11 8v6',campanas:'M3 11v2a1 1 0 001 1h2l5 4V6L6 10H4a1 1 0 00-1 1zM16 8a5 5 0 010 8M19 5a9 9 0 010 14',dashboard:'M4 13h6V4H4zM14 20h6V4h-6zM4 20h6v-3H4z',clientes:'M4 21V6l8-3 8 3v15M9 21v-5h6v5M9 9h2M13 9h2',contactos:'M12 11a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6',oportunidades:'M3 4h18l-7 8v7l-4 2v-9z',tareas:'M4 5h16v15H4zM8 12l3 3 5-6',cotizaciones:'M6 3h9l4 4v14H6zM9 12h7M9 16h7',productos:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8',equipo:'M4 20V10M10 20V4M16 20v-8M22 20H2',reportes:'M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3',ajustes:'M12 15a3 3 0 100-6 3 3 0 000 6zM4 12h2M18 12h2M12 4v2M12 18v2'};
+const NAV=[['dashboard','Panel gerencial'],['clientes','Clientes'],['contactos','Contactos'],['campanas','Campañas'],['prospeccion','Prospección IA'],['oportunidades','Oportunidades'],['tareas','Tareas'],['cotizaciones','Cotizaciones'],['productos','Productos'],['equipo','Equipo y metas'],['reportes','Reportes'],['ajustes','Ajustes']];
+function go(v,keep){ui.view=v;if(!keep)ui.cli=null;render();window.scrollTo(0,0)}
+function setUser(id){S.user=id;ui.fv='';ui.cli=null;save();render()}
+const fvSel=()=>`<select id="fv" onchange="ui.fv=this.value;render()"><option value="">Todo el equipo</option>${so(sellers().map(v=>[v.id,v.nombre]),ui.fv)}</select>`;
+const head=(t,sub,act,fv)=>`<div class="hd"><div><h1>${t}</h1><p class="mut">${sub}</p></div><div class="ha">${fv&&mgr()?fvSel():''}${act||''}</div></div>`;
+const tbl=(h,rows,emp)=>`<div class="tw"><table><thead><tr>${h.map(x=>`<th ${x[0]==='#'?'class="num"':''}>${x.replace(/^#/,'')}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${h.length}" class="empty">${emp||'Sin registros para mostrar.'}</td></tr>`}</tbody></table></div>`;
+const ico=(n)=>`<svg class="ic" viewBox="0 0 24 24"><path d="${IC[n]}"/></svg>`;
+
+function render(){
+const a=document.activeElement,id=a&&a.id,pos=a&&a.selectionStart;
+$('#nav').innerHTML=NAV.map(([k,t])=>`<button class="${ui.view===k?'on':''}" onclick="go('${k}')"><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg>${t}</button>`).join('');
+$('#usel').innerHTML=S.vendedores.map(v=>`<option value="${v.id}" ${v.id===S.user?'selected':''}>${esc(v.nombre)} · ${v.rol}</option>`).join('');
+$('#main').innerHTML=V[ui.view]();
+if(id){const e=document.getElementById(id);if(e&&e!==a||e&&a){e.focus();try{if(pos!=null)e.setSelectionRange(pos,pos)}catch(x){}}}
+}
+
+const E={
+clientes:{s:'cliente',coll:'clientes',f:[['empresa','Empresa','text',1],['nit','CUIT','text',0],['sector','Sector','select',1,SECT],['ciudad','Ciudad','select',1,CIU],['vendedor','Vendedor asignado','select',1,'V'],['estado','Estado','select',1,['Prospecto','Activo','Inactivo']]]},
+contactos:{s:'contacto',coll:'contactos',f:[['nombre','Nombre','text',1],['cliente','Empresa','select',1,'C'],['cargo','Cargo','text',0],['email','Correo','email',1],['telefono','Teléfono','phone',0]]},
+oportunidades:{s:'oportunidad',coll:'oportunidades',f:[['titulo','Título','text',1],['cliente','Cliente','select',1,'C'],['valor','Valor (ARS)','money',1],['probabilidad','Probabilidad %','number',1],['etapa','Etapa','select',1,ETAPAS],['cierre','Cierre estimado','date',1],['vendedor','Vendedor','select',1,'V'],['motivoPerdida','Motivo de pérdida','textarea',0]]},
+vendedores:{s:'vendedor',coll:'vendedores',f:[['nombre','Nombre','text',1],['email','Correo','email',1],['rol','Rol','select',1,['Vendedor','Gerente comercial']],['ciudad','Ciudad','text',0],['metaMensual','Meta mensual (ARS)','money',1],['estado','Estado','select',1,['Activo','Inactivo']]]},
+tareas:{s:'tarea',coll:'tareas',f:[['titulo','Descripción','text',1],['tipo','Tipo','select',1,TIPOS],['fecha','Fecha','date',1],['cliente','Cliente','select',1,'C'],['opp','Oportunidad (opcional)','select',0,'O'],['vendedor','Responsable','select',1,'V'],['estado','Estado','select',1,['Pendiente','Hecha']],['resultado','Resultado','textarea',0]]},
+productos:{s:'producto',coll:'productos',f:[['sku','SKU','text',1],['nombre','Producto o servicio','text',1],['categoria','Categoría','select',1,['Software','Servicios','Soporte','Hardware']],['precio','Precio (ARS)','money',1],['estado','Estado','select',1,['Activo','Inactivo']]]}
+};
+function optList(o){if(o==='V')return sellers().map(v=>[v.id,v.nombre]);if(o==='C')return S.clientes.map(c=>[c.id,c.empresa]);if(o==='O')return S.oportunidades.map(x=>[x.id,x.titulo]);return o}
+function openForm(ent,id,defs){
+const cfg=E[ent],r=id?byId(cfg.coll,id):(defs||{});
+const fh=cfg.f.map(([k,l,t,req,o])=>{const v=r[k]!=null?r[k]:'';let inp;
+if(t==='select')inp=`<select name="${k}" ${req?'required':''}>${req?'':'<option value="">—</option>'}${so(optList(o),v)}</select>`;
+else if(t==='textarea')inp=`<textarea name="${k}" rows="3">${esc(v)}</textarea>`;
+else inp=`<input name="${k}" type="${{money:'number',number:'number',phone:'tel'}[t]||t}" value="${esc(v)}" ${req?'required':''} ${t==='money'||t==='number'?'min="0"':''}>`;
+return`<label id="w_${k}">${l}${req?' *':''}${inp}</label>`}).join('');
+modal(`<h3>${id?'Editar':'Nuevo/a'} ${cfg.s}</h3><form id="gf" onsubmit="return saveForm(event,'${ent}','${id||''}')"><div class="grid2">${fh}</div><div class="err" id="ferr"></div><div class="btns"><button type="button" class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn">Guardar</button></div></form>`);
+if(ent==='oportunidades'){const fm=$('#gf'),tg=()=>$('#w_motivoPerdida').style.display=fm.etapa.value==='Perdida'?'':'none';fm.etapa.onchange=()=>{fm.probabilidad.value=SUG[fm.etapa.value];tg()};tg()}
+}
+function persist(ent,o,id){const c=E[ent].coll;if(id)Object.assign(byId(c,id),o);else S[c].push(Object.assign({id:uid(PRE[ent])},o))}
+const HOOK={
+oportunidades(o,id){
+if(o.etapa==='Perdida'&&!o.motivoPerdida)return'Indica el motivo de pérdida.';
+if(o.probabilidad>100)return'La probabilidad debe estar entre 0 y 100.';
+const prev=id&&byId('oportunidades',id);
+if(o.etapa==='Ganada'&&(!prev||prev.etapa!=='Ganada'))o.cerradaEn=today();
+if(o.etapa!=='Ganada')o.cerradaEn='';
+if(!id)o.creada=today();
+persist('oportunidades',o,id);
+if(prev&&prev.etapa!==o.etapa)logAct('Sistema',o.cliente,o.vendedor,`Oportunidad "${o.titulo}" pasó de ${prev.etapa} a ${o.etapa}`)},
+tareas(o,id){const op=o.opp&&byId('oportunidades',o.opp);if(op)o.cliente=op.cliente;persist('tareas',o,id)},
+productos(o,id){persist('productos',o,id)}
+};
+function saveForm(e,ent,id){
+e.preventDefault();const fm=e.target,o={};
+E[ent].f.forEach(([k,,t])=>{let v=fm.elements[k].value;if(t==='money'||t==='number')v=v===''?0:Number(v);o[k]=typeof v==='string'?v.trim():v});
+const err=(HOOK[ent]||((o,i)=>persist(ent,o,i)))(o,id);
+if(err){$('#ferr').textContent=err;return false}
+closeM();save();render();toast('Guardado correctamente');return false}
+function del(ent,id){
+const r=byId(E[ent].coll,id);
+ask(ent==='clientes'?`¿Eliminar a <b>${esc(r.empresa)}</b> junto con sus contactos, oportunidades, tareas y cotizaciones?`:`¿Eliminar este registro (${esc(r.nombre||r.titulo||r.sku)})? Esta acción no se puede deshacer.`,()=>{
+if(ent==='clientes'){['contactos','oportunidades','tareas','cotizaciones','acts'].forEach(c=>S[c]=S[c].filter(x=>x.cliente!==id));if(ui.cli===id)ui.cli=null}
+else if(ent==='vendedores'){if(S.clientes.some(c=>c.vendedor===id)||S.oportunidades.some(o=>o.vendedor===id)||id===S.user){toast('No se puede: tiene registros asignados o es el usuario activo');return}}
+S[E[ent].coll]=S[E[ent].coll].filter(x=>x.id!==id);save();render();toast('Registro eliminado')})}
+
+const V={};
+V.dashboard=()=>{
+const o=oppS(),mes=today().slice(0,7),vm=ventasMes(sv(),mes);
+const gan=o.filter(x=>x.etapa==='Ganada').length,per=o.filter(x=>x.etapa==='Perdida').length;
+const ab=o.filter(x=>x.etapa!=='Ganada'&&x.etapa!=='Perdida');
+const pron=ab.reduce((s,x)=>s+x.valor*x.probabilidad/100,0);
+const venc=tarS().filter(t=>t.estado==='Pendiente'&&t.fecha<today()).length;
+const sl=sellers().filter(v=>!sv()||v.id===sv()),meta=sl.reduce((s,v)=>s+v.metaMensual,0),av=meta?vm/meta*100:0;
+const kp=(l,v,h,hot)=>`<div class="kpi ${hot?'hot':''}"><span>${l}</span><b>${v}</b><small>${h}</small></div>`;
+const rows=ETAPAS.map(e=>{const l=o.filter(x=>x.etapa===e);return{e,n:l.length,v:l.reduce((s,x)=>s+x.valor,0)}});
+const mx=Math.max(1,...rows.map(r=>r.v));
+const funnel=`<svg viewBox="0 0 640 ${rows.length*44}" width="100%" role="img" aria-label="Embudo por etapa">${rows.map((r,i)=>{const w=Math.max(4,r.v/mx*360),c=r.e==='Ganada'?'#1f9d74':r.e==='Perdida'?'#b9c6cb':i%2?'var(--ac)':'var(--p)';return`<g style="cursor:pointer" onclick="ui.etapa='${r.e}';go('oportunidades')"><text x="0" y="${i*44+26}" font-size="13" font-weight="700" fill="#12303A">${r.e}</text><rect x="110" y="${i*44+8}" width="${w}" height="26" rx="8" style="fill:${c}"/><text x="${118+w}" y="${i*44+26}" font-size="12" fill="#12303A">${r.n} · ${cop(r.v)}</text></g>`}).join('')}</svg>`;
+const rank=sellers().map(v=>({v,m:ventasMes(v.id,mes)})).sort((a,b)=>b.m-a.m).map(({v,m},i)=>{const p=v.metaMensual?m/v.metaMensual*100:0;return`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${esc(v.nombre)}</b><span>${cop(m)} · ${Math.round(p)}%</span></div><div class="bar"><i class="${p>=100?'':'c'}" style="width:${Math.min(100,p)}%"></i></div><small class="mut">Meta ${cop(v.metaMensual)}</small></div>`}).join('');
+const ag=tarS().filter(t=>t.estado==='Pendiente'&&t.fecha<=today()).sort((a,b)=>a.fecha<b.fecha?-1:1);
+const agh=ag.map(t=>`<div class="row ${t.fecha<today()?'late':'now'}"><div class="grow"><b>${esc(t.titulo)}</b><div class="mut">${t.tipo} · ${esc(cn(t.cliente))} · ${t.fecha<today()?'Vencida '+fd(t.fecha):'Hoy'}</div></div><button class="btn sm sec" onclick="quickDone('${t.id}')">Hecha</button></div>`).join('')||'<div class="empty">Sin tareas pendientes para hoy. ¡Buen trabajo!</div>';
+return head('Panel gerencial',`Hola, ${esc(cur().nombre)} · ${mgr()?'vista del equipo':'tus cifras'}`,'<button class="btn" onclick="openForm(\'oportunidades\',null,newOpp())">Crear oportunidad</button>',1)+
+`<div class="demo">Demo preparada por Ideonapp para Big Fidelity · datos de ejemplo ficticios</div><div class="kpis">`+
+kp('Ventas ganadas del mes',cop(vm),'oportunidades ganadas en '+mes)+
+kp('Tasa de cierre',(gan+per?Math.round(gan/(gan+per)*100):0)+'%',gan+' ganadas · '+per+' perdidas')+
+kp('Pronóstico ponderado',cop(pron),'valor × probabilidad')+
+kp('Oportunidades abiertas',ab.length,cop(ab.reduce((s,x)=>s+x.valor,0))+' en juego')+
+kp('Tareas vencidas',venc,'requieren atención',venc>0)+
+kp('Avance de meta',Math.round(av)+'%','meta '+cop(meta))+
+`</div><div class="g2"><div><div class="card"><h2>Embudo por etapa</h2>${funnel}<small class="mut">Clic en una etapa para ver el tablero filtrado.</small></div></div><div>${mgr()?`<div class="card"><h2>Ranking de vendedores</h2>${rank}</div>`:''}<div class="card"><h2>Agenda de hoy</h2>${agh}</div></div></div>`};
+const newOpp=()=>({probabilidad:10,etapa:'Prospecto',cierre:dd(30),vendedor:sv()||'v2',cliente:(S.clientes[0]||{}).id,valor:0});
+function quickDone(id){completeTask(id,'Completada desde la agenda')}
+function completeTask(id,res){const t=byId('tareas',id);t.estado='Hecha';t.resultado=res||t.resultado;logAct(t.tipo,t.cliente,t.vendedor,res||t.titulo);save();render();toast('Tarea completada')}
+
+V.clientes=()=>{
+if(ui.cli)return cliDetail();
+const q=F('q').toLowerCase();
+const L=cliS().filter(c=>(!F('sec')||c.sector===F('sec'))&&(!F('ciu')||c.ciudad===F('ciu'))&&(!F('est')||c.estado===F('est'))&&(!q||(c.empresa+c.nit).toLowerCase().includes(q)));
+return head('Clientes','Cartera de empresas',`<button class="btn" onclick="openForm('clientes',null,{vendedor:sv()||'v2',estado:'Prospecto'})">+ Nuevo cliente</button>`,1)+
+`<div class="card"><div class="fb"><input id="fq" placeholder="Buscar empresa o CUIT…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('sec','Sector',SECT)}${fsel('ciu','Ciudad',CIU)}${fsel('est','Estado',['Prospecto','Activo','Inactivo'])}</div>`+
+tbl(['Empresa','NIT','Sector','Ciudad','Estado','Vendedor','Oport. abiertas',''],L.map(c=>{const n=S.oportunidades.filter(o=>o.cliente===c.id&&o.etapa!=='Ganada'&&o.etapa!=='Perdida').length;return`<tr class="cl" onclick="ui.cli='${c.id}';render()"><td><b>${esc(c.empresa)}</b></td><td>${esc(c.nit)}</td><td>${c.sector}</td><td>${c.ciudad}</td><td>${chipE(c.estado)}</td><td>${esc(vn(c.vendedor))}</td><td>${n}</td><td class="acts" onclick="event.stopPropagation()"><button class="btn sm ghost" onclick="openForm('clientes','${c.id}')">Editar</button><button class="btn sm ghost" onclick="del('clientes','${c.id}')">Eliminar</button></td></tr>`}).join(''))+`</div>`};
+function cliDetail(){
+const c=byId('clientes',ui.cli);if(!c){ui.cli=null;return V.clientes()}
+const cs=S.contactos.filter(p=>p.cliente===c.id),os=S.oportunidades.filter(o=>o.cliente===c.id),qs=S.cotizaciones.filter(q=>q.cliente===c.id),as=S.acts.filter(a=>a.cliente===c.id).sort((a,b)=>a.fecha<b.fecha?1:-1);
+return head(esc(c.empresa),`${c.sector} · ${c.ciudad} · CUIT ${esc(c.nit||'—')} · ${esc(vn(c.vendedor))}`,`<button class="btn ghost" onclick="ui.cli=null;render()">← Volver</button><button class="btn ghost" onclick="openForm('clientes','${c.id}')">Editar</button><button class="btn" onclick="actModal('${c.id}')">Registrar actividad</button>`)+
+`<div class="g2"><div><div class="card"><div style="display:flex;justify-content:space-between"><h2>Contactos</h2><button class="btn sm sec" onclick="openForm('contactos',null,{cliente:'${c.id}'})">+ Agregar</button></div>${tbl(['Nombre','Cargo','Correo','Teléfono',''],cs.map(p=>`<tr><td><b>${esc(p.nombre)}</b></td><td>${esc(p.cargo)}</td><td>${esc(p.email)}</td><td>${esc(p.telefono)}</td><td class="acts"><button class="btn sm ghost" onclick="openForm('contactos','${p.id}')">Editar</button><button class="btn sm ghost" onclick="del('contactos','${p.id}')">Borrar</button></td></tr>`).join(''),'Sin contactos.')}</div>
+<div class="card"><h2>Oportunidades</h2>${tbl(['Título','Etapa','#Valor'],os.map(o=>`<tr class="cl" onclick="openForm('oportunidades','${o.id}')"><td>${esc(o.titulo)}</td><td>${chipE(o.etapa)}</td><td class="num">${cop(o.valor)}</td></tr>`).join(''),'Sin oportunidades.')}</div>
+<div class="card"><h2>Cotizaciones</h2>${tbl(['Número','Fecha','Estado','#Total'],qs.map(q=>`<tr class="cl" onclick="qView('${q.id}')"><td><b>${q.numero}</b></td><td>${fd(q.fecha)}</td><td>${chipE(q.estado)}</td><td class="num">${cop(q.total)}</td></tr>`).join(''),'Sin cotizaciones.')}</div></div>
+<div class="card"><h2>Línea de tiempo</h2><div class="tl">${as.map(a=>`<div><b>${a.tipo}</b> · <span class="mut">${fd(a.fecha)} · ${esc(vn(a.vendedor))}</span><br>${esc(a.resultado)}</div>`).join('')||'<span class="mut">Sin actividades registradas.</span>'}</div></div></div>`}
+function actModal(cid){
+modal(`<h3>Registrar actividad</h3><form onsubmit="return saveAct(event)"><label>Cliente<select name="cliente">${so(S.clientes.map(c=>[c.id,c.empresa]),cid)}</select></label><div class="grid2"><label>Tipo<select name="tipo">${so(TIPOS)}</select></label><label>Fecha<input type="date" name="fecha" value="${today()}" required></label></div><label>Resultado<textarea name="resultado" rows="3" required></textarea></label><div class="btns"><button type="button" class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn">Guardar</button></div></form>`)}
+function saveAct(e){e.preventDefault();const f=e.target.elements,c=byId('clientes',f.cliente.value);S.acts.unshift({id:uid('a'),tipo:f.tipo.value,fecha:f.fecha.value,cliente:c.id,vendedor:mgr()?c.vendedor:cur().id,resultado:f.resultado.value.trim()});closeM();save();render();toast('Actividad registrada');return false}
+
+V.contactos=()=>{
+const q=F('q').toLowerCase();
+const L=contS().filter(p=>(!F('e')||p.cliente===F('e'))&&(!q||(p.nombre+p.email+p.cargo+cn(p.cliente)).toLowerCase().includes(q)));
+return head('Contactos','Directorio de personas por empresa',`<button class="btn ghost" onclick="expModal()">Exportar</button><button class="btn sec" onclick="go('campanas');campForm()">Crear campaña</button><button class="btn" onclick="openForm('contactos',null,{cliente:(cliS()[0]||{}).id})">+ Nuevo contacto</button>`,1)+
+`<div class="card"><div class="fb"><input id="fq" placeholder="Buscar nombre, cargo o correo…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('e','Empresa',cliS().map(c=>[c.id,c.empresa]))}</div>`+
+tbl(['Nombre','Empresa','Cargo','Correo','Teléfono',''],L.map(p=>{const w='57'+(p.telefono||'').replace(/\D/g,'');return`<tr><td><b>${esc(p.nombre)}</b></td><td>${esc(cn(p.cliente))}</td><td>${esc(p.cargo)}</td><td><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></td><td>${esc(p.telefono)}</td><td class="acts">${p.telefono?`<a class="btn sm sec" target="_blank" rel="noopener" href="https://wa.me/${w}">WhatsApp</a>`:''}<button class="btn sm ghost" onclick="openForm('contactos','${p.id}')">Editar</button><button class="btn sm ghost" onclick="del('contactos','${p.id}')">Eliminar</button></td></tr>`}).join(''))+`</div>`};
+
+
+/* Campañas de ejemplo: una enviada con resultados y un borrador. */
+function seedCamp(s){
+const act=s.clientes.filter(c=>c.estado==='Activo').map(c=>c.id);
+let P=s.contactos.filter(p=>act.includes(p.cliente)&&p.email);if(P.length<6)P=s.contactos.filter(p=>p.email);P=P.slice(0,10);
+const dest=P.map((p,i)=>({p:p.id,c:p.cliente,st:i%3===0?'Respondió':'Enviado',opp:''}));
+const o=s.oportunidades.find(x=>dest.some(d=>d.c===x.cliente)&&x.etapa!=='Ganada'&&x.etapa!=='Perdida');
+if(o){o.campana='k1';const d=dest.find(d=>d.c===o.cliente);d.opp=o.id;d.st='Respondió'}
+return[{id:'k1',creador:'v1',nombre:'Lanzamiento: tarjeta de fidelidad en el celular',canal:'Correo',seg:{estado:'Activo'},asunto:'{nombre}, ¿sabés quiénes son los mejores clientes de {empresa}?',mensaje:'Hola {nombre},\n\nCon Big Fidelity tus clientes suman puntos y sellos desde Google y Apple Wallet, y vos sabés quién vuelve y quién no.\n\n¿Te muestro en 15 minutos cómo quedaría el programa de {empresa}?\n\nSaludos,\n{vendedor}',prog:'',estado:'Enviada',fecha:dd(-6),dest},
+{id:'k2',creador:'v1',nombre:'Puntos dobles para cafeterías',canal:'WhatsApp',seg:{estado:'Activo',sector:'Cafeterías'},asunto:'',mensaje:'Hola {nombre} 👋, soy {vendedor} de Big Fidelity. Este mes activamos una campaña de puntos dobles para {empresa} sin costo extra si renuevan el plan. ¿Te cuento?',prog:'',estado:'Borrador',fecha:'',dest:[]}]}
+
+/* ===== Exportar contactos y campañas (correo / WhatsApp) ===== */
+const CANALES=['Correo','WhatsApp'];
+const VARS=[['{nombre}','Nombre'],['{empresa}','Empresa'],['{cargo}','Cargo'],['{vendedor}','Vendedor']];
+const chipK=e=>`<span class="chip ${{Importada:'ok',Enviada:'ok',Respondió:'ok',Programada:'w',Borrador:'',Enviado:''}[e]||''}">${esc(e)}</span>`;
+const pCli=p=>byId('clientes',p.cliente)||{};
+const perso=(t,p)=>String(t||'').replace(/\{nombre\}/g,(p.nombre||'').split(' ')[0]).replace(/\{empresa\}/g,cn(p.cliente)).replace(/\{cargo\}/g,p.cargo||'').replace(/\{vendedor\}/g,vn(pCli(p).vendedor));
+const waNum=p=>'57'+String(p.telefono||'').replace(/\D/g,'');
+function dl(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+
+/* --- Exportar contactos --- */
+function contFiltrados(){const q=(ui.f.contactosq||'').toLowerCase(),e=ui.f.contactose||'';return contS().filter(p=>(!e||p.cliente===e)&&(!q||(p.nombre+p.email+p.cargo+cn(p.cliente)).toLowerCase().includes(q)))}
+function expModal(){
+const nf=contFiltrados().length,nt=contS().length;
+modal(`<h3>Exportar contactos</h3><p class="mut">Descarga tus contactos para usarlos en Excel, en el celular o en otra herramienta.</p>
+<label>¿Qué contactos?<select id="xs"><option value="f">Los que ves con los filtros actuales (${nf})</option><option value="t">Todos mis contactos (${nt})</option></select></label>
+<div class="grid3" style="margin-top:12px">
+<button class="btn" onclick="expCont('csv')">Excel / CSV</button>
+<button class="btn sec" onclick="expCont('vcf')">vCard (celular, Gmail, Outlook)</button>
+<button class="btn ghost" onclick="expCont('mail')">Copiar correos</button></div>
+<div class="btns"><button class="btn ghost" onclick="closeM()">Cerrar</button></div>`)}
+function expCont(fmt){
+const L=$('#xs').value==='t'?contS():contFiltrados();
+if(!L.length){toast('No hay contactos para exportar');return}
+if(fmt==='csv'){const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
+const rows=[['Nombre','Empresa','Cargo','Correo','Teléfono','Ciudad','Sector','Estado del cliente','Vendedor']].concat(L.map(p=>{const c=pCli(p);return[p.nombre,c.empresa,p.cargo,p.email,p.telefono,c.ciudad,c.sector,c.estado,vn(c.vendedor)]}));
+dl('contactos-'+today()+'.csv','﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n'),'text/csv;charset=utf-8')}
+else if(fmt==='vcf'){const v=s=>String(s||'').replace(/[,;\\]/g,m=>'\\'+m);
+dl('contactos-'+today()+'.vcf',L.map(p=>{const n=(p.nombre||'').split(' '),fn=n.shift(),ln=n.join(' ');return['BEGIN:VCARD','VERSION:3.0',`N:${v(ln)};${v(fn)};;;`,`FN:${v(p.nombre)}`,`ORG:${v(cn(p.cliente))}`,p.cargo?`TITLE:${v(p.cargo)}`:'',p.email?`EMAIL;TYPE=WORK:${p.email}`:'',p.telefono?`TEL;TYPE=CELL:+${waNum(p)}`:'','END:VCARD'].filter(Boolean).join('\r\n')}).join('\r\n'),'text/vcard;charset=utf-8')}
+else{const t=L.map(p=>p.email).filter(Boolean).join('; ');try{navigator.clipboard.writeText(t)}catch(e){}closeM();toast(L.length+' correos copiados');return}
+closeM();toast(L.length+' contactos exportados')}
+
+/* --- Campañas --- */
+const kS=()=>S.campanas.filter(k=>mgr()||k.creador===cur().id);
+const oppK=id=>S.oportunidades.filter(o=>o.campana===id);
+/** Destinatarios del segmento: contactos visibles que cumplen los filtros y tienen el dato del canal. */
+function segC(sg,canal){
+return contS().filter(p=>{const c=pCli(p);
+if(sg.sector&&c.sector!==sg.sector)return false;if(sg.ciudad&&c.ciudad!==sg.ciudad)return false;if(sg.estado&&c.estado!==sg.estado)return false;
+if(sg.vendedor&&c.vendedor!==sg.vendedor)return false;if(sg.cargo&&!(p.cargo||'').toLowerCase().includes(sg.cargo.toLowerCase()))return false;
+if(sg.etapa&&!S.oportunidades.some(o=>o.cliente===c.id&&o.etapa===sg.etapa))return false;
+return canal==='WhatsApp'?Boolean(p.telefono):Boolean(p.email)})}
+function segTxt(sg){const t=[sg.sector,sg.ciudad,sg.estado&&('clientes '+sg.estado.toLowerCase()+'s'),sg.etapa&&('oportunidad en '+sg.etapa),sg.vendedor&&vn(sg.vendedor),sg.cargo&&('cargo «'+sg.cargo+'»')].filter(Boolean);return t.length?t.join(' · '):'Todos mis contactos'}
+function autoProg(){let n=0;S.campanas.forEach(k=>{if(k.estado==='Programada'&&k.prog&&k.prog<=today()){enviarK(k,true);n++}});if(n)save()}
+
+V.campanas=()=>{autoProg();
+const L=kS(),env=L.filter(k=>k.estado==='Enviada'),dest=env.reduce((s,k)=>s+k.dest.length,0),resp=env.reduce((s,k)=>s+k.dest.filter(d=>d.st==='Respondió').length,0);
+const ops=L.reduce((s,k)=>s+oppK(k.id).length,0),val=L.reduce((s,k)=>s+oppK(k.id).reduce((a,o)=>a+o.valor,0),0);
+return head('Campañas','Correos y mensajes de WhatsApp a segmentos de tus contactos',`<button class="btn" onclick="campForm()">+ Nueva campaña</button>`)+
+`<div class="kpis"><div class="kpi"><span>Campañas enviadas</span><b>${env.length}</b></div><div class="kpi"><span>Contactos alcanzados</span><b>${dest}</b></div><div class="kpi hot"><span>Tasa de respuesta</span><b>${dest?Math.round(resp/dest*100):0}%</b></div><div class="kpi"><span>Oportunidades generadas</span><b>${ops} · ${cop(val)}</b></div></div>
+<div class="card">`+tbl(['Campaña','Canal','Segmento','Estado','#Destinatarios','#Respuestas','#Oportunidades',''],L.slice().sort((a,b)=>(b.fecha||b.prog||'9').localeCompare(a.fecha||a.prog||'9')).map(k=>{const r=k.dest.filter(d=>d.st==='Respondió').length;
+return`<tr><td><b>${esc(k.nombre)}</b><br><span class="mut">${k.estado==='Enviada'?'Enviada el '+fd(k.fecha):k.estado==='Programada'?'Programada para el '+fd(k.prog):'Borrador'}</span></td><td>${chipK(k.canal)}</td><td>${esc(segTxt(k.seg))}</td><td>${chipK(k.estado)}</td><td class="num">${k.estado==='Enviada'?k.dest.length:segC(k.seg,k.canal).length}</td><td class="num">${k.estado==='Enviada'?r:'—'}</td><td class="num">${oppK(k.id).length}</td>
+<td class="acts">${k.estado==='Enviada'?`<button class="btn sm sec" onclick="campVer('${k.id}')">Ver resultados</button>`:`<button class="btn sm sec" onclick="campForm('${k.id}')">Editar</button>`}<button class="btn sm ghost" onclick="campDup('${k.id}')">Duplicar</button><button class="btn sm ghost" onclick="campDel('${k.id}')">Eliminar</button></td></tr>`}).join(''),'Aún no hay campañas. Crea la primera con «+ Nueva campaña».')+`</div>
+<div class="card"><h2>Cómo funciona</h2><p class="mut">Elige a quién escribir con filtros (sector, ciudad, estado, etapa de la oportunidad, cargo), redacta el mensaje con variables como {nombre} o {empresa} y envíalo o prográmalo. Cada envío queda en el historial del cliente; marca quién respondió y convierte las respuestas en oportunidades. <b>Demostración:</b> el envío se simula; en tu versión se conecta a tu correo (Gmail, Outlook o SMTP) o a WhatsApp Business.</p></div>`};
+
+function campForm(id){
+const k=id?S.campanas.find(x=>x.id===id):{nombre:'',canal:'Correo',seg:{},asunto:'',mensaje:'Hola {nombre},\n\n',prog:''};const sg=k.seg||{};
+modal(`<h3>${id?'Editar campaña':'Nueva campaña'}</h3><form id="cf" onsubmit="return false" oninput="campPrev()" onchange="campPrev()">
+<div class="grid2"><label>Nombre *<input name="nombre" value="${esc(k.nombre)}" required placeholder="Ej.: Lanzamiento de servicio"></label><label>Canal<select name="canal">${so(CANALES,k.canal)}</select></label></div>
+<h2 style="margin:10px 0 4px;font-size:14px">¿A quién? (segmento)</h2>
+<div class="grid3"><label>Sector<select name="sector"><option value="">Todos</option>${so(SECT,sg.sector)}</select></label><label>Ciudad<select name="ciudad"><option value="">Todas</option>${so(CIU,sg.ciudad)}</select></label><label>Estado del cliente<select name="estado"><option value="">Todos</option>${so(['Prospecto','Activo','Inactivo'],sg.estado)}</select></label>
+<label>Con oportunidad en<select name="etapa"><option value="">Cualquier etapa</option>${so(ETAPAS,sg.etapa)}</select></label>${mgr()?`<label>Vendedor<select name="vendedor"><option value="">Todo el equipo</option>${so(sellers().map(v=>[v.id,v.nombre]),sg.vendedor)}</select></label>`:''}<label>Cargo contiene<input name="cargo" value="${esc(sg.cargo||'')}" placeholder="Ej.: Gerente"></label></div>
+<h2 style="margin:10px 0 4px;font-size:14px">Mensaje</h2>
+<label id="w_asunto">Asunto<input name="asunto" value="${esc(k.asunto||'')}" placeholder="Ej.: {nombre}, una idea para {empresa}"></label>
+<label>Texto *<textarea name="mensaje" rows="6" required>${esc(k.mensaje)}</textarea></label>
+<div class="fb" style="margin:6px 0 0">${VARS.map(([v,l])=>`<button type="button" class="btn sm ghost" onclick="insVar('${v}')">+ ${l}</button>`).join('')}</div>
+<label style="max-width:260px">Programar envío (opcional)<input type="date" name="prog" min="${today()}" value="${esc(k.prog||'')}"></label>
+<div class="card" style="margin:10px 0 0;background:#f6fafb"><b id="cpN"></b><div id="cpP" class="mut" style="white-space:pre-wrap;margin-top:6px"></div></div>
+<div class="err" id="cerr"></div>
+<div class="btns"><button type="button" class="btn ghost" onclick="closeM()">Cancelar</button><button type="button" class="btn sec" onclick="campGuardar('${id||''}',false)">Guardar borrador</button><button type="button" class="btn" id="cbtn" onclick="campGuardar('${id||''}',true)">Enviar ahora</button></div></form>`,1);
+campPrev()}
+function insVar(v){const t=$('#cf').mensaje,s=t.selectionStart||t.value.length;t.value=t.value.slice(0,s)+v+t.value.slice(t.selectionEnd||s);t.focus();t.setSelectionRange(s+v.length,s+v.length);campPrev()}
+function campLeer(){const f=$('#cf').elements;return{nombre:f.nombre.value.trim(),canal:f.canal.value,asunto:f.asunto.value.trim(),mensaje:f.mensaje.value,prog:f.prog.value,seg:{sector:f.sector.value,ciudad:f.ciudad.value,estado:f.estado.value,etapa:f.etapa.value,vendedor:f.vendedor?f.vendedor.value:'',cargo:f.cargo.value.trim()}}}
+function campPrev(){const k=campLeer(),L=segC(k.seg,k.canal),p=L[0];
+$('#w_asunto').style.display=k.canal==='Correo'?'':'none';
+$('#cpN').textContent=L.length+(L.length===1?' destinatario':' destinatarios')+' · '+segTxt(k.seg)+(k.canal==='WhatsApp'?' (con teléfono)':' (con correo)');
+$('#cpP').textContent=p?('Vista previa para '+p.nombre+' ('+cn(p.cliente)+'):\n\n'+(k.canal==='Correo'?'Asunto: '+perso(k.asunto,p)+'\n\n':'')+perso(k.mensaje,p)):'Ningún contacto cumple este segmento.';
+$('#cbtn').textContent=k.prog&&k.prog>today()?'Programar envío':'Enviar ahora'}
+function campGuardar(id,enviar){
+const k=campLeer();
+if(!k.nombre){$('#cerr').textContent='Ponle un nombre a la campaña.';return}
+if(!k.mensaje.trim()||k.mensaje.trim()==='Hola {nombre},'){$('#cerr').textContent='Escribe el mensaje.';return}
+if(k.canal==='Correo'&&!k.asunto&&enviar){$('#cerr').textContent='Escribe el asunto del correo.';return}
+if(enviar&&!segC(k.seg,k.canal).length){$('#cerr').textContent='Ningún contacto cumple el segmento.';return}
+let r=id&&S.campanas.find(x=>x.id===id);
+if(!r){r={id:uid('k'),creador:cur().id,estado:'Borrador',fecha:'',dest:[]};S.campanas.push(r)}
+Object.assign(r,k);
+if(enviar&&k.prog&&k.prog>today()){r.estado='Programada';closeM();save();render();toast('Campaña programada para el '+fd(k.prog));return}
+if(enviar){enviarK(r);closeM();save();render();toast('Campaña enviada a '+r.dest.length+' contactos (simulado)');campVer(r.id);return}
+r.estado='Borrador';closeM();save();render();toast('Borrador guardado')}
+function enviarK(r,auto){
+r.dest=segC(r.seg,r.canal).map(p=>({p:p.id,c:p.cliente,st:'Enviado',opp:''}));r.estado='Enviada';r.fecha=today();
+[...new Set(r.dest.map(d=>d.c))].forEach(c=>logAct(r.canal,c,(byId('clientes',c)||{}).vendedor,`Campaña «${r.nombre}» enviada por ${r.canal.toLowerCase()}${auto?' (programada)':''}`))}
+function campVer(id){
+const k=S.campanas.find(x=>x.id===id);if(!k)return;const r=k.dest.filter(d=>d.st==='Respondió').length,o=oppK(k.id);
+modal(`<h3>${esc(k.nombre)}</h3><p class="mut">${chipK(k.canal)} · Enviada el ${fd(k.fecha)} · ${esc(segTxt(k.seg))}</p>
+<div class="kpis" style="margin-top:12px"><div class="kpi"><span>Enviados</span><b>${k.dest.length}</b></div><div class="kpi hot"><span>Respondieron</span><b>${r} (${k.dest.length?Math.round(r/k.dest.length*100):0}%)</b></div><div class="kpi"><span>Oportunidades</span><b>${o.length} · ${cop(o.reduce((s,x)=>s+x.valor,0))}</b></div></div>
+<details style="margin-bottom:10px"><summary class="mut" style="cursor:pointer">Ver mensaje</summary><div class="mut" style="white-space:pre-wrap;margin-top:6px">${k.canal==='Correo'?'<b>Asunto:</b> '+esc(k.asunto)+'\n\n':''}${esc(k.mensaje)}</div></details>`+
+tbl(['Contacto','Empresa','Estado',''],k.dest.map(d=>{const p=byId('contactos',d.p);if(!p)return'';const m=perso(k.mensaje,p);
+const lnk=k.canal==='WhatsApp'?`<a class="btn sm sec" target="_blank" rel="noopener" href="https://wa.me/${waNum(p)}?text=${encodeURIComponent(m)}">Abrir WhatsApp</a>`:`<a class="btn sm sec" href="mailto:${esc(p.email)}?subject=${encodeURIComponent(perso(k.asunto,p))}&body=${encodeURIComponent(m)}">Abrir correo</a>`;
+return`<tr><td><b>${esc(p.nombre)}</b><br><span class="mut">${esc(p.cargo||'')}</span></td><td>${esc(cn(p.cliente))}</td><td>${chipK(d.st)}${d.opp?' '+chipK('Oportunidad'):''}</td>
+<td class="acts">${lnk}<button class="btn sm ghost" onclick="campResp('${k.id}','${p.id}')">${d.st==='Respondió'?'Quitar respuesta':'Respondió'}</button>${d.opp?'':`<button class="btn sm" onclick="campOpp('${k.id}','${p.id}')">Crear oportunidad</button>`}</td></tr>`}).join(''),'Esta campaña no tiene destinatarios.')+
+`<div class="btns"><button class="btn ghost" onclick="campCsv('${k.id}')">Exportar resultados (CSV)</button><button class="btn" onclick="closeM()">Cerrar</button></div>`,1)}
+function campResp(kid,pid){const k=S.campanas.find(x=>x.id===kid),d=k.dest.find(x=>x.p===pid),p=byId('contactos',pid);
+d.st=d.st==='Respondió'?'Enviado':'Respondió';if(d.st==='Respondió')logAct(k.canal,d.c,(byId('clientes',d.c)||{}).vendedor,`${p?p.nombre:'Contacto'} respondió a la campaña «${k.nombre}»`);save();campVer(kid);render()}
+function campOpp(kid,pid){const k=S.campanas.find(x=>x.id===kid),p=byId('contactos',pid),c=pCli(p);ui.campOpp={k:kid,p:pid};
+openForm('oportunidades',null,{cliente:c.id,titulo:'Campaña «'+k.nombre+'» · '+c.empresa,valor:0,probabilidad:SUG.Contactado,etapa:'Contactado',cierre:dd(30),vendedor:c.vendedor})}
+function campDup(id){const k=S.campanas.find(x=>x.id===id);S.campanas.push({id:uid('k'),creador:cur().id,nombre:k.nombre+' (copia)',canal:k.canal,seg:Object.assign({},k.seg),asunto:k.asunto,mensaje:k.mensaje,prog:'',estado:'Borrador',fecha:'',dest:[]});save();render();toast('Campaña duplicada como borrador')}
+function campDel(id){const k=S.campanas.find(x=>x.id===id);ask(`¿Eliminar la campaña <b>${esc(k.nombre)}</b>? Las oportunidades que generó se conservan.`,()=>{S.campanas=S.campanas.filter(x=>x.id!==id);save();render();toast('Campaña eliminada')})}
+function campCsv(id){const k=S.campanas.find(x=>x.id===id),q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
+const rows=[['Contacto','Empresa','Correo','Teléfono','Estado','Oportunidad']].concat(k.dest.map(d=>{const p=byId('contactos',d.p)||{},o=d.opp&&byId('oportunidades',d.opp);return[p.nombre,cn(d.c),p.email,p.telefono,d.st,o?o.titulo+' ('+cop(o.valor)+')':'']}));
+dl('campana-'+noacc(k.nombre).toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.csv','﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n'),'text/csv;charset=utf-8');toast('Resultados exportados')}
+/* Las oportunidades creadas desde una campaña quedan vinculadas a ella. */
+const _hookOpp=HOOK.oportunidades;
+HOOK.oportunidades=function(o,id){const cp=!id&&ui.campOpp;if(cp)o.campana=cp.k;const err=_hookOpp(o,id);
+if(!err&&cp){const op=S.oportunidades[S.oportunidades.length-1],k=S.campanas.find(x=>x.id===cp.k),d=k&&k.dest.find(x=>x.p===cp.p);if(d){d.opp=op.id;d.st='Respondió'}ui.campOpp=null}return err};
+const _closeM=closeM;closeM=function(){ui.campOpp=null;_closeM()};
+
+/* ===== Prospección con IA (demostración: resultados ficticios) ===== */
+const PROS_N=['Andina','Del Valle','Central','La Esquina','Horizonte','El Puente','Sol y Luna','Nova','Prado','Altamira'];
+function prosGen(q,ciudad){const k=q.trim()||'Comercial',K=k.charAt(0).toUpperCase()+k.slice(1);
+return PROS_N.slice(0,8).map((nm,i)=>{const slug=noacc((k+'-'+nm).toLowerCase()).replace(/[^a-z0-9]+/g,'-');
+return{empresa:K+' '+nm,ciudad,direccion:'Calle ficticia '+(10+i*7)+' # '+(20+i)+'-'+(5+i),telefono:'11 5555 '+(1000+i*37),whatsapp:i%2?'11 6555 '+(2000+i*41):'',correo:i%3===2?'':'contacto@'+slug+'.ejemplo.test',web:'https://'+slug+'.ejemplo.test/',fuente:'https://'+slug+'.ejemplo.test/contacto',nota:['Atiende empresas y hogares; horario extendido.','Tiene varias sedes en la ciudad.','Publica catálogo en línea, sin tienda virtual.','Empresa familiar con más de 15 años.'][i%4]}})}
+V.prospeccion=()=>{const P=ui.pros||{};
+return head('Prospección con IA','Encuentra empresas y sus datos de contacto en la web para llenar tu embudo')+
+`<div class="card"><form class="fb" onsubmit="return prosBuscar(event)" style="align-items:flex-end">
+<label style="margin:0;flex:2;min-width:220px">¿Qué empresas buscas?<input id="pq" value="${esc(P.q||'')}" placeholder="Ej.: ferreterías, clínicas dentales, colegios" required minlength="3"></label>
+<label style="margin:0;flex:1;min-width:160px">Ciudad<select id="pc">${so(CIU,P.ciudad||'Buenos Aires')}</select></label>
+<label style="margin:0;flex:1;min-width:160px">Sector en el CRM<select id="ps">${so(SECT,P.sector||'Retail')}</select></label>
+<button class="btn" id="pb" ${P.busy?'disabled':''}>${P.busy?'Buscando…':'Buscar con IA'}</button></form>
+<p class="mut">Demostración: los resultados son ficticios para mostrar el flujo. En tu CRM, la IA busca en la web en tiempo real, abre la web de cada empresa y cita la fuente de cada dato (sin LinkedIn ni redes sociales).</p></div>`+
+(P.busy?`<div class="card"><p><b>La IA está buscando en la web…</b></p><p class="mut">Consulta buscadores y abre la web oficial de cada empresa para confirmar sus datos. Suele tardar menos de un minuto.</p></div>`:'')+
+(P.res&&!P.busy?`<div class="card"><div class="fb" style="justify-content:space-between;align-items:center"><b>${P.res.length} empresas encontradas: ${esc(P.q)} en ${esc(P.ciudad)}</b><span class="ha"><button class="btn sm ghost" onclick="prosSel(true)">Seleccionar todas</button><button class="btn sm" onclick="prosImportar()">Importar seleccionadas</button></span></div>`+
+tbl(['','Empresa','Contacto','Web y fuente','Nota',''],P.res.map((r,i)=>{const dup=prosDup(r);return`<tr><td>${r.importada||dup?'':`<input type="checkbox" ${r.sel?'checked':''} onchange="ui.pros.res[${i}].sel=this.checked" aria-label="Seleccionar ${esc(r.empresa)}">`}</td>
+<td><b>${esc(r.empresa)}</b><br><span class="mut">${esc(r.direccion)} · ${esc(r.ciudad)}</span></td>
+<td>${r.correo?esc(r.correo)+'<br>':''}${esc(r.telefono)}${r.whatsapp?'<br>WhatsApp '+esc(r.whatsapp):''}</td>
+<td><a href="${esc(r.web)}" target="_blank" rel="noopener">${esc(r.web.replace(/^https?:\/\//,'').replace(/\/$/,''))}</a><br><a class="mut" href="${esc(r.fuente)}" target="_blank" rel="noopener">fuente</a></td><td class="mut">${esc(r.nota)}</td>
+<td>${r.importada?chipK('Importada'):dup?'<span class="chip">Ya está en el CRM</span>':`<button class="btn sm sec" onclick="prosImportar(${i})">Importar</button>`}</td></tr>`}).join(''))+
+(P.res.some(r=>r.importada)?`<div class="btns"><button class="btn sec" onclick="go('campanas');campForm();setTimeout(()=>{const f=$('#cf');if(f){f.estado.value='Prospecto';f.nombre.value='Presentación a prospectos de '+(ui.pros.q||'');campPrev()}},50)">Crear campaña para los importados</button></div>`:'')+`</div>`:'')};
+function prosBuscar(e){e.preventDefault();const q=$('#pq').value.trim();if(q.length<3)return false;
+ui.pros={q,ciudad:$('#pc').value,sector:$('#ps').value,busy:true};render();
+setTimeout(()=>{ui.pros.busy=false;ui.pros.res=prosGen(q,ui.pros.ciudad);render()},1600);return false}
+const prosDup=r=>S.clientes.some(c=>noacc(c.empresa.toLowerCase())===noacc(r.empresa.toLowerCase())||(r.web&&c.web===r.web));
+function prosSel(v){(ui.pros.res||[]).forEach(r=>{if(!r.importada&&!prosDup(r))r.sel=v});render()}
+function prosImportar(i){const L=i==null?ui.pros.res.filter(r=>r.sel&&!r.importada&&!prosDup(r)):[ui.pros.res[i]];
+if(!L.length){toast('Selecciona al menos una empresa');return}
+const vend=mgr()?(sellers()[0]||cur()).id:cur().id;
+L.forEach(r=>{const cid=uid('c');S.clientes.push({id:cid,empresa:r.empresa,nit:'',sector:ui.pros.sector,ciudad:r.ciudad,vendedor:vend,estado:'Prospecto',web:r.web,origen:'Prospección IA',fuente:r.fuente});
+if(r.correo||r.telefono)S.contactos.push({id:uid('p'),nombre:'Contacto general',cliente:cid,cargo:'Atención comercial',email:r.correo,telefono:r.whatsapp||r.telefono});
+logAct('Sistema',cid,vend,'Empresa importada desde Prospección IA · fuente: '+r.fuente);r.importada=true;r.sel=false});
+save();render();toast(L.length+(L.length===1?' empresa importada':' empresas importadas')+' como prospecto')}
+
+V.oportunidades=()=>{
+const o=oppS(),cols=ui.etapa?[ui.etapa]:ETAPAS;
+return head('Tablero de oportunidades','Arrastra las tarjetas entre columnas para cambiar de etapa',`${ui.etapa?`<button class="btn ghost" onclick="ui.etapa='';render()">Ver todas las etapas ✕</button>`:''}<button class="btn" onclick="openForm('oportunidades',null,newOpp())">Crear oportunidad</button>`,1)+
+`<div class="kan" style="${ui.etapa?'grid-template-columns:minmax(260px,420px)':''}">${cols.map(e=>{const l=o.filter(x=>x.etapa===e);return`<div class="col" ondragover="event.preventDefault()" ondrop="event.preventDefault();moveOpp(event.dataTransfer.getData('text/plain'),'${e}')"><h4>${e}<span>${l.length}</span></h4><div class="tot">${cop(l.reduce((s,x)=>s+x.valor,0))}</div>${l.map(x=>`<div class="kc" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')" onclick="openForm('oportunidades','${x.id}')"><b>${esc(x.titulo)}</b><div class="mut">${esc(cn(x.cliente))}</div><div class="m"><span>${cop(x.valor)}</span><span>${x.probabilidad}%</span></div><div class="m"><span>Cierre ${fd(x.cierre)}</span><span>${esc(vn(x.vendedor).split(' ')[0])}</span></div><select onclick="event.stopPropagation()" onchange="moveOpp('${x.id}',this.value)" aria-label="Mover etapa">${so(ETAPAS,x.etapa)}</select></div>`).join('')}</div>`}).join('')}</div>`};
+function moveOpp(id,e){const o=byId('oportunidades',id);if(!o||o.etapa===e){render();return}
+if(e==='Perdida'){modal(`<h3>Motivo de pérdida</h3><p>¿Por qué se perdió «${esc(o.titulo)}»?</p><textarea id="mot" rows="3" style="width:100%"></textarea><div class="err" id="ferr"></div><div class="btns"><button class="btn ghost" onclick="closeM();render()">Cancelar</button><button class="btn" onclick="const m=$('#mot').value.trim();if(!m){$('#ferr').textContent='Indica el motivo.';return}closeM();setStage('${id}','Perdida',m)">Marcar perdida</button></div>`);return}
+setStage(id,e)}
+function setStage(id,e,mot){const o=byId('oportunidades',id),prev=o.etapa;o.etapa=e;o.probabilidad=SUG[e];o.cerradaEn=e==='Ganada'?today():'';if(mot)o.motivoPerdida=mot;logAct('Sistema',o.cliente,o.vendedor,`Oportunidad "${o.titulo}" pasó de ${prev} a ${e}`);save();render();toast('Etapa actualizada: '+e)}
+
+const trow=t=>{const v=t.estado==='Pendiente'&&t.fecha<today(),h=t.estado==='Pendiente'&&t.fecha===today(),op=t.opp&&byId('oportunidades',t.opp);
+return`<div class="row ${v?'late':h?'now':''}"><div class="grow"><b>${esc(t.titulo)}</b><div class="mut">${t.tipo} · ${esc(cn(t.cliente))}${op?' · '+esc(op.titulo):''} · ${fd(t.fecha)}${mgr()?' · '+esc(vn(t.vendedor)):''}</div>${t.resultado?`<div class="mut">Resultado: ${esc(t.resultado)}</div>`:''}</div><div class="acts">${t.estado==='Pendiente'?`<button class="btn sm sec" onclick="doneModal('${t.id}')">Completar</button><button class="btn sm ghost" onclick="reprog('${t.id}')">Reprogramar</button>`:''}<button class="btn sm ghost" onclick="openForm('tareas','${t.id}')">Editar</button><button class="btn sm ghost" onclick="del('tareas','${t.id}')">Borrar</button></div></div>`};
+V.tareas=()=>{
+const T=tarS(),td=today();
+const tabs={Vencidas:T.filter(t=>t.estado==='Pendiente'&&t.fecha<td),Hoy:T.filter(t=>t.estado==='Pendiente'&&t.fecha===td),'Próximas':T.filter(t=>t.estado==='Pendiente'&&t.fecha>td),Hechas:T.filter(t=>t.estado==='Hecha')};
+const L=tabs[ui.tab].sort((a,b)=>a.fecha<b.fecha?-1:1);
+const A=actS().filter(a=>(!F('tp')||a.tipo===F('tp'))&&(!F('d')||a.fecha>=F('d'))&&(!F('h')||a.fecha<=F('h'))).sort((a,b)=>a.fecha<b.fecha?1:-1);
+return head('Tareas y actividades','Tu agenda comercial',`<button class="btn" onclick="openForm('tareas',null,{fecha:today(),estado:'Pendiente',tipo:'Llamada',vendedor:sv()||'v2',cliente:(S.clientes[0]||{}).id})">+ Nueva tarea</button>`,1)+
+`<div class="card"><div class="tabs">${Object.keys(tabs).map(k=>`<button class="${ui.tab===k?'on':''}" onclick="ui.tab='${k}';render()">${k} (${tabs[k].length})</button>`).join('')}</div>${L.map(trow).join('')||'<div class="empty">No hay tareas en esta pestaña.</div>'}</div>
+<div class="card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Registro de actividades</h2><button class="btn sm sec" onclick="actModal('')">+ Registrar actividad</button></div><div class="fb">${fsel('tp','Tipo',[...TIPOS,'Sistema'])}<label style="margin:0">Desde <input type="date" id="fd1" value="${F('d')}" onchange="setF('d',this.value)"></label><label style="margin:0">Hasta <input type="date" id="fd2" value="${F('h')}" onchange="setF('h',this.value)"></label></div>${tbl(['Fecha','Tipo','Cliente','Resultado','Vendedor'],A.slice(0,60).map(a=>`<tr><td>${fd(a.fecha)}</td><td><span class="chip">${a.tipo}</span></td><td>${esc(cn(a.cliente))}</td><td>${esc(a.resultado)}</td><td>${esc(vn(a.vendedor))}</td></tr>`).join(''))}</div>`};
+function doneModal(id){modal(`<h3>Completar tarea</h3><label>Resultado<textarea id="res" rows="3" placeholder="¿Qué pasó?"></textarea></label><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn" onclick="const r=$('#res').value.trim();closeM();completeTask('${id}',r)">Marcar como hecha</button></div>`)}
+function reprog(id){const t=byId('tareas',id);modal(`<h3>Reprogramar tarea</h3><label>Nueva fecha<input type="date" id="nf" value="${t.fecha}"></label><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn" onclick="const v=$('#nf').value;if(v){byId('tareas','${id}').fecha=v;save();closeM();render();toast('Tarea reprogramada')}">Guardar</button></div>`)}
+
+V.cotizaciones=()=>{
+const L=cotS().filter(q=>(!F('est')||q.estado===F('est'))&&(!F('q')||(q.numero+cn(q.cliente)).toLowerCase().includes(F('q').toLowerCase()))).sort((a,b)=>a.numero<b.numero?1:-1);
+return head('Cotizaciones','Numeración consecutiva, descuento e IVA en vivo',`<button class="btn" onclick="qOpen()">+ Nueva cotización</button>`,1)+
+`<div class="card"><div class="fb"><input id="fq" placeholder="Buscar número o cliente…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('est','Estado',['Borrador','Enviada','Aceptada','Rechazada'])}</div>`+
+tbl(['Número','Cliente','Fecha','#Total (ARS)','Estado',''],L.map(q=>`<tr><td><b>${q.numero}</b></td><td>${esc(cn(q.cliente))}</td><td>${fd(q.fecha)}</td><td class="num">${cop(q.total)}</td><td><select onchange="qState('${q.id}',this.value)">${so(['Borrador','Enviada','Aceptada','Rechazada'],q.estado)}</select></td><td class="acts"><button class="btn sm sec" onclick="qView('${q.id}')">Ver / imprimir</button><button class="btn sm ghost" onclick="qOpen('${q.id}')">Editar</button><button class="btn sm ghost" onclick="qDel('${q.id}')">Eliminar</button></td></tr>`).join(''))+`</div>`};
+function qState(id,e){const q=byId('cotizaciones',id);q.estado=e;if(e==='Aceptada'&&q.opp){const o=byId('oportunidades',q.opp);if(o&&o.etapa!=='Ganada'){setStage(q.opp,'Ganada');toast(q.numero+' aceptada: oportunidad marcada como Ganada');return}}save();render();toast('Estado actualizado')}
+function qDel(id){const q=byId('cotizaciones',id);ask(`¿Eliminar la cotización ${q.numero}?`,()=>{S.cotizaciones=S.cotizaciones.filter(x=>x.id!==id);save();render();toast('Cotización eliminada')})}
+const nextNum=()=>'COT-'+pad(Math.max(0,...S.cotizaciones.map(q=>parseInt(q.numero.replace(/\D/g,''))||0))+1);
+function qOpen(id){const q=id&&byId('cotizaciones',id);ui.q=q?JSON.parse(JSON.stringify(q)):{cliente:(cliS()[0]||S.clientes[0]).id,opp:'',fecha:today(),estado:'Borrador',lines:[{p:'',n:'',q:1,pr:0,d:0}],ivaP:S.iva};ui.qid=id||'';qDraw()}
+function qDraw(){
+const q=ui.q,pr=S.productos.filter(p=>p.estado==='Activo'),ops=S.oportunidades.filter(o=>o.cliente===q.cliente);
+modal(`<h3>${ui.qid?'Editar '+byId('cotizaciones',ui.qid).numero:'Nueva cotización · '+nextNum()}</h3><div class="grid2"><label>Cliente<select onchange="ui.q.cliente=this.value;ui.q.opp='';qDraw()">${so(S.clientes.map(c=>[c.id,c.empresa]),q.cliente)}</select></label><label>Oportunidad<select onchange="ui.q.opp=this.value"><option value="">— Sin oportunidad —</option>${so(ops.map(o=>[o.id,o.titulo]),q.opp)}</select></label><label>Fecha<input type="date" value="${q.fecha}" onchange="ui.q.fecha=this.value"></label><label>Estado<select onchange="ui.q.estado=this.value">${so(['Borrador','Enviada','Aceptada','Rechazada'],q.estado)}</select></label></div>
+<div class="tw"><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Desc. %</th><th class="num">Subtotal</th><th></th></tr></thead><tbody>${q.lines.map((l,i)=>`<tr><td><select style="min-width:200px" onchange="qProd(${i},this.value)"><option value="">Seleccionar…</option>${so(pr.map(p=>[p.id,p.nombre]),l.p)}</select></td><td><input type="number" min="1" style="width:70px" value="${l.q}" oninput="ui.q.lines[${i}].q=Math.max(0,+this.value);qTot()"></td><td><input type="number" min="0" style="width:120px" value="${l.pr}" oninput="ui.q.lines[${i}].pr=Math.max(0,+this.value);qTot()"></td><td><input type="number" min="0" max="100" style="width:70px" value="${l.d}" oninput="ui.q.lines[${i}].d=Math.min(100,Math.max(0,+this.value));qTot()"></td><td class="num" id="ls${i}"></td><td><button class="btn sm ghost" onclick="ui.q.lines.splice(${i},1);qDraw()">✕</button></td></tr>`).join('')}</tbody></table></div>
+<button class="btn sm ghost" onclick="ui.q.lines.push({p:'',n:'',q:1,pr:0,d:0});qDraw()">+ Agregar línea</button><div class="totals" id="qt"></div><div class="err" id="ferr"></div><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn" onclick="qSave()">Guardar cotización</button></div>`,1);qTot()}
+function qProd(i,pid){const p=byId('productos',pid),l=ui.q.lines[i];if(p){l.p=p.id;l.n=p.nombre;l.pr=p.precio}else{l.p='';l.n=''}qDraw()}
+function qTot(){const q=ui.q,c=qcalc(q.lines,q.ivaP);q.lines.forEach((l,i)=>{const e=$('#ls'+i);if(e)e.textContent=cop(l.q*l.pr*(1-l.d/100))});$('#qt').innerHTML=`<div><span>Subtotal</span><span>${cop(c.sub)}</span></div><div><span>Descuento</span><span>- ${cop(c.desc)}</span></div><div><span>IVA ${q.ivaP}%</span><span>${cop(c.iva)}</span></div><div class="t"><span>Total</span><span>${cop(c.total)}</span></div>`}
+function qSave(){
+const q=ui.q,L=q.lines.filter(l=>l.p||l.n);
+if(!L.length){$('#ferr').textContent='Agrega al menos un producto.';return}
+if(L.some(l=>l.q<=0)){$('#ferr').textContent='Las cantidades deben ser mayores a 0.';return}
+const c=qcalc(L,q.ivaP),rec=Object.assign({},q,{lines:L,items:L.map(l=>l.q+'× '+l.n).join('; '),descuento:c.sub?Math.round(c.desc/c.sub*100):0,total:c.total});
+if(ui.qid)Object.assign(byId('cotizaciones',ui.qid),rec);else{rec.id=uid('q');rec.numero=nextNum();S.cotizaciones.push(rec)}
+closeM();
+const o=rec.opp&&byId('oportunidades',rec.opp);
+if(rec.estado==='Aceptada'&&o&&o.etapa!=='Ganada'){setStage(o.id,'Ganada');return}
+save();render();toast('Cotización guardada')}
+function qView(id){
+const q=byId('cotizaciones',id),c=byId('clientes',q.cliente)||{},t=qcalc(q.lines,q.ivaP),e=S.emp;
+modal(`<div class="doc"><div class="top"><div style="display:flex;gap:10px;align-items:center">${logoHTML(46)}<div><b>${esc(e.nombre)}</b><div class="mut">CUIT ${esc(e.nit)}<br>${esc(e.dir)}<br>${esc(e.tel)} · ${esc(e.email)}</div></div></div><div style="text-align:right"><h2>${q.numero}</h2><div class="mut">Fecha ${fd(q.fecha)}<br>Estado: ${q.estado}</div></div></div>
+<p><b>Cliente:</b> ${esc(c.empresa)} · CUIT ${esc(c.nit||'—')} · ${esc(c.ciudad||'')}</p>
+${tbl(['Producto','#Cant.','#Precio','#Desc.','#Subtotal'],q.lines.map(l=>`<tr><td>${esc(l.n)}</td><td class="num">${l.q}</td><td class="num">${cop(l.pr)}</td><td class="num">${l.d}%</td><td class="num">${cop(l.q*l.pr*(1-l.d/100))}</td></tr>`).join(''))}
+<div class="totals"><div><span>Subtotal</span><span>${cop(t.sub)}</span></div><div><span>Descuento</span><span>- ${cop(t.desc)}</span></div><div><span>IVA ${q.ivaP}%</span><span>${cop(t.iva)}</span></div><div class="t"><span>Total ARS</span><span>${cop(t.total)}</span></div></div>
+<p class="mut">Documento de ejemplo con datos ficticios. Validez de la oferta: 30 días.</p></div><div class="btns noprint"><button class="btn ghost" onclick="closeM()">Cerrar</button><button class="btn" onclick="window.print()">Imprimir</button></div>`,1)}
+
+V.productos=()=>{
+const q=F('q').toLowerCase(),L=S.productos.filter(p=>(!F('cat')||p.categoria===F('cat'))&&(!q||(p.nombre+p.sku).toLowerCase().includes(q)));
+return head('Catálogo','Productos y servicios de Big Fidelity',`<button class="btn" onclick="openForm('productos',null,{estado:'Activo',categoria:'Software',sku:'ATL-'+pad(S.productos.length+1,3)})">+ Nuevo producto</button>`)+
+`<div class="card"><div class="fb"><input id="fq" placeholder="Buscar producto o SKU…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('cat','Categoría',['Software','Servicios','Soporte','Hardware'])}</div>`+
+tbl(['SKU','Producto','Categoría','#Precio (ARS)','Estado',''],L.map(p=>`<tr><td>${esc(p.sku)}</td><td><b>${esc(p.nombre)}</b></td><td>${p.categoria}</td><td class="num">${cop(p.precio)}</td><td>${chipE(p.estado)}</td><td class="acts"><button class="btn sm ghost" onclick="openForm('productos','${p.id}')">Editar</button><button class="btn sm ghost" onclick="del('productos','${p.id}')">Dar de baja</button></td></tr>`).join(''))+`</div>`};
+
+V.equipo=()=>{
+const m=F('m')||today().slice(0,7),sl=sellers().filter(v=>!sv()||v.id===sv()),M=mgr();
+const team=M?S.vendedores:S.vendedores.filter(v=>v.id===cur().id);
+const rows=sl.map(v=>({v,a:ventasMes(v.id,m)}));
+const chart=`<svg viewBox="0 0 640 ${Math.max(1,rows.length)*46}" width="100%" role="img" aria-label="Meta contra avance">${rows.map(({v,a},i)=>{const p=v.metaMensual?a/v.metaMensual*100:0,y=i*46;return`<text x="0" y="${y+20}" font-size="13" font-weight="700" fill="#12303A">${esc(v.nombre)}</text><text x="0" y="${y+36}" font-size="11" fill="#5d7882">${cop(a)} / ${cop(v.metaMensual)}</text><rect x="190" y="${y+10}" width="360" height="18" rx="9" fill="#e3edf0"/><rect x="190" y="${y+10}" width="${Math.min(100,p)*3.6}" height="18" rx="9" style="fill:${p>=100?'#1f9d74':'var(--ac)'}"/><text x="562" y="${y+24}" font-size="13" font-weight="800" fill="#0E4A5C">${Math.round(p)}%</text>`}).join('')}</svg>`;
+return head('Equipo y metas','Vendedores y cumplimiento de metas',M?`<button class="btn" onclick="openForm('vendedores',null,{rol:'Vendedor',estado:'Activo',metaMensual:15000000})">+ Nuevo vendedor</button>`:'')+
+`<div class="card"><h2>Vendedores</h2>${tbl(['Nombre','Correo','Rol','Ciudad','Estado','#Ventas del mes',''],team.map(v=>`<tr><td><b>${esc(v.nombre)}</b></td><td>${esc(v.email)}</td><td>${v.rol}</td><td>${esc(v.ciudad)}</td><td>${chipE(v.estado)}</td><td class="num">${cop(ventasMes(v.id,today().slice(0,7)))}</td><td class="acts">${M?`<button class="btn sm ghost" onclick="openForm('vendedores','${v.id}')">Editar</button><button class="btn sm ghost" onclick="del('vendedores','${v.id}')">Eliminar</button>`:''}</td></tr>`).join(''))}</div>
+<div class="card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Metas mensuales</h2><label style="margin:0">Mes <input type="month" id="fm" value="${m}" onchange="setF('m',this.value)"></label></div>${chart}
+${M?`<h2 style="margin-top:16px">Editar metas</h2><div class="grid3">${sellers().map(v=>`<label>${esc(v.nombre)}<input type="number" min="0" step="100000" value="${v.metaMensual}" onchange="setMeta('${v.id}',this.value)"></label>`).join('')}</div>`:'<p class="mut">Solo el gerente comercial puede editar las metas.</p>'}</div>`};
+function setMeta(id,v){byId('vendedores',id).metaMensual=Math.max(0,Number(v)||0);save();render();toast('Meta actualizada')}
+
+function repData(){
+const d=F('d'),h=F('h'),inR=x=>(!d||x>=d)&&(!h||x<=h),r=ui.f.reportes_t||'etapas';
+if(r==='etapas')return{h:['Etapa','Oportunidades','Valor (ARS)','Ponderado (ARS)'],m:[2,3],r:ETAPAS.map(e=>{const l=oppS().filter(o=>o.etapa===e&&inR(o.creada));return[e,l.length,l.reduce((s,o)=>s+o.valor,0),l.reduce((s,o)=>s+o.valor*o.probabilidad/100,0)]})};
+if(r==='ventas')return{h:['Vendedor','Oportunidades ganadas','Ventas (ARS)','Meta mensual (ARS)'],m:[2,3],r:sellers().filter(v=>okV(v.id)).map(v=>{const l=S.oportunidades.filter(o=>o.vendedor===v.id&&o.etapa==='Ganada'&&o.cerradaEn&&inR(o.cerradaEn));return[v.nombre,l.length,l.reduce((s,o)=>s+o.valor,0),v.metaMensual]})};
+if(r==='actividades'){const A=actS().filter(a=>a.tipo!=='Sistema'&&inR(a.fecha));return{h:['Cliente','Total','Llamadas','Reuniones','Correos','WhatsApp'],m:[],r:S.clientes.map(c=>{const l=A.filter(a=>a.cliente===c.id);return[c.empresa,l.length,...TIPOS.map(t=>l.filter(a=>a.tipo===t).length)]}).filter(x=>x[1]>0)}}
+return{h:['Estado','Cotizaciones','Total (ARS)'],m:[2],r:['Borrador','Enviada','Aceptada','Rechazada'].map(e=>{const l=cotS().filter(q=>q.estado===e&&inR(q.fecha));return[e,l.length,l.reduce((s,q)=>s+q.total,0)]})}}
+V.reportes=()=>{
+const t=ui.f.reportes_t||'etapas',R=repData();
+return head('Reportes','Datos exportables según tus filtros',`<button class="btn" onclick="exportCsv()">Exportar CSV</button>`,1)+
+`<div class="card"><div class="fb"><select id="rt" onchange="ui.f.reportes_t=this.value;render()">${so([['etapas','Oportunidades por etapa'],['ventas','Ventas por vendedor'],['actividades','Actividades por cliente'],['cotizaciones','Cotizaciones por estado']],t)}</select><label style="margin:0">Desde <input type="date" id="fd1" value="${F('d')}" onchange="setF('d',this.value)"></label><label style="margin:0">Hasta <input type="date" id="fd2" value="${F('h')}" onchange="setF('h',this.value)"></label></div>${tbl(R.h.map((x,i)=>i>0?'#'+x:x),R.r.map(r=>`<tr>${r.map((x,i)=>`<td class="${i?'num':''}">${R.m.includes(i)?cop(x):esc(x)}</td>`).join('')}</tr>`).join(''),'No hay datos en el rango seleccionado.')}</div>`};
+function exportCsv(){
+const R=repData(),q=x=>'"'+String(x).replace(/"/g,'""')+'"';
+const csv='\ufeff'+[R.h,...R.r].map(r=>r.map(q).join(';')).join('\r\n');
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='reporte-'+(ui.f.reportes_t||'etapas')+'-'+today()+'.csv';document.body.appendChild(a);a.click();a.remove();toast('CSV exportado')}
+
+V.ajustes=()=>{const M=mgr(),e=S.emp,d=M?'':'disabled';
+return head('Ajustes','Usuario de demostración, empresa y datos')+
+`<div class="card"><h2>Usuario de demostración</h2><p class="mut">Cambia de perfil para ver cómo se ajustan menús, permisos y filtros.</p><label style="max-width:360px">Usuario activo<select onchange="setUser(this.value)">${so(S.vendedores.map(v=>[v.id,v.nombre+' · '+v.rol]),S.user)}</select></label></div>
+<div class="card"><h2>Datos de la empresa e IVA</h2>${M?'':'<p class="mut">Solo el gerente comercial puede modificar estos datos.</p>'}<form onsubmit="return saveEmp(event)"><div class="grid2"><label>Razón social<input name="nombre" value="${esc(e.nombre)}" ${d}></label><label>CUIT<input name="nit" value="${esc(e.nit)}" ${d}></label><label>Dirección<input name="dir" value="${esc(e.dir)}" ${d}></label><label>Teléfono<input name="tel" value="${esc(e.tel)}" ${d}></label><label>Correo<input name="email" value="${esc(e.email)}" ${d}></label><label>IVA %<input name="iva" type="number" min="0" max="100" value="${S.iva}" ${d}></label></div>${M?'<button class="btn">Guardar datos</button>':''}</form></div>
+<div class="card"><h2>Exportar e importar datos</h2><div class="btns" style="justify-content:flex-start;margin:0 0 10px"><button class="btn sec" onclick="$('#io').value=JSON.stringify(S,null,1);toast('Datos exportados abajo')">Exportar datos</button><button class="btn ghost" onclick="importData()">Importar</button></div><textarea class="big" id="io" placeholder="El JSON exportado aparece aquí. Pega un JSON para importar."></textarea></div>
+<div class="card"><h2>Reiniciar demo</h2><p class="mut">Restaura los registros de ejemplo y borra tus cambios.</p><button class="btn danger" onclick="ask('¿Restaurar todos los datos de ejemplo? Se perderán los cambios actuales.',()=>{S=seed();ui.cli=null;ui.fv='';save();render();toast('Datos de ejemplo restaurados')},'Reiniciar')">Reiniciar datos de ejemplo</button></div>`};
+function saveEmp(e){e.preventDefault();const f=e.target.elements;['nombre','nit','dir','tel','email'].forEach(k=>S.emp[k]=f[k].value.trim());S.iva=Math.min(100,Math.max(0,Number(f.iva.value)||0));save();toast('Datos guardados');return false}
+function importData(){try{const o=JSON.parse($('#io').value);if(!o||!Array.isArray(o.clientes)||!Array.isArray(o.vendedores)||!Array.isArray(o.oportunidades))throw 0;['contactos','tareas','cotizaciones','productos','acts'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[]});o.emp=o.emp||S.emp;o.iva=o.iva||21;o.seq=o.seq||2000;o.user=o.vendedores.some(v=>v.id===o.user)?o.user:o.vendedores[0].id;S=o;ui.fv='';ui.cli=null;save();render();toast('Datos importados')}catch(x){toast('JSON no válido: no se importó nada')}}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+render();
+</script>
+
+<button id="bfBtn" onclick="document.getElementById('bfPanel').classList.toggle('on')" title="Personalizar marca">🎨 Marca</button>
+<div id="bfPanel"><h4>Marca de la demo</h4>
+<label>Nombre<input type="text" id="bfName"></label>
+<label>Logo (PNG, JPG o SVG)<input type="file" id="bfLogo" accept="image/*"></label>
+<label>Color principal (menú)<input type="color" id="bfP"></label>
+<label>Color de acento (botones)<input type="color" id="bfA"></label>
+<div style="display:flex;gap:8px;justify-content:space-between"><button class="btn sm ghost" type="button" onclick="bfReset()">Restablecer</button><button class="btn sm" type="button" onclick="document.getElementById('bfPanel').classList.remove('on')">Listo</button></div>
+<p class="mut" style="font-size:11px;margin-top:8px">Se guarda en este navegador. Tip: ?p=1a2b3c&amp;a=ff6600 en la URL.</p></div>
+<script>
+(function(){
+var K='bf-brand-v1',D={name:'big fidelity',p:'#22369F',a:'#A6EE6B',logo:'data:image/png;base64,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'};
+function load(){var b={};try{b=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}var q=new URLSearchParams(location.search);
+if(q.get('p'))b.p='#'+q.get('p').replace('#','');if(q.get('a'))b.a='#'+q.get('a').replace('#','');if(q.get('name'))b.name=q.get('name');return Object.assign({},D,b)}
+function save(b){try{localStorage.setItem(K,JSON.stringify(b))}catch(e){alert('El logo es muy pesado para guardarlo; usa uno más liviano.')}}
+function lum(h){h=h.replace('#','');var c=[0,2,4].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+function initials(n){return n.split(/\s+/).filter(Boolean).slice(0,2).map(function(w){return w[0].toUpperCase()}).join('')}
+window.logoHTML=function(sz){var b=window.BRAND||D;return '<span class="blogo" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz*.38)+'px">'+(b.logo?'<img src="'+b.logo+'" alt="">':'<svg viewBox="0 0 24 24" width="62%" height="62%" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>')+'</span>'};
+function apply(){var b=window.BRAND=load(),r=document.documentElement.style;
+r.setProperty('--p',b.p);r.setProperty('--ac',b.a);r.setProperty('--fg',lum(b.p)>.4?'#1d2830':'#1a2350');r.setProperty('--act',lum(b.a)>.4?(lum(b.p)<.2?b.p:'#111'):'#fff');
+var light=lum(b.p)>.45;r.setProperty('--sfg',light?'#2b3a42':'#e6eef1');r.setProperty('--sfgon',light?'#111':'#fff');r.setProperty('--non',light?'rgba(0,0,0,.09)':'rgba(255,255,255,.16)');r.setProperty('--nhov',light?'rgba(0,0,0,.05)':'rgba(255,255,255,.08)');r.setProperty('--pt',light?(lum(b.a)<.4?b.a:'#1d2830'):b.p);
+document.querySelector('.side').style.color=light?'#1d2830':'#fff';
+document.querySelectorAll('.side .blogo').forEach(function(e){e.outerHTML=logoHTML(34)});
+document.querySelectorAll('.bname').forEach(function(e){e.textContent=b.name});
+document.title='Big Fidelity · CRM (demo)';
+document.getElementById('bfName').value=b.name;document.getElementById('bfP').value=b.p;document.getElementById('bfA').value=b.a;
+if(typeof render==='function')try{render()}catch(e){}}
+function set(k,v){var b=load();b[k]=v;save(b);apply()}
+document.getElementById('bfName').oninput=function(){set('name',this.value||D.name)};
+document.getElementById('bfP').oninput=function(){set('p',this.value)};
+document.getElementById('bfA').oninput=function(){set('a',this.value)};
+document.getElementById('bfLogo').onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){
+var img=new Image();img.onload=function(){var m=256,sc=Math.min(1,m/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*sc;c.height=img.height*sc;c.getContext('2d').drawImage(img,0,0,c.width,c.height);set('logo',c.toDataURL('image/png'))};img.src=rd.result};rd.readAsDataURL(f)};
+window.bfReset=function(){try{localStorage.removeItem(K)}catch(e){}apply()};
+apply();
+})();
+</script>
+</body>
+</html>

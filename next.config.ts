@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   // El SDK de Ideon Data se incluye en el ZIP y en el despliegue a Vercel de las apps que lo usan.
   outputFileTracingIncludes: {
     "/demo/[slug]": ["./src/content/showcase/*.html"],
+    "/demo/p/[token]": ["./src/content/private-demos/*.html"],
     "/api/projects/[id]/download": ["./public/ideon-data.js"],
     "/api/projects/[id]/publish": ["./public/ideon-data.js"],
   },
