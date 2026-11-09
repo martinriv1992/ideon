@@ -48,9 +48,11 @@ export const PACKAGES: BusinessPackage[] = [
       { es: "Cotizaciones con IVA listas para enviar", en: "Quotes with tax, ready to send" },
       { es: "Vendedores, metas y comisiones", en: "Sales reps, targets and commissions" },
       { es: "Tareas y recordatorios de seguimiento", en: "Follow-up tasks and reminders" },
+      { es: "Campañas por correo y WhatsApp a segmentos", en: "Email and WhatsApp campaigns to segments" },
+      { es: "Exportación de contactos a Excel y vCard", en: "Contact export to Excel and vCard" },
       { es: "Panel de ventas y conversión", en: "Sales and conversion dashboard" },
     ],
-    agentBrief: "CRM de ventas: clientes y contactos con historial de actividades, embudo de oportunidades en kanban con etapas configurables (arrastrar para mover), cotizaciones con líneas, descuento e IVA que se pueden imprimir y convertir en venta, vendedores con metas mensuales y comisiones, tareas y recordatorios de seguimiento con vencimiento, panel con ventas del mes, tasa de conversión, valor del embudo por etapa y ranking de vendedores.",
+    agentBrief: "CRM de ventas: clientes y contactos con historial de actividades, embudo de oportunidades en kanban con etapas configurables (arrastrar para mover), cotizaciones con líneas, descuento e IVA que se pueden imprimir y convertir en venta, vendedores con metas mensuales y comisiones, tareas y recordatorios de seguimiento con vencimiento, campañas por correo y WhatsApp a segmentos de contactos (filtros por sector, ciudad, estado y etapa; mensaje con variables como {nombre} y {empresa}; envío o programación; registro en el historial; marcar respuestas y convertirlas en oportunidades vinculadas a la campaña), exportación de contactos a CSV y vCard, panel con ventas del mes, tasa de conversión, valor del embudo por etapa y ranking de vendedores.",
   },
   {
     key: "suite", planKey: "pkg_suite", kind: "erp", name: "Ideon Business Suite", price: 2_900_000, currency: "COP", demo: "ideon-suite",
