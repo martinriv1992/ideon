@@ -2,6 +2,7 @@ import { AuthForm } from "@/components/auth/auth-form";
 import { registerAction } from "@/features/auth/actions";
 import { safeNext } from "@/features/auth/schemas";
 import { isSupabaseConfigured } from "@/lib/env";
+import { googleAuthEnabled } from "@/features/auth/providers";
 
 export default async function RegisterPage({
   searchParams,
@@ -15,6 +16,7 @@ export default async function RegisterPage({
       action={registerAction}
       next={safeNext(next, "/projects/new")}
       configured={isSupabaseConfigured}
+        google={await googleAuthEnabled()}
     />
   );
 }
