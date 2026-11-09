@@ -85,7 +85,14 @@ contraseña. Antes, cada navegador tenía su propia copia en `localStorage`.
 - **Dónde está:**
   - API `POST /api/apps/[projectId]/prospect`, solo para usuarios de la app con sesión.
   - Lógica en `src/features/appdata/prospect.ts`; limpieza de resultados en `normalizeProspects` (`core.ts`).
-- **Cupo:** `prospect_monthly_limit` (por defecto 40 búsquedas por app cada 30 días, en Backoffice → Ajustes). Una búsqueda fallida no gasta cupo.
+- **Cobro (ePayco, COP, editable en Backoffice → Ajustes):**
+  - 3 búsquedas de prueba gratis por app (`prospect_trial_searches`).
+  - Plan prepago: 80.000 COP por 20 búsquedas durante 30 días (`prospect_plan_price`, `prospect_plan_searches`, `prospect_plan_days`). Renovar con el plan activo suma las búsquedas y alarga la vigencia desde el final; si venció, empieza de cero.
+  - Búsquedas sueltas: 12.000 COP cada una (`prospect_single_price`), no vencen.
+  - Se gastan en orden prueba → plan → sueltas. Una búsqueda fallida no gasta saldo. Sin saldo, la API responde 402 `no_searches` y el SDK le dice al usuario que el dueño compre en Ideonapp.
+  - El uso se cuenta en `rate_limits` (`prospect:trial|plan|credit`); el plan y las compras en columnas `prospect_*` de `projects` (migración `0011_prospect_billing.sql`).
+  - El dueño compra desde Publicar → «Prospección con IA» (solo aparece si la app usa `db.prospect`). API: `GET /api/projects/[id]/prospect`, `POST /api/projects/[id]/prospect/buy`; se acredita en `fulfilPayment` al confirmarse el pago.
+  - Margen: cada búsqueda cuesta ~0,35 USD (~1.400 COP); el plan sale a 4.000 COP por búsqueda.
 - **Coste:** se registra en `ai_usage`. Prueba real del 09/11/2026: «ferreterías en Medellín» devolvió 6 empresas reales en 47 s por 0,35 USD con Opus 5.5.
 - **Modelo:** el de la fila `prospect` de `model_policies`; sin ella, `claude-opus-5-5`.
 - **Si `web_fetch` no está permitido** (como en entornos con red restringida), se busca solo con `web_search`.

@@ -100,3 +100,29 @@ export async function sendAccessEmail(args: { to: string; name: string; appName:
     return res.ok;
   } catch { return false; }
 }
+
+/** Saldo de prospección del proyecto: prueba gratis, plan prepago vigente y búsquedas sueltas. */
+export async function prospectBalance(projectId: string) {
+  const { prospectPricingFrom } = await import("./core");
+  const db = createAdminClient();
+  const [{ data: p }, { data: rows }] = await Promise.all([
+    db.from("projects").select("prospect_plan_until,prospect_plan_since,prospect_plan_granted,prospect_credits_bought").eq("id", projectId).single(),
+    db.from("platform_settings").select("key,value").like("key", "prospect_%"),
+  ]);
+  const pricing = prospectPricingFrom(rows ?? []);
+  const count = async (pool: string, since?: string | null) => {
+    let q = db.from("rate_limits").select("id", { count: "exact", head: true }).eq("bucket", `prospect:${pool}`).eq("ip_hash", projectId);
+    if (since) q = q.gte("created_at", since);
+    return (await q).count ?? 0;
+  };
+  const active = Boolean(p?.prospect_plan_until && new Date(p.prospect_plan_until) > new Date());
+  const [trialUsed, planUsed, creditUsed] = await Promise.all([count("trial"), active ? count("plan", p?.prospect_plan_since) : Promise.resolve(0), count("credit")]);
+  return {
+    pricing,
+    balance: {
+      trial: { total: pricing.trialSearches, used: trialUsed },
+      plan: { active, until: p?.prospect_plan_until ?? null, searches: active ? p?.prospect_plan_granted ?? 0 : 0, used: planUsed },
+      credits: { bought: p?.prospect_credits_bought ?? 0, used: creditUsed },
+    },
+  };
+}

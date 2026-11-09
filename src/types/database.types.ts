@@ -129,6 +129,10 @@ export type Project = {
   free_changes_used: number;
   /** Paquete empresarial del que parte el proyecto (inventory | crm | suite). */
   package_key: string | null;
+  prospect_plan_until: string | null;
+  prospect_plan_since: string | null;
+  prospect_plan_granted: number;
+  prospect_credits_bought: number;
   created_at: string;
   updated_at: string;
 };
@@ -230,7 +234,7 @@ export type Database = {
       };
       projects: {
         Row: Row<Project>;
-        Insert: Insert<Project, "id" | "created_by" | "category_key" | "status" | "complexity" | "locale" | "archived_at" | "kind" | "brief" | "current_version_id" | "active_run_id" | "paid_at" | "free_changes_used" | "package_key" | "created_at" | "updated_at">;
+        Insert: Insert<Project, "id" | "created_by" | "category_key" | "status" | "complexity" | "locale" | "archived_at" | "kind" | "brief" | "current_version_id" | "active_run_id" | "paid_at" | "free_changes_used" | "package_key" | "prospect_plan_until" | "prospect_plan_since" | "prospect_plan_granted" | "prospect_credits_bought" | "created_at" | "updated_at">;
         Update: Partial<Project>;
         Relationships: [];
       };
