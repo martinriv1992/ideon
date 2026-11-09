@@ -1254,7 +1254,7 @@
         },
         "crm": {
           "title": "Sales CRM",
-          "text": "Clients, kanban pipeline, quotes with tax, tasks and per-rep targets."
+          "text": "Clients, kanban pipeline, quotes with tax, email and WhatsApp campaigns, and per-rep targets."
         },
         "business": {
           "title": "Business Management",
@@ -1401,6 +1401,10 @@
         {
           "title": "Per-rep targets",
           "text": "Monthly goals and progress for each team member."
+        },
+        {
+          "title": "Campaigns and export",
+          "text": "Email and WhatsApp to segments (industry, city, stage), replies, opportunities generated, and contact export to Excel or vCard."
         },
         {
           "title": "Management dashboard",

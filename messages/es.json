@@ -1254,7 +1254,7 @@
         },
         "crm": {
           "title": "CRM comercial",
-          "text": "Clientes, embudo kanban, cotizaciones con IVA, tareas y metas por vendedor."
+          "text": "Clientes, embudo kanban, cotizaciones con IVA, campañas por correo y WhatsApp, y metas por vendedor."
         },
         "business": {
           "title": "Gestión empresarial",
@@ -1401,6 +1401,10 @@
         {
           "title": "Metas por vendedor",
           "text": "Objetivos mensuales y avance de cada persona del equipo."
+        },
+        {
+          "title": "Campañas y exportación",
+          "text": "Correos y WhatsApp a segmentos (sector, ciudad, etapa), respuestas, oportunidades generadas y exportación de contactos a Excel o vCard."
         },
         {
           "title": "Panel gerencial",

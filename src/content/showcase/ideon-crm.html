@@ -166,11 +166,13 @@ const qc=(L,p)=>{let sub=0,de=0;L.forEach(l=>{sub+=l.q*l.pr;de+=l.q*l.pr*l.d/100
 s.cotizaciones=Array.from({length:10},(_,i)=>{const es=['Borrador','Enviada','Aceptada','Rechazada'][i%4];const lines=[0,1].slice(0,i%2+1).map(k=>{const p=PR[(i+k*3)%8];return{p:'g'+((i+k*3)%8+1),n:p[0],q:(i%3)+1,pr:p[2],d:(i%4)*5}});const c=qc(lines,19);return{id:'q'+(i+1),numero:'COT-'+pad(i+1),cliente:'c'+(i+1),opp:es==='Aceptada'?'':'o'+(i+1),fecha:dd(-(i*3+1)),lines,items:lines.map(l=>l.q+'× '+l.n).join('; '),descuento:c.sub?Math.round(c.desc/c.sub*100):0,ivaP:19,total:c.total,estado:es}});
 const RES=['Quedó de revisar la propuesta (ejemplo)','Solicitó ajuste de precio (ejemplo)','Envió documentos requeridos (ejemplo)','Confirmó reunión con su equipo (ejemplo)'];
 s.acts=Array.from({length:16},(_,i)=>({id:'a'+i,tipo:TIPOS[i%4],fecha:dd(-(i+1)),cliente:'c'+(i%12+1),vendedor:SV[i%4],resultado:RES[i%4]}));
+s.campanas=seedCamp(s);
 return s}
 
 function load(){try{const j=localStorage.getItem(KEY);if(j){const o=JSON.parse(j);if(o&&o.clientes&&o.vendedores&&o.acts)return o}}catch(e){}return seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 let S=load(),ui={view:'dashboard',f:{},fv:'',tab:'Hoy',cli:null,etapa:'',q:null,qid:''};
+if(!S.campanas){S.campanas=seedCamp(S)}
 const byId=(l,id)=>S[l].find(x=>x.id===id);
 const cn=id=>(byId('clientes',id)||{}).empresa||'—';
 const vn=id=>(byId('vendedores',id)||{}).nombre||'—';
@@ -199,8 +201,8 @@ function modal(h,w){$('#modal').innerHTML=`<div class="box ${w?'wide':''}">${h}<
 function closeM(){$('#modal').classList.remove('on');$('#modal').innerHTML=''}
 function ask(msg,fn,lbl){ask.fn=fn;modal(`<h3>Confirmar</h3><p>${msg}</p><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn danger" onclick="const f=ask.fn;closeM();f()">${lbl||'Eliminar'}</button></div>`)}
 
-const IC={dashboard:'M4 13h6V4H4zM14 20h6V4h-6zM4 20h6v-3H4z',clientes:'M4 21V6l8-3 8 3v15M9 21v-5h6v5M9 9h2M13 9h2',contactos:'M12 11a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6',oportunidades:'M3 4h18l-7 8v7l-4 2v-9z',tareas:'M4 5h16v15H4zM8 12l3 3 5-6',cotizaciones:'M6 3h9l4 4v14H6zM9 12h7M9 16h7',productos:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8',equipo:'M4 20V10M10 20V4M16 20v-8M22 20H2',reportes:'M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3',ajustes:'M12 15a3 3 0 100-6 3 3 0 000 6zM4 12h2M18 12h2M12 4v2M12 18v2'};
-const NAV=[['dashboard','Panel gerencial'],['clientes','Clientes'],['contactos','Contactos'],['oportunidades','Oportunidades'],['tareas','Tareas'],['cotizaciones','Cotizaciones'],['productos','Productos'],['equipo','Equipo y metas'],['reportes','Reportes'],['ajustes','Ajustes']];
+const IC={campanas:'M3 11v2a1 1 0 001 1h2l5 4V6L6 10H4a1 1 0 00-1 1zM16 8a5 5 0 010 8M19 5a9 9 0 010 14',dashboard:'M4 13h6V4H4zM14 20h6V4h-6zM4 20h6v-3H4z',clientes:'M4 21V6l8-3 8 3v15M9 21v-5h6v5M9 9h2M13 9h2',contactos:'M12 11a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6',oportunidades:'M3 4h18l-7 8v7l-4 2v-9z',tareas:'M4 5h16v15H4zM8 12l3 3 5-6',cotizaciones:'M6 3h9l4 4v14H6zM9 12h7M9 16h7',productos:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8',equipo:'M4 20V10M10 20V4M16 20v-8M22 20H2',reportes:'M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3',ajustes:'M12 15a3 3 0 100-6 3 3 0 000 6zM4 12h2M18 12h2M12 4v2M12 18v2'};
+const NAV=[['dashboard','Panel gerencial'],['clientes','Clientes'],['contactos','Contactos'],['campanas','Campañas'],['oportunidades','Oportunidades'],['tareas','Tareas'],['cotizaciones','Cotizaciones'],['productos','Productos'],['equipo','Equipo y metas'],['reportes','Reportes'],['ajustes','Ajustes']];
 function go(v,keep){ui.view=v;if(!keep)ui.cli=null;render();window.scrollTo(0,0)}
 function setUser(id){S.user=id;ui.fv='';ui.cli=null;save();render()}
 const fvSel=()=>`<select id="fv" onchange="ui.fv=this.value;render()"><option value="">Todo el equipo</option>${so(sellers().map(v=>[v.id,v.nombre]),ui.fv)}</select>`;
@@ -312,9 +314,137 @@ function saveAct(e){e.preventDefault();const f=e.target.elements,c=byId('cliente
 V.contactos=()=>{
 const q=F('q').toLowerCase();
 const L=contS().filter(p=>(!F('e')||p.cliente===F('e'))&&(!q||(p.nombre+p.email+p.cargo+cn(p.cliente)).toLowerCase().includes(q)));
-return head('Contactos','Directorio de personas por empresa',`<button class="btn" onclick="openForm('contactos',null,{cliente:(cliS()[0]||{}).id})">+ Nuevo contacto</button>`,1)+
+return head('Contactos','Directorio de personas por empresa',`<button class="btn ghost" onclick="expModal()">Exportar</button><button class="btn sec" onclick="go('campanas');campForm()">Crear campaña</button><button class="btn" onclick="openForm('contactos',null,{cliente:(cliS()[0]||{}).id})">+ Nuevo contacto</button>`,1)+
 `<div class="card"><div class="fb"><input id="fq" placeholder="Buscar nombre, cargo o correo…" value="${esc(F('q'))}" oninput="setF('q',this.value)">${fsel('e','Empresa',cliS().map(c=>[c.id,c.empresa]))}</div>`+
 tbl(['Nombre','Empresa','Cargo','Correo','Teléfono',''],L.map(p=>{const w='57'+(p.telefono||'').replace(/\D/g,'');return`<tr><td><b>${esc(p.nombre)}</b></td><td>${esc(cn(p.cliente))}</td><td>${esc(p.cargo)}</td><td><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></td><td>${esc(p.telefono)}</td><td class="acts">${p.telefono?`<a class="btn sm sec" target="_blank" rel="noopener" href="https://wa.me/${w}">WhatsApp</a>`:''}<button class="btn sm ghost" onclick="openForm('contactos','${p.id}')">Editar</button><button class="btn sm ghost" onclick="del('contactos','${p.id}')">Eliminar</button></td></tr>`}).join(''))+`</div>`};
+
+
+/* Campañas de ejemplo: una enviada con resultados y un borrador. */
+function seedCamp(s){
+const act=s.clientes.filter(c=>c.estado==='Activo').map(c=>c.id);
+let P=s.contactos.filter(p=>act.includes(p.cliente)&&p.email);if(P.length<6)P=s.contactos.filter(p=>p.email);P=P.slice(0,10);
+const dest=P.map((p,i)=>({p:p.id,c:p.cliente,st:i%3===0?'Respondió':'Enviado',opp:''}));
+const o=s.oportunidades.find(x=>dest.some(d=>d.c===x.cliente)&&x.etapa!=='Ganada'&&x.etapa!=='Perdida');
+if(o){o.campana='k1';const d=dest.find(d=>d.c===o.cliente);d.opp=o.id;d.st='Respondió'}
+return[{id:'k1',creador:'v1',nombre:'Lanzamiento: plataforma de inventario',canal:'Correo',seg:{estado:'Activo'},asunto:'{nombre}, ¿cómo controla hoy el inventario de {empresa}?',mensaje:'Hola {nombre},\n\nEn Soluciones Atlas lanzamos una plataforma de inventario que muestra existencias en tiempo real y avisa antes de quedarse sin stock.\n\n¿Le gustaría ver una demostración de 20 minutos para {empresa}?\n\nSaludos,\n{vendedor}',prog:'',estado:'Enviada',fecha:dd(-6),dest},
+{id:'k2',creador:'v1',nombre:'Renovación de soporte 2027',canal:'WhatsApp',seg:{estado:'Activo',sector:'Salud'},asunto:'',mensaje:'Hola {nombre} 👋, soy {vendedor} de Soluciones Atlas. Se acerca la renovación del soporte de {empresa} para 2027 y tenemos una condición especial si renuevan este mes. ¿Le cuento?',prog:'',estado:'Borrador',fecha:'',dest:[]}]}
+
+/* ===== Exportar contactos y campañas (correo / WhatsApp) ===== */
+const CANALES=['Correo','WhatsApp'];
+const VARS=[['{nombre}','Nombre'],['{empresa}','Empresa'],['{cargo}','Cargo'],['{vendedor}','Vendedor']];
+const chipK=e=>`<span class="chip ${{Enviada:'ok',Respondió:'ok',Programada:'w',Borrador:'',Enviado:''}[e]||''}">${esc(e)}</span>`;
+const pCli=p=>byId('clientes',p.cliente)||{};
+const perso=(t,p)=>String(t||'').replace(/\{nombre\}/g,(p.nombre||'').split(' ')[0]).replace(/\{empresa\}/g,cn(p.cliente)).replace(/\{cargo\}/g,p.cargo||'').replace(/\{vendedor\}/g,vn(pCli(p).vendedor));
+const waNum=p=>'57'+String(p.telefono||'').replace(/\D/g,'');
+function dl(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+
+/* --- Exportar contactos --- */
+function contFiltrados(){const q=(ui.f.contactosq||'').toLowerCase(),e=ui.f.contactose||'';return contS().filter(p=>(!e||p.cliente===e)&&(!q||(p.nombre+p.email+p.cargo+cn(p.cliente)).toLowerCase().includes(q)))}
+function expModal(){
+const nf=contFiltrados().length,nt=contS().length;
+modal(`<h3>Exportar contactos</h3><p class="mut">Descarga tus contactos para usarlos en Excel, en el celular o en otra herramienta.</p>
+<label>¿Qué contactos?<select id="xs"><option value="f">Los que ves con los filtros actuales (${nf})</option><option value="t">Todos mis contactos (${nt})</option></select></label>
+<div class="grid3" style="margin-top:12px">
+<button class="btn" onclick="expCont('csv')">Excel / CSV</button>
+<button class="btn sec" onclick="expCont('vcf')">vCard (celular, Gmail, Outlook)</button>
+<button class="btn ghost" onclick="expCont('mail')">Copiar correos</button></div>
+<div class="btns"><button class="btn ghost" onclick="closeM()">Cerrar</button></div>`)}
+function expCont(fmt){
+const L=$('#xs').value==='t'?contS():contFiltrados();
+if(!L.length){toast('No hay contactos para exportar');return}
+if(fmt==='csv'){const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
+const rows=[['Nombre','Empresa','Cargo','Correo','Teléfono','Ciudad','Sector','Estado del cliente','Vendedor']].concat(L.map(p=>{const c=pCli(p);return[p.nombre,c.empresa,p.cargo,p.email,p.telefono,c.ciudad,c.sector,c.estado,vn(c.vendedor)]}));
+dl('contactos-'+today()+'.csv','﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n'),'text/csv;charset=utf-8')}
+else if(fmt==='vcf'){const v=s=>String(s||'').replace(/[,;\\]/g,m=>'\\'+m);
+dl('contactos-'+today()+'.vcf',L.map(p=>{const n=(p.nombre||'').split(' '),fn=n.shift(),ln=n.join(' ');return['BEGIN:VCARD','VERSION:3.0',`N:${v(ln)};${v(fn)};;;`,`FN:${v(p.nombre)}`,`ORG:${v(cn(p.cliente))}`,p.cargo?`TITLE:${v(p.cargo)}`:'',p.email?`EMAIL;TYPE=WORK:${p.email}`:'',p.telefono?`TEL;TYPE=CELL:+${waNum(p)}`:'','END:VCARD'].filter(Boolean).join('\r\n')}).join('\r\n'),'text/vcard;charset=utf-8')}
+else{const t=L.map(p=>p.email).filter(Boolean).join('; ');try{navigator.clipboard.writeText(t)}catch(e){}closeM();toast(L.length+' correos copiados');return}
+closeM();toast(L.length+' contactos exportados')}
+
+/* --- Campañas --- */
+const kS=()=>S.campanas.filter(k=>mgr()||k.creador===cur().id);
+const oppK=id=>S.oportunidades.filter(o=>o.campana===id);
+/** Destinatarios del segmento: contactos visibles que cumplen los filtros y tienen el dato del canal. */
+function segC(sg,canal){
+return contS().filter(p=>{const c=pCli(p);
+if(sg.sector&&c.sector!==sg.sector)return false;if(sg.ciudad&&c.ciudad!==sg.ciudad)return false;if(sg.estado&&c.estado!==sg.estado)return false;
+if(sg.vendedor&&c.vendedor!==sg.vendedor)return false;if(sg.cargo&&!(p.cargo||'').toLowerCase().includes(sg.cargo.toLowerCase()))return false;
+if(sg.etapa&&!S.oportunidades.some(o=>o.cliente===c.id&&o.etapa===sg.etapa))return false;
+return canal==='WhatsApp'?Boolean(p.telefono):Boolean(p.email)})}
+function segTxt(sg){const t=[sg.sector,sg.ciudad,sg.estado&&('clientes '+sg.estado.toLowerCase()+'s'),sg.etapa&&('oportunidad en '+sg.etapa),sg.vendedor&&vn(sg.vendedor),sg.cargo&&('cargo «'+sg.cargo+'»')].filter(Boolean);return t.length?t.join(' · '):'Todos mis contactos'}
+function autoProg(){let n=0;S.campanas.forEach(k=>{if(k.estado==='Programada'&&k.prog&&k.prog<=today()){enviarK(k,true);n++}});if(n)save()}
+
+V.campanas=()=>{autoProg();
+const L=kS(),env=L.filter(k=>k.estado==='Enviada'),dest=env.reduce((s,k)=>s+k.dest.length,0),resp=env.reduce((s,k)=>s+k.dest.filter(d=>d.st==='Respondió').length,0);
+const ops=L.reduce((s,k)=>s+oppK(k.id).length,0),val=L.reduce((s,k)=>s+oppK(k.id).reduce((a,o)=>a+o.valor,0),0);
+return head('Campañas','Correos y mensajes de WhatsApp a segmentos de tus contactos',`<button class="btn" onclick="campForm()">+ Nueva campaña</button>`)+
+`<div class="kpis"><div class="kpi"><span>Campañas enviadas</span><b>${env.length}</b></div><div class="kpi"><span>Contactos alcanzados</span><b>${dest}</b></div><div class="kpi hot"><span>Tasa de respuesta</span><b>${dest?Math.round(resp/dest*100):0}%</b></div><div class="kpi"><span>Oportunidades generadas</span><b>${ops} · ${cop(val)}</b></div></div>
+<div class="card">`+tbl(['Campaña','Canal','Segmento','Estado','#Destinatarios','#Respuestas','#Oportunidades',''],L.slice().sort((a,b)=>(b.fecha||b.prog||'9').localeCompare(a.fecha||a.prog||'9')).map(k=>{const r=k.dest.filter(d=>d.st==='Respondió').length;
+return`<tr><td><b>${esc(k.nombre)}</b><br><span class="mut">${k.estado==='Enviada'?'Enviada el '+fd(k.fecha):k.estado==='Programada'?'Programada para el '+fd(k.prog):'Borrador'}</span></td><td>${chipK(k.canal)}</td><td>${esc(segTxt(k.seg))}</td><td>${chipK(k.estado)}</td><td class="num">${k.estado==='Enviada'?k.dest.length:segC(k.seg,k.canal).length}</td><td class="num">${k.estado==='Enviada'?r:'—'}</td><td class="num">${oppK(k.id).length}</td>
+<td class="acts">${k.estado==='Enviada'?`<button class="btn sm sec" onclick="campVer('${k.id}')">Ver resultados</button>`:`<button class="btn sm sec" onclick="campForm('${k.id}')">Editar</button>`}<button class="btn sm ghost" onclick="campDup('${k.id}')">Duplicar</button><button class="btn sm ghost" onclick="campDel('${k.id}')">Eliminar</button></td></tr>`}).join(''),'Aún no hay campañas. Crea la primera con «+ Nueva campaña».')+`</div>
+<div class="card"><h2>Cómo funciona</h2><p class="mut">Elige a quién escribir con filtros (sector, ciudad, estado, etapa de la oportunidad, cargo), redacta el mensaje con variables como {nombre} o {empresa} y envíalo o prográmalo. Cada envío queda en el historial del cliente; marca quién respondió y convierte las respuestas en oportunidades. <b>Demostración:</b> el envío se simula; en tu versión se conecta a tu correo (Gmail, Outlook o SMTP) o a WhatsApp Business.</p></div>`};
+
+function campForm(id){
+const k=id?S.campanas.find(x=>x.id===id):{nombre:'',canal:'Correo',seg:{},asunto:'',mensaje:'Hola {nombre},\n\n',prog:''};const sg=k.seg||{};
+modal(`<h3>${id?'Editar campaña':'Nueva campaña'}</h3><form id="cf" onsubmit="return false" oninput="campPrev()" onchange="campPrev()">
+<div class="grid2"><label>Nombre *<input name="nombre" value="${esc(k.nombre)}" required placeholder="Ej.: Lanzamiento de servicio"></label><label>Canal<select name="canal">${so(CANALES,k.canal)}</select></label></div>
+<h2 style="margin:10px 0 4px;font-size:14px">¿A quién? (segmento)</h2>
+<div class="grid3"><label>Sector<select name="sector"><option value="">Todos</option>${so(SECT,sg.sector)}</select></label><label>Ciudad<select name="ciudad"><option value="">Todas</option>${so(CIU,sg.ciudad)}</select></label><label>Estado del cliente<select name="estado"><option value="">Todos</option>${so(['Prospecto','Activo','Inactivo'],sg.estado)}</select></label>
+<label>Con oportunidad en<select name="etapa"><option value="">Cualquier etapa</option>${so(ETAPAS,sg.etapa)}</select></label>${mgr()?`<label>Vendedor<select name="vendedor"><option value="">Todo el equipo</option>${so(sellers().map(v=>[v.id,v.nombre]),sg.vendedor)}</select></label>`:''}<label>Cargo contiene<input name="cargo" value="${esc(sg.cargo||'')}" placeholder="Ej.: Gerente"></label></div>
+<h2 style="margin:10px 0 4px;font-size:14px">Mensaje</h2>
+<label id="w_asunto">Asunto<input name="asunto" value="${esc(k.asunto||'')}" placeholder="Ej.: {nombre}, una idea para {empresa}"></label>
+<label>Texto *<textarea name="mensaje" rows="6" required>${esc(k.mensaje)}</textarea></label>
+<div class="fb" style="margin:6px 0 0">${VARS.map(([v,l])=>`<button type="button" class="btn sm ghost" onclick="insVar('${v}')">+ ${l}</button>`).join('')}</div>
+<label style="max-width:260px">Programar envío (opcional)<input type="date" name="prog" min="${today()}" value="${esc(k.prog||'')}"></label>
+<div class="card" style="margin:10px 0 0;background:#f6fafb"><b id="cpN"></b><div id="cpP" class="mut" style="white-space:pre-wrap;margin-top:6px"></div></div>
+<div class="err" id="cerr"></div>
+<div class="btns"><button type="button" class="btn ghost" onclick="closeM()">Cancelar</button><button type="button" class="btn sec" onclick="campGuardar('${id||''}',false)">Guardar borrador</button><button type="button" class="btn" id="cbtn" onclick="campGuardar('${id||''}',true)">Enviar ahora</button></div></form>`,1);
+campPrev()}
+function insVar(v){const t=$('#cf').mensaje,s=t.selectionStart||t.value.length;t.value=t.value.slice(0,s)+v+t.value.slice(t.selectionEnd||s);t.focus();t.setSelectionRange(s+v.length,s+v.length);campPrev()}
+function campLeer(){const f=$('#cf').elements;return{nombre:f.nombre.value.trim(),canal:f.canal.value,asunto:f.asunto.value.trim(),mensaje:f.mensaje.value,prog:f.prog.value,seg:{sector:f.sector.value,ciudad:f.ciudad.value,estado:f.estado.value,etapa:f.etapa.value,vendedor:f.vendedor?f.vendedor.value:'',cargo:f.cargo.value.trim()}}}
+function campPrev(){const k=campLeer(),L=segC(k.seg,k.canal),p=L[0];
+$('#w_asunto').style.display=k.canal==='Correo'?'':'none';
+$('#cpN').textContent=L.length+(L.length===1?' destinatario':' destinatarios')+' · '+segTxt(k.seg)+(k.canal==='WhatsApp'?' (con teléfono)':' (con correo)');
+$('#cpP').textContent=p?('Vista previa para '+p.nombre+' ('+cn(p.cliente)+'):\n\n'+(k.canal==='Correo'?'Asunto: '+perso(k.asunto,p)+'\n\n':'')+perso(k.mensaje,p)):'Ningún contacto cumple este segmento.';
+$('#cbtn').textContent=k.prog&&k.prog>today()?'Programar envío':'Enviar ahora'}
+function campGuardar(id,enviar){
+const k=campLeer();
+if(!k.nombre){$('#cerr').textContent='Ponle un nombre a la campaña.';return}
+if(!k.mensaje.trim()||k.mensaje.trim()==='Hola {nombre},'){$('#cerr').textContent='Escribe el mensaje.';return}
+if(k.canal==='Correo'&&!k.asunto&&enviar){$('#cerr').textContent='Escribe el asunto del correo.';return}
+if(enviar&&!segC(k.seg,k.canal).length){$('#cerr').textContent='Ningún contacto cumple el segmento.';return}
+let r=id&&S.campanas.find(x=>x.id===id);
+if(!r){r={id:uid('k'),creador:cur().id,estado:'Borrador',fecha:'',dest:[]};S.campanas.push(r)}
+Object.assign(r,k);
+if(enviar&&k.prog&&k.prog>today()){r.estado='Programada';closeM();save();render();toast('Campaña programada para el '+fd(k.prog));return}
+if(enviar){enviarK(r);closeM();save();render();toast('Campaña enviada a '+r.dest.length+' contactos (simulado)');campVer(r.id);return}
+r.estado='Borrador';closeM();save();render();toast('Borrador guardado')}
+function enviarK(r,auto){
+r.dest=segC(r.seg,r.canal).map(p=>({p:p.id,c:p.cliente,st:'Enviado',opp:''}));r.estado='Enviada';r.fecha=today();
+[...new Set(r.dest.map(d=>d.c))].forEach(c=>logAct(r.canal,c,(byId('clientes',c)||{}).vendedor,`Campaña «${r.nombre}» enviada por ${r.canal.toLowerCase()}${auto?' (programada)':''}`))}
+function campVer(id){
+const k=S.campanas.find(x=>x.id===id);if(!k)return;const r=k.dest.filter(d=>d.st==='Respondió').length,o=oppK(k.id);
+modal(`<h3>${esc(k.nombre)}</h3><p class="mut">${chipK(k.canal)} · Enviada el ${fd(k.fecha)} · ${esc(segTxt(k.seg))}</p>
+<div class="kpis" style="margin-top:12px"><div class="kpi"><span>Enviados</span><b>${k.dest.length}</b></div><div class="kpi hot"><span>Respondieron</span><b>${r} (${k.dest.length?Math.round(r/k.dest.length*100):0}%)</b></div><div class="kpi"><span>Oportunidades</span><b>${o.length} · ${cop(o.reduce((s,x)=>s+x.valor,0))}</b></div></div>
+<details style="margin-bottom:10px"><summary class="mut" style="cursor:pointer">Ver mensaje</summary><div class="mut" style="white-space:pre-wrap;margin-top:6px">${k.canal==='Correo'?'<b>Asunto:</b> '+esc(k.asunto)+'\n\n':''}${esc(k.mensaje)}</div></details>`+
+tbl(['Contacto','Empresa','Estado',''],k.dest.map(d=>{const p=byId('contactos',d.p);if(!p)return'';const m=perso(k.mensaje,p);
+const lnk=k.canal==='WhatsApp'?`<a class="btn sm sec" target="_blank" rel="noopener" href="https://wa.me/${waNum(p)}?text=${encodeURIComponent(m)}">Abrir WhatsApp</a>`:`<a class="btn sm sec" href="mailto:${esc(p.email)}?subject=${encodeURIComponent(perso(k.asunto,p))}&body=${encodeURIComponent(m)}">Abrir correo</a>`;
+return`<tr><td><b>${esc(p.nombre)}</b><br><span class="mut">${esc(p.cargo||'')}</span></td><td>${esc(cn(p.cliente))}</td><td>${chipK(d.st)}${d.opp?' '+chipK('Oportunidad'):''}</td>
+<td class="acts">${lnk}<button class="btn sm ghost" onclick="campResp('${k.id}','${p.id}')">${d.st==='Respondió'?'Quitar respuesta':'Respondió'}</button>${d.opp?'':`<button class="btn sm" onclick="campOpp('${k.id}','${p.id}')">Crear oportunidad</button>`}</td></tr>`}).join(''),'Esta campaña no tiene destinatarios.')+
+`<div class="btns"><button class="btn ghost" onclick="campCsv('${k.id}')">Exportar resultados (CSV)</button><button class="btn" onclick="closeM()">Cerrar</button></div>`,1)}
+function campResp(kid,pid){const k=S.campanas.find(x=>x.id===kid),d=k.dest.find(x=>x.p===pid),p=byId('contactos',pid);
+d.st=d.st==='Respondió'?'Enviado':'Respondió';if(d.st==='Respondió')logAct(k.canal,d.c,(byId('clientes',d.c)||{}).vendedor,`${p?p.nombre:'Contacto'} respondió a la campaña «${k.nombre}»`);save();campVer(kid);render()}
+function campOpp(kid,pid){const k=S.campanas.find(x=>x.id===kid),p=byId('contactos',pid),c=pCli(p);ui.campOpp={k:kid,p:pid};
+openForm('oportunidades',null,{cliente:c.id,titulo:'Campaña «'+k.nombre+'» · '+c.empresa,valor:0,probabilidad:SUG.Contactado,etapa:'Contactado',cierre:dd(30),vendedor:c.vendedor})}
+function campDup(id){const k=S.campanas.find(x=>x.id===id);S.campanas.push({id:uid('k'),creador:cur().id,nombre:k.nombre+' (copia)',canal:k.canal,seg:Object.assign({},k.seg),asunto:k.asunto,mensaje:k.mensaje,prog:'',estado:'Borrador',fecha:'',dest:[]});save();render();toast('Campaña duplicada como borrador')}
+function campDel(id){const k=S.campanas.find(x=>x.id===id);ask(`¿Eliminar la campaña <b>${esc(k.nombre)}</b>? Las oportunidades que generó se conservan.`,()=>{S.campanas=S.campanas.filter(x=>x.id!==id);save();render();toast('Campaña eliminada')})}
+function campCsv(id){const k=S.campanas.find(x=>x.id===id),q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
+const rows=[['Contacto','Empresa','Correo','Teléfono','Estado','Oportunidad']].concat(k.dest.map(d=>{const p=byId('contactos',d.p)||{},o=d.opp&&byId('oportunidades',d.opp);return[p.nombre,cn(d.c),p.email,p.telefono,d.st,o?o.titulo+' ('+cop(o.valor)+')':'']}));
+dl('campana-'+noacc(k.nombre).toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.csv','﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n'),'text/csv;charset=utf-8');toast('Resultados exportados')}
+/* Las oportunidades creadas desde una campaña quedan vinculadas a ella. */
+const _hookOpp=HOOK.oportunidades;
+HOOK.oportunidades=function(o,id){const cp=!id&&ui.campOpp;if(cp)o.campana=cp.k;const err=_hookOpp(o,id);
+if(!err&&cp){const op=S.oportunidades[S.oportunidades.length-1],k=S.campanas.find(x=>x.id===cp.k),d=k&&k.dest.find(x=>x.p===cp.p);if(d){d.opp=op.id;d.st='Respondió'}ui.campOpp=null}return err};
+const _closeM=closeM;closeM=function(){ui.campOpp=null;_closeM()};
 
 V.oportunidades=()=>{
 const o=oppS(),cols=ui.etapa?[ui.etapa]:ETAPAS;
