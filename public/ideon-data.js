@@ -36,7 +36,7 @@
       pwChanged: "Contraseña actualizada.", pwWrong: "La contraseña actual no es correcta.", pwWeak: "La nueva contraseña debe tener al menos 8 caracteres.",
       rejected: "Un cambio no se pudo guardar y se descartó.", leave: "Hay cambios sin guardar.", demoUser: "Usuario de demostración",
       powered: "Datos seguros con Ideonapp", role: { admin: "Administrador", member: "Miembro" },
-      quota: "Llegaste al límite mensual de búsquedas de prospección.", badQuery: "Escribe qué tipo de empresas buscas (mínimo 3 letras).",
+      quota: "Llegaste al límite mensual de búsquedas de prospección.", noSearches: "No quedan búsquedas de prospección. El dueño de la cuenta puede activar el plan o comprar búsquedas en Ideonapp (Publicar → Prospección con IA).", badQuery: "Escribe qué tipo de empresas buscas (mínimo 3 letras).",
       searchFailed: "No se pudo completar la búsqueda. Inténtalo de nuevo.", demoNote: "Resultado de ejemplo (vista previa): en la app real la IA busca en la web y cita la fuente.",
     },
     en: {
@@ -48,7 +48,7 @@
       pwChanged: "Password updated.", pwWrong: "The current password is wrong.", pwWeak: "The new password must be at least 8 characters.",
       rejected: "A change couldn't be saved and was discarded.", leave: "There are unsaved changes.", demoUser: "Demo user",
       powered: "Data secured by Ideonapp", role: { admin: "Admin", member: "Member" },
-      quota: "You've reached this month's prospecting search limit.", badQuery: "Type what kind of businesses you're looking for (3+ letters).",
+      quota: "You've reached this month's prospecting search limit.", noSearches: "No prospecting searches left. The account owner can activate the plan or buy searches in Ideonapp (Publish → AI prospecting).", badQuery: "Type what kind of businesses you're looking for (3+ letters).",
       searchFailed: "The search couldn't be completed. Try again.", demoNote: "Sample result (preview): in the live app the AI searches the web and cites the source.",
     },
   }[LANG];
@@ -239,7 +239,7 @@
       return req("POST", "/prospect", { query: String(query || ""), location: opts.location || undefined, max: opts.max || 10 }).then(function (j) {
         return { results: j.results || [], remaining: j.remaining, demo: false };
       }, function (e) {
-        var msg = e.code === "quota_exceeded" ? TXT.quota : e.code === "invalid_query" ? TXT.badQuery : TXT.searchFailed;
+        var msg = e.code === "no_searches" ? TXT.noSearches : e.code === "quota_exceeded" ? TXT.quota : e.code === "invalid_query" ? TXT.badQuery : TXT.searchFailed;
         var err = new Error(msg); err.code = e.code; throw err;
       });
     },

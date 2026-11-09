@@ -63,3 +63,25 @@ test("prospección: limpia, valida y deduplica lo que devuelve la IA", async () 
   assert.equal(prospectRequestSchema.parse({ query: "ferreterías", location: " " }).location, undefined);
   assert.equal(prospectRequestSchema.safeParse({ query: "ferreterías", max: 50 }).success, false);
 });
+
+test("prospección: precios desde ajustes, orden de saldos y extensión del plan", async () => {
+  const { prospectPricingFrom, DEFAULT_PROSPECT_PRICING, nextPool, remainingSearches, extendPlan } = await import("../dist-tests/features/appdata/core.js");
+  assert.deepEqual(prospectPricingFrom([]), DEFAULT_PROSPECT_PRICING);
+  const pr = prospectPricingFrom([{ key: "prospect_plan_price", value: 90000 }, { key: "prospect_single_price", value: "15000" }, { key: "prospect_trial_searches", value: -2 }]);
+  assert.equal(pr.planPrice, 90000); assert.equal(pr.singlePrice, 15000); assert.equal(pr.planSearches, 20);
+  assert.ok(pr.trialSearches >= 0);
+  const b = { trial: { total: 3, used: 0 }, plan: { active: true, until: null, searches: 20, used: 0 }, credits: { bought: 2, used: 0 } };
+  assert.equal(nextPool(b), "trial"); assert.equal(remainingSearches(b), 25);
+  b.trial.used = 3; assert.equal(nextPool(b), "plan");
+  b.plan.used = 20; assert.equal(nextPool(b), "credit"); assert.equal(remainingSearches(b), 2);
+  b.credits.used = 2; assert.equal(nextPool(b), null); assert.equal(remainingSearches(b), 0);
+  b.plan = { active: false, until: null, searches: 0, used: 5 }; b.credits.bought = 3;
+  assert.equal(nextPool(b), "credit"); assert.equal(remainingSearches(b), 1);
+  const now = new Date("2026-11-09T00:00:00Z");
+  const fresh = extendPlan({ until: null, since: null, granted: 0 }, { planDays: 30, planSearches: 20 }, now);
+  assert.deepEqual(fresh, { until: "2026-12-09T00:00:00.000Z", since: now.toISOString(), granted: 20 });
+  const renew = extendPlan({ until: fresh.until, since: fresh.since, granted: 20 }, { planDays: 30, planSearches: 20 }, new Date("2026-11-20T00:00:00Z"));
+  assert.deepEqual(renew, { until: "2027-01-08T00:00:00.000Z", since: fresh.since, granted: 40 });
+  const expired = extendPlan({ until: "2026-10-01T00:00:00Z", since: "2026-09-01T00:00:00Z", granted: 20 }, { planDays: 30, planSearches: 20 }, now);
+  assert.equal(expired.granted, 20); assert.equal(expired.since, now.toISOString());
+});

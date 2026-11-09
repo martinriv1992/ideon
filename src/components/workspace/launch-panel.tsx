@@ -325,3 +325,64 @@ export function BuyDomainCard({ detail }: { detail: ProjectDetail }) {
     </Card>
   );
 }
+
+interface ProspectInfo {
+  pricing: { planPrice: number; planSearches: number; planDays: number; singlePrice: number; trialSearches: number };
+  balance: { trial: { total: number; used: number }; plan: { active: boolean; until: string | null; searches: number; used: number }; credits: { bought: number; used: number } };
+  remaining: number; usesProspect: boolean;
+}
+
+/** Prospección con IA de la app: saldo (prueba, plan, sueltas) y compra por ePayco. Solo si la app usa db.prospect. */
+export function ProspectCard({ detail }: { detail: ProjectDetail }) {
+  const t = useTranslations("app.launch");
+  const locale = useLocale();
+  const [info, setInfo] = useState<ProspectInfo | null>(null);
+  const [qty, setQty] = useState(1);
+  const [busy, setBusy] = useState<"plan" | "single" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const id = detail.project.id;
+  useEffect(() => { api<ProspectInfo>(`/api/projects/${id}/prospect`).then(setInfo).catch(() => setInfo(null)); }, [id, detail.project.current_version_id]);
+  if (!detail.subscription || !info?.usesProspect) return null;
+  const { pricing: p, balance: b } = info;
+  const cur = detail.billingCurrency;
+  async function buy(kind: "plan" | "single") {
+    setBusy(kind); setError(null);
+    try {
+      const r = await api<{ checkout: Checkout }>(`/api/projects/${id}/prospect/buy`, { method: "POST", body: JSON.stringify({ kind, qty, locale }) });
+      await openEpayco(r.checkout);
+    } catch (e) { setError((e as Error).message); } finally { setBusy(null); }
+  }
+  const trialLeft = Math.max(0, b.trial.total - b.trial.used);
+  const creditsLeft = Math.max(0, b.credits.bought - b.credits.used);
+  return (
+    <Card className="p-3 space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <b className="flex items-center gap-1.5"><Search className="size-4" /> {t("prospectTitle")}</b>
+        <Badge tone={info.remaining > 3 ? "success" : info.remaining > 0 ? "warning" : "danger"}>{t("prospectLeft", { n: info.remaining })}</Badge>
+      </div>
+      <p className="text-[12px] text-fg-muted leading-relaxed">{t("prospectHelp")}</p>
+      <ul className="text-[12.5px] space-y-0.5">
+        {trialLeft > 0 && <li>{t("prospectTrial", { left: trialLeft, total: b.trial.total })}</li>}
+        <li>{b.plan.active && b.plan.until
+          ? t("prospectPlanActive", { used: b.plan.used, total: b.plan.searches, until: new Date(b.plan.until).toLocaleDateString(locale) })
+          : t("prospectPlanNone")}</li>
+        {b.credits.bought > 0 && <li>{t("prospectCredits", { left: creditsLeft })}</li>}
+      </ul>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" loading={busy === "plan"} onClick={() => void buy("plan")}>
+          {t(b.plan.active ? "prospectRenew" : "prospectBuyPlan", { n: p.planSearches, price: money(p.planPrice, cur, locale), days: p.planDays })}
+        </Button>
+        <span className="flex items-center gap-1.5">
+          <select aria-label={t("prospectQty")} value={qty} onChange={(e) => setQty(Number(e.target.value))} className="h-8 rounded-[8px] border border-border bg-surface px-2 text-[13px]">
+            {[1, 3, 5, 10].map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+          <Button size="sm" variant="secondary" loading={busy === "single"} onClick={() => void buy("single")}>
+            {t("prospectBuySingle", { n: qty, price: money(p.singlePrice * qty, cur, locale) })}
+          </Button>
+        </span>
+      </div>
+      <p className="text-[11.5px] text-fg-subtle">{t("prospectNote", { price: money(p.singlePrice, cur, locale) })}</p>
+      {error && <p className="text-[12px] text-danger">{error}</p>}
+    </Card>
+  );
+}

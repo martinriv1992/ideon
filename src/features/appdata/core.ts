@@ -136,3 +136,53 @@ export function normalizeProspects(raw: unknown, max: number): Prospect[] {
   }
   return out;
 }
+
+// ------------------------------------------------------------------ Cobro de la prospección
+/** Precios y cupos (ajustes de la plataforma, en la moneda de cobro). */
+export interface ProspectPricing { planPrice: number; planSearches: number; planDays: number; singlePrice: number; trialSearches: number }
+export const DEFAULT_PROSPECT_PRICING: ProspectPricing = { planPrice: 80000, planSearches: 20, planDays: 30, singlePrice: 12000, trialSearches: 3 };
+
+export function prospectPricingFrom(rows: { key: string; value: unknown }[]): ProspectPricing {
+  const m = new Map(rows.map((r) => [r.key, r.value]));
+  const n = (k: string, d: number) => { const v = Number(m.get(k)); return Number.isFinite(v) && v >= 0 ? v : d; };
+  return {
+    planPrice: n("prospect_plan_price", DEFAULT_PROSPECT_PRICING.planPrice),
+    planSearches: Math.floor(n("prospect_plan_searches", DEFAULT_PROSPECT_PRICING.planSearches)),
+    planDays: Math.max(1, Math.floor(n("prospect_plan_days", DEFAULT_PROSPECT_PRICING.planDays))),
+    singlePrice: n("prospect_single_price", DEFAULT_PROSPECT_PRICING.singlePrice),
+    trialSearches: Math.floor(n("prospect_trial_searches", DEFAULT_PROSPECT_PRICING.trialSearches)),
+  };
+}
+
+export type ProspectPool = "trial" | "plan" | "credit";
+export interface ProspectBalance {
+  trial: { total: number; used: number };
+  plan: { active: boolean; until: string | null; searches: number; used: number };
+  credits: { bought: number; used: number };
+}
+
+/** De qué bolsa sale la próxima búsqueda: primero la prueba gratis, luego el plan del periodo y por último las búsquedas sueltas. */
+export function nextPool(b: ProspectBalance): ProspectPool | null {
+  if (b.trial.used < b.trial.total) return "trial";
+  if (b.plan.active && b.plan.used < b.plan.searches) return "plan";
+  if (b.credits.used < b.credits.bought) return "credit";
+  return null;
+}
+
+export function remainingSearches(b: ProspectBalance) {
+  return Math.max(0, b.trial.total - b.trial.used) + (b.plan.active ? Math.max(0, b.plan.searches - b.plan.used) : 0) + Math.max(0, b.credits.bought - b.credits.used);
+}
+
+/**
+ * Pago del plan: si sigue activo, se suman sus búsquedas y la vigencia se alarga desde el final;
+ * si venció, empieza hoy con las búsquedas del plan (las no usadas del periodo anterior se pierden).
+ */
+export function extendPlan(cur: { until: string | null; since: string | null; granted: number }, p: Pick<ProspectPricing, "planDays" | "planSearches">, now = new Date()) {
+  const active = Boolean(cur.until && new Date(cur.until) > now);
+  const start = active ? new Date(cur.until!) : now;
+  return {
+    until: new Date(start.getTime() + p.planDays * 86_400_000).toISOString(),
+    since: active && cur.since ? cur.since : now.toISOString(),
+    granted: (active ? cur.granted : 0) + p.planSearches,
+  };
+}

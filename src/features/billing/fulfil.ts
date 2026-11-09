@@ -5,6 +5,7 @@ import { billingFromSettings, type BillingSettings } from "./pricing";
 import * as registrar from "@/features/domains/registrar";
 import { requestPublish } from "@/features/deploy/review";
 import type { DomainOrder, Json, Project } from "@/types/database.types";
+import { extendPlan, prospectPricingFrom } from "@/features/appdata/core";
 
 /**
  * Lo que ocurre cuando un pago se confirma (idempotente: ePayco puede reenviar
@@ -17,7 +18,7 @@ import type { DomainOrder, Json, Project } from "@/types/database.types";
 type Admin = ReturnType<typeof createAdminClient>;
 
 export interface PaymentMeta {
-  type: "launch" | "renewal" | "changes" | "domain";
+  type: "launch" | "renewal" | "changes" | "domain" | "prospect_plan" | "prospect_credits";
   /** Paquete de cambios comprado (type = "changes"). */
   pack_qty?: number;
   user_id: string;
@@ -72,6 +73,7 @@ export async function fulfilPayment(paymentId: string, providerData: Record<stri
   if (meta.type === "launch") await fulfilLaunch(db, payment.project_id, payment.organization_id, payment.amount, payment.currency, meta);
   else if (meta.type === "renewal") await fulfilRenewal(db, payment.project_id, meta);
   else if (meta.type === "domain") await fulfilDomain(db, payment.project_id, meta);
+  else if (meta.type === "prospect_plan" || meta.type === "prospect_credits") await fulfilProspect(db, payment.project_id, meta);
   else if (meta.type === "changes" && meta.subscription_id && meta.pack_qty) {
     const { data: sub } = await db.from("subscriptions").select("extra_changes").eq("id", meta.subscription_id).single();
     if (sub) await db.from("subscriptions").update({ extra_changes: sub.extra_changes + meta.pack_qty }).eq("id", meta.subscription_id);
@@ -114,6 +116,21 @@ async function fulfilDomain(db: Admin, projectId: string, meta: PaymentMeta) {
   }
   await event(db, projectId, "domain.paid", { domain: meta.domain });
   await purchaseDomain(meta.domain_order_id);
+}
+
+/** Prospección con IA: el plan suma búsquedas y vigencia; las búsquedas sueltas se acumulan sin caducidad. */
+async function fulfilProspect(db: Admin, projectId: string, meta: PaymentMeta) {
+  const { data: p } = await db.from("projects").select("prospect_plan_until,prospect_plan_since,prospect_plan_granted,prospect_credits_bought").eq("id", projectId).single();
+  if (!p) return;
+  if (meta.type === "prospect_plan") {
+    const { data: rows } = await db.from("platform_settings").select("key,value").like("key", "prospect_%");
+    const next = extendPlan({ until: p.prospect_plan_until, since: p.prospect_plan_since, granted: p.prospect_plan_granted }, { ...prospectPricingFrom(rows ?? []), planSearches: meta.pack_qty ?? prospectPricingFrom(rows ?? []).planSearches });
+    await db.from("projects").update({ prospect_plan_until: next.until, prospect_plan_since: next.since, prospect_plan_granted: next.granted }).eq("id", projectId);
+    await event(db, projectId, "prospect.plan_paid", { until: next.until, searches: next.granted });
+  } else {
+    await db.from("projects").update({ prospect_credits_bought: p.prospect_credits_bought + (meta.pack_qty ?? 0) }).eq("id", projectId);
+    await event(db, projectId, "prospect.credits_paid", { qty: meta.pack_qty ?? 0 });
+  }
 }
 
 async function fulfilRenewal(db: Admin, projectId: string, meta: PaymentMeta) {

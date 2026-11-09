@@ -1,16 +1,16 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { prospectRequestSchema } from "@/features/appdata/core";
+import { nextPool, prospectRequestSchema, remainingSearches } from "@/features/appdata/core";
+import { prospectBalance } from "@/features/appdata/server";
 import { prospect } from "@/features/appdata/prospect";
 import { appFail, appJson, guardApp } from "@/features/appdata/guard";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-const MONTH = 30 * 86_400_000;
-
 /**
  * Prospección con IA desde el CRM del cliente (usuarios con sesión).
- * Cupo por app: ajuste `prospect_monthly_limit` (por defecto 40 búsquedas cada 30 días).
+ * Cada búsqueda sale de una bolsa: prueba gratis → plan prepago vigente → búsquedas sueltas
+ * (las compra el dueño del proyecto en Ideonapp, pestaña Publicar).
  */
 export async function POST(req: Request, { params }: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await params;
@@ -21,18 +21,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ project
   if (!process.env.ANTHROPIC_API_KEY) return appFail("not_configured", 503);
 
   const db = createAdminClient();
-  const { data: setting } = await db.from("platform_settings").select("value").eq("key", "prospect_monthly_limit").maybeSingle();
-  const limit = Number(setting?.value ?? 40) || 0;
-  const since = new Date(Date.now() - MONTH).toISOString();
-  const { count } = await db.from("rate_limits").select("id", { count: "exact", head: true }).eq("bucket", "prospect").eq("ip_hash", projectId).gte("created_at", since);
-  if ((count ?? 0) >= limit) return appJson({ error: { code: "quota_exceeded", limit } }, 429);
-  const { data: slot } = await db.from("rate_limits").insert({ bucket: "prospect", ip_hash: projectId }).select("id").single();
+  const { balance } = await prospectBalance(projectId);
+  const pool = nextPool(balance);
+  if (!pool) return appJson({ error: { code: "no_searches" } }, 402);
+  const { data: slot } = await db.from("rate_limits").insert({ bucket: `prospect:${pool}`, ip_hash: projectId }).select("id").single();
 
   const { data: project } = await db.from("projects").select("organization_id,locale").eq("id", projectId).single();
   try {
     const r = await prospect({ ...body.data, locale: project?.locale ?? "es" });
     if (project) await db.from("ai_usage").insert({ organization_id: project.organization_id, project_id: projectId, provider: "anthropic", model: r.model, cost_usd: Number(r.costUsd.toFixed(6)) });
-    return appJson({ results: r.results, remaining: Math.max(0, limit - (count ?? 0) - 1) });
+    return appJson({ results: r.results, remaining: Math.max(0, remainingSearches(balance) - 1) });
   } catch (e) {
     console.error("prospect failed", projectId, e instanceof Error ? e.message : e);
     // Una búsqueda fallida no consume cupo.
