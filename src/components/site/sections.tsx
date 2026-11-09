@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import {
   ArrowRight, Bot, Boxes, BriefcaseBusiness, Check, Code2, Compass, DraftingCompass, ExternalLink, FileCheck2, Gauge, Globe,
-  KeyRound, Layers, Palette, Rocket, ShieldCheck, SlidersHorizontal, Sparkles, Users, Workflow, Eye, Scale, Handshake,
+  KeyRound, Layers, Palette, Server, Wallet, Rocket, ShieldCheck, SlidersHorizontal, Sparkles, Users, Workflow, Eye, Scale, Handshake,
 } from "lucide-react";
 import { Badge, Card, Container, SectionHeading } from "@/components/ui/card";
 import { Reveal } from "@/components/marketing/reveal";
@@ -43,6 +43,7 @@ export async function SiteHero({ isAuthenticated }: { isAuthenticated: boolean }
             <CtaLink href={`/${locale}/contact?intent=meeting`} track="meeting_cta_clicked" trackLabel="hero">{t("ctaPrimary")} <ArrowRight className="size-4" aria-hidden /></CtaLink>
             <CtaLink href={`/${locale}#solutions`} variant="secondary">{t("ctaSecondary")}</CtaLink>
           </div>
+          <p className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-fg-muted animate-fade-up [animation-delay:220ms]"><Check className="size-4 text-accent" aria-hidden />{t("ownership")}</p>
         </div>
         <div className="mt-16 animate-fade-up [animation-delay:260ms]">
           <p className="text-center text-[13.5px] text-fg-subtle mb-4">{t("selfServe")}</p>
@@ -241,6 +242,7 @@ export async function StartAndPricing() {
             </li>
           ))}
         </ol>
+        <div className="mt-12"><OwnershipBand /></div>
         <div className="mt-12">
           <PricingTable defaultRegion={regionForCountry(country)} />
         </div>
@@ -249,6 +251,38 @@ export async function StartAndPricing() {
         </div>
       </Container>
     </section>
+  );
+}
+
+/* ----------------------------------------------------------------------------- PAGO ÚNICO */
+const OWNERSHIP_ICONS = [Wallet, KeyRound, Users, Server];
+
+/** Mensaje comercial clave: se compra el software (pago único), no una licencia ni una suscripción. */
+export async function OwnershipBand({ heading = true }: { heading?: boolean }) {
+  const t = await getTranslations("site.ownership");
+  const items = t.raw("items") as { title: string; text: string }[];
+  return (
+    <div className="rounded-[20px] border border-accent/40 bg-surface p-6 sm:p-8">
+      {heading && (
+        <div className="max-w-2xl">
+          <Badge tone="accent">{t("eyebrow")}</Badge>
+          <h2 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-balance">{t("title")}</h2>
+          <p className="mt-2 text-[15px] text-fg-muted leading-relaxed">{t("text")}</p>
+        </div>
+      )}
+      <div className={cn("grid sm:grid-cols-2 lg:grid-cols-4 gap-5", heading && "mt-7")}>
+        {items.map((it, i) => {
+          const Icon = OWNERSHIP_ICONS[i] ?? Check;
+          return (
+            <div key={it.title}>
+              <Icon className="size-5 text-accent" aria-hidden />
+              <h3 className="mt-2.5 text-[15px] font-semibold">{it.title}</h3>
+              <p className="mt-1 text-[14px] text-fg-muted leading-relaxed">{it.text}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

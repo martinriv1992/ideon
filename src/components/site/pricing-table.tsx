@@ -31,6 +31,7 @@ export function PricingTable({ defaultRegion }: { defaultRegion: PricingRegion }
             <p className="mt-1 text-[14px] text-fg-muted min-h-[42px]">{t(`tiers.${tier.key}.text`)}</p>
             <p className="mt-4 text-[13px] text-fg-subtle">{t("from")}</p>
             <p className="text-2xl font-semibold tracking-tight tabular-nums">{formatFrom(tier.from, plan.currency, locale)}</p>
+            <p className="mt-1 text-[12.5px] font-medium text-accent">{t("oneTime")}</p>
           </div>
         ))}
       </div>

@@ -290,7 +290,7 @@ const rank=sellers().map(v=>({v,m:ventasMes(v.id,mes)})).sort((a,b)=>b.m-a.m).ma
 const ag=tarS().filter(t=>t.estado==='Pendiente'&&t.fecha<=today()).sort((a,b)=>a.fecha<b.fecha?-1:1);
 const agh=ag.map(t=>`<div class="row ${t.fecha<today()?'late':'now'}"><div class="grow"><b>${esc(t.titulo)}</b><div class="mut">${t.tipo} · ${esc(cn(t.cliente))} · ${t.fecha<today()?'Vencida '+fd(t.fecha):'Hoy'}</div></div><button class="btn sm sec" onclick="quickDone('${t.id}')">Hecha</button></div>`).join('')||'<div class="empty">Sin tareas pendientes para hoy. ¡Buen trabajo!</div>';
 return head('Panel gerencial',`Hola, ${esc(cur().nombre)} · ${mgr()?'vista del equipo':'tus cifras'}`,'<button class="btn" onclick="openForm(\'oportunidades\',null,newOpp())">Crear oportunidad</button>',1)+
-`<div class="demo">Demo preparada por Ideonapp para Big Fidelity · datos de ejemplo ficticios</div><div class="kpis">`+
+`<div class="demo">Demo preparada por Ideonapp para Big Fidelity · datos ficticios · Pago único: el software es suyo, sin licencias</div><div class="kpis">`+
 kp('Ventas ganadas del mes',cop(vm),'oportunidades ganadas en '+mes)+
 kp('Tasa de cierre',(gan+per?Math.round(gan/(gan+per)*100):0)+'%',gan+' ganadas · '+per+' perdidas')+
 kp('Pronóstico ponderado',cop(pron),'valor × probabilidad')+

@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { headers } from "next/headers";
 import { ArrowRight, Check } from "lucide-react";
 import { Container } from "@/components/ui/card";
-import { CtaLink } from "@/components/site/sections";
+import { CtaLink, OwnershipBand } from "@/components/site/sections";
 import { DemoFrame } from "@/components/site/demo-frame";
 import { TrackOnView } from "@/components/site/site-analytics";
 import { PRICING, formatFrom, regionForCountry } from "@/content/commercial/pricing";
@@ -76,6 +76,7 @@ export default async function InventoryPage({ params }: { params: Promise<{ loca
               <div className="mt-6"><CtaLink href={`/${locale}/contact?solution=inventory`} track="proposal_requested" trackLabel="inventory_pricing">{t("cta")} <ArrowRight className="size-4" aria-hidden /></CtaLink></div>
             </div>
           </div>
+          <div className="mt-6"><OwnershipBand /></div>
         </Container>
       </section>
     </div>

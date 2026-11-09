@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { money } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import { OwnershipBand } from "@/components/site/sections";
 
 /** Precios vigentes de los paquetes (filas pkg_* de pricing_plans; si no, los de referencia). */
 async function packagePlans() {
@@ -115,6 +116,7 @@ export async function BusinessPackages({ heading = true }: { heading?: boolean }
           })}
         </div>
         <p className="mt-6 text-center text-[13px] text-fg-subtle max-w-3xl mx-auto leading-relaxed">{t("footnote")}</p>
+        <div className="mt-10"><OwnershipBand /></div>
       </Container>
     </section>
   );
