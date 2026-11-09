@@ -78,6 +78,19 @@ contraseña. Antes, cada navegador tenía su propia copia en `localStorage`.
   - Haiku: completa, QA 16/16, funciona en la vista previa.
   - Sonnet: completa, QA 15/16, funciona en vivo con login, 5 vistas y persistencia entre sesiones.
 
+## Prospección con IA (`db.prospect`)
+
+- **Qué hace:** desde el CRM del cliente, `db.prospect('ferreterías', { location: 'Medellín', max: 10 })` busca en la web, con Claude y las herramientas `web_search` y `web_fetch`, empresas reales y sus datos de contacto corporativos. Devuelve nombre, sector, ciudad, dirección, teléfono, WhatsApp, correo, web, la URL de la **fuente** y una nota.
+- **Fuentes:** no se usan LinkedIn, Instagram, Facebook, TikTok ni X (están bloqueadas). Solo datos publicados por la propia empresa o por directorios públicos, sin inventar.
+- **Dónde está:**
+  - API `POST /api/apps/[projectId]/prospect`, solo para usuarios de la app con sesión.
+  - Lógica en `src/features/appdata/prospect.ts`; limpieza de resultados en `normalizeProspects` (`core.ts`).
+- **Cupo:** `prospect_monthly_limit` (por defecto 40 búsquedas por app cada 30 días, en Backoffice → Ajustes). Una búsqueda fallida no gasta cupo.
+- **Coste:** se registra en `ai_usage`. Prueba real del 09/11/2026: «ferreterías en Medellín» devolvió 6 empresas reales en 47 s por 0,35 USD con Opus 5.5.
+- **Modelo:** el de la fila `prospect` de `model_policies`; sin ella, `claude-opus-5-5`.
+- **Si `web_fetch` no está permitido** (como en entornos con red restringida), se busca solo con `web_search`.
+- **Vista previa y demo:** resultados ficticios marcados como tales. En el demo CRM, vista «Prospección IA» con importación como prospectos y campaña para los importados.
+
 ## Rollback
 
 - **Código:** revertir el merge o usar Instant Rollback en Vercel. Las apps publicadas antes de este cambio no usan el SDK y no se ven afectadas.

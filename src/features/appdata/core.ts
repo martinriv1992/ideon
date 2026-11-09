@@ -74,3 +74,65 @@ export function sessionCookieName(projectId: string) {
 export function usesIdeonData(html: string) {
   return /\bIdeonDB\s*\.\s*ready\s*\(/.test(html);
 }
+
+// ------------------------------------------------------------------ Prospección con IA
+/** Búsqueda de empresas: qué tipo de negocio y dónde (p. ej. «ferreterías», «Medellín»). */
+export const prospectRequestSchema = z.object({
+  query: z.string().trim().min(3, "query").max(200, "query"),
+  location: z.string().trim().max(120).optional().transform((v) => v || undefined),
+  max: z.number().int().min(1).max(20).default(10),
+});
+
+const clean = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().replace(/\s+/g, " ").slice(0, max) : "");
+const EMAIL = /^[^\s@<>()[\]",;:]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+
+/** Teléfono razonable (7 a 15 dígitos), conservando un + inicial. */
+export function cleanPhone(v: unknown) {
+  const s = clean(v, 40);
+  const digits = s.replace(/\D/g, "");
+  if (digits.length < 7 || digits.length > 15) return "";
+  return (s.trim().startsWith("+") ? "+" : "") + digits;
+}
+
+export function cleanUrl(v: unknown) {
+  const s = clean(v, 300);
+  if (!s) return "";
+  try {
+    const u = new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`);
+    return u.protocol === "https:" || u.protocol === "http:" ? u.toString() : "";
+  } catch { return ""; }
+}
+
+export interface Prospect { empresa: string; sector: string; ciudad: string; direccion: string; telefono: string; whatsapp: string; correo: string; web: string; fuente: string; nota: string }
+
+/**
+ * Normaliza lo que devuelve la IA: descarta empresas sin nombre o sin fuente,
+ * correos y teléfonos mal formados, perfiles de LinkedIn como fuente y
+ * duplicados (misma web o mismo nombre).
+ */
+export function normalizeProspects(raw: unknown, max: number): Prospect[] {
+  const list = Array.isArray(raw) ? raw : raw && typeof raw === "object" && Array.isArray((raw as { empresas?: unknown }).empresas) ? (raw as { empresas: unknown[] }).empresas : [];
+  const out: Prospect[] = [];
+  const seen = new Set<string>();
+  for (const r of list) {
+    if (!r || typeof r !== "object") continue;
+    const o = r as Record<string, unknown>;
+    const empresa = clean(o.empresa ?? o.nombre ?? o.name, 160);
+    const fuente = cleanUrl(o.fuente ?? o.source);
+    if (!empresa || !fuente || /linkedin\.com/i.test(fuente)) continue;
+    const web = cleanUrl(o.web ?? o.website);
+    const correo = clean(o.correo ?? o.email, 160).toLowerCase();
+    const key = (web ? new URL(web).hostname.replace(/^www\./, "") : empresa.toLowerCase());
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({
+      empresa, fuente, web,
+      sector: clean(o.sector, 80), ciudad: clean(o.ciudad ?? o.city, 80), direccion: clean(o.direccion ?? o.address, 200),
+      telefono: cleanPhone(o.telefono ?? o.phone), whatsapp: cleanPhone(o.whatsapp),
+      correo: EMAIL.test(correo) ? correo : "",
+      nota: clean(o.nota ?? o.note, 240),
+    });
+    if (out.length >= max) break;
+  }
+  return out;
+}

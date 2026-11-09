@@ -39,3 +39,27 @@ test("formato de registro para el SDK", () => {
   const r = toClient({ id: "p1", collection: "productos", data: { a: 1 }, created_at: "c", updated_at: "u", deleted_at: null, created_by: null, updated_by: null });
   assert.deepEqual(r, { id: "p1", collection: "productos", data: { a: 1 }, createdAt: "c", updatedAt: "u", createdBy: null, deleted: false });
 });
+
+test("prospección: limpia, valida y deduplica lo que devuelve la IA", async () => {
+  const { normalizeProspects, prospectRequestSchema, cleanPhone } = await import("../dist-tests/features/appdata/core.js");
+  const raw = { empresas: [
+    { empresa: "Ferretería Uno", telefono: "(604) 511-9828", correo: "INFO@Uno.co", web: "uno.co", fuente: "https://uno.co/contacto" },
+    { empresa: "Ferretería Uno copia", web: "https://www.uno.co/", fuente: "https://otra.com" },
+    { empresa: "Sin fuente", correo: "a@b.co" },
+    { empresa: "Perfil", fuente: "https://www.linkedin.com/company/x" },
+    { empresa: "Dos", correo: "no-es-correo", telefono: "123", fuente: "https://dos.com" },
+  ] };
+  const r = normalizeProspects(raw, 10);
+  assert.deepEqual(r.map((x) => x.empresa), ["Ferretería Uno", "Dos"]);
+  assert.equal(r[0].correo, "info@uno.co");
+  assert.equal(r[0].telefono, "6045119828");
+  assert.equal(r[0].web, "https://uno.co/");
+  assert.equal(r[1].correo, "");
+  assert.equal(r[1].telefono, "");
+  assert.equal(normalizeProspects(raw, 1).length, 1);
+  assert.deepEqual(normalizeProspects(null, 5), []);
+  assert.equal(cleanPhone("+57 300 555 0101"), "+573005550101");
+  assert.equal(prospectRequestSchema.safeParse({ query: "x" }).success, false);
+  assert.equal(prospectRequestSchema.parse({ query: "ferreterías", location: " " }).location, undefined);
+  assert.equal(prospectRequestSchema.safeParse({ query: "ferreterías", max: 50 }).success, false);
+});

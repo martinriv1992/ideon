@@ -891,7 +891,9 @@
       "previewBudget": "Tope diario (USD) de gasto de IA en vistas previas gratuitas de toda la plataforma.",
       "maxSignups": "Máximo de cuentas nuevas por conexión en 24 horas.",
       "includedChanges": "Cambios por chat incluidos por año en el plan anual.",
-      "changePacks": "Paquetes de cambios adicionales: lista JSON de objetos con qty (cambios) y price (en la moneda de cobro)."
+      "changePacks": "Paquetes de cambios adicionales: lista JSON de objetos con qty (cambios) y price (en la moneda de cobro).",
+      "prospectLimit": "Búsquedas de prospección con IA por app cada 30 días (cada una cuesta ~0,35 USD con Opus 5.5).",
+      "publishReview": "Revisión manual antes de publicar (true/false)."
     },
     "leads": {
       "title": "Leads comerciales",
