@@ -16,11 +16,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/es/login?error=not_configured`);
   }
 
+  const locale = /^\/en(\/|$)/.test(next) ? "en" : "es";
+  // OAuth cancelado o rechazado por el proveedor (p. ej. la persona cerró la ventana de Google).
+  if (!code && searchParams.get("error")) {
+    return NextResponse.redirect(`${origin}/${locale}/login?error=oauth&next=${encodeURIComponent(next.replace(/^\/(es|en)/, ""))}`);
+  }
+
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(`${origin}${next}`);
   }
 
-  return NextResponse.redirect(`${origin}/es/login?error=auth_callback`);
+  return NextResponse.redirect(`${origin}/${locale}/login?error=auth_callback`);
 }

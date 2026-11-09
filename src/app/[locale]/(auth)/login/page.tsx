@@ -3,6 +3,7 @@ import { AuthForm } from "@/components/auth/auth-form";
 import { loginAction } from "@/features/auth/actions";
 import { safeNext } from "@/features/auth/schemas";
 import { isSupabaseConfigured } from "@/lib/env";
+import { googleAuthEnabled } from "@/features/auth/providers";
 
 export default async function LoginPage({
   searchParams,
@@ -15,6 +16,11 @@ export default async function LoginPage({
   const linkError = error === "auth_link" || error === "auth_callback";
   return (
     <>
+      {error === "oauth" && (
+        <p role="alert" className="mb-4 rounded-[12px] border border-warning/40 bg-warning/10 px-4 py-3 text-[13px] leading-relaxed">
+          {t("googleCancelled")}
+        </p>
+      )}
       {linkError && (
         <p role="alert" className="mb-4 rounded-[12px] border border-warning/40 bg-warning/10 px-4 py-3 text-[13px] leading-relaxed">
           {t("linkInvalid")}
@@ -25,6 +31,7 @@ export default async function LoginPage({
         action={loginAction}
         next={safeNext(next)}
         configured={isSupabaseConfigured}
+        google={await googleAuthEnabled()}
       />
     </>
   );

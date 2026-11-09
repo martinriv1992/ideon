@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FieldError, Input, Label } from "@/components/ui/input";
 import type { AuthState } from "@/features/auth/actions";
 import { readPendingIdea } from "@/features/projects/pending-idea";
+import { GoogleButton } from "./google-button";
 
 type Mode = "login" | "register" | "forgot" | "reset";
 
@@ -16,16 +17,19 @@ interface Props {
   action: (prev: AuthState, formData: FormData) => Promise<AuthState>;
   next?: string;
   configured: boolean;
+  /** Inicio de sesión con Google activado en Supabase. */
+  google?: boolean;
 }
 
-export function AuthForm({ mode, action, next, configured }: Props) {
+export function AuthForm({ mode, action, next, configured, google = false }: Props) {
   const t = useTranslations("auth");
   const locale = useLocale();
   const [state, formAction, pending] = useActionState(action, {} as AuthState);
-  const [hasPendingIdea, setHasPendingIdea] = useState(false);
+  const [pendingIdea, setPendingIdea] = useState<string | null>(null);
+  const hasPendingIdea = Boolean(pendingIdea);
 
   useEffect(() => {
-    if (mode === "register" || mode === "login") setHasPendingIdea(Boolean(readPendingIdea()));
+    if (mode === "register" || mode === "login") setPendingIdea(readPendingIdea()?.idea ?? null);
   }, [mode]);
 
   const titles: Record<Mode, [string, string]> = {
@@ -34,7 +38,11 @@ export function AuthForm({ mode, action, next, configured }: Props) {
     forgot: [t("forgotTitle"), t("forgotSubtitle")],
     reset: [t("resetTitle"), t("resetSubtitle")],
   };
-  const [title, subtitle] = titles[mode];
+  // Si viene del primer prompt de la portada, dejamos claro que hace falta una cuenta (gratis) para crear el proyecto.
+  const fromPrompt = hasPendingIdea && (mode === "register" || mode === "login");
+  const [title, subtitle] = fromPrompt
+    ? [mode === "register" ? t("freeTitle") : t("freeLoginTitle"), t("freeSteps")]
+    : titles[mode];
 
   const errorText = (key?: string) => {
     if (!key) return null;
@@ -64,10 +72,16 @@ export function AuthForm({ mode, action, next, configured }: Props) {
       <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{title}</h1>
       <p className="mt-2 text-[15px] text-fg-muted">{subtitle}</p>
 
-      {hasPendingIdea && (
-        <div className="mt-6 flex gap-3 rounded-[12px] border border-accent/30 bg-accent-soft p-3.5 text-[13px] text-fg">
-          <Lightbulb className="size-4 mt-0.5 shrink-0 text-accent" />
-          <span>{t("pendingIdea")}</span>
+      {fromPrompt && (
+        <div className="mt-6 rounded-[12px] border border-accent/30 bg-accent-soft p-3.5 text-[13px] text-fg space-y-1.5">
+          <p className="flex gap-2 font-medium"><Lightbulb className="size-4 mt-0.5 shrink-0 text-accent" />{mode === "login" ? t("pendingIdeaLogin") : t("pendingIdea")}</p>
+          <p className="text-fg-muted line-clamp-2 italic">«{pendingIdea}»</p>
+          <p>
+            {mode === "register" ? t("freeHasAccount") : t("freeNoAccount")}{" "}
+            <Link href={{ pathname: mode === "register" ? "/login" : "/register", query: next ? { next } : undefined }} className="font-medium text-accent hover:underline">
+              {mode === "register" ? t("login") : t("register")}
+            </Link>
+          </p>
         </div>
       )}
 
@@ -77,7 +91,11 @@ export function AuthForm({ mode, action, next, configured }: Props) {
         </div>
       )}
 
-      <form action={formAction} className="mt-8 space-y-5" noValidate>
+      {google && configured && (mode === "login" || mode === "register") && (
+        <div className="mt-8"><GoogleButton next={next} /></div>
+      )}
+
+      <form action={formAction} className={google && configured && (mode === "login" || mode === "register") ? "space-y-5" : "mt-8 space-y-5"} noValidate>
         {next && <input type="hidden" name="next" value={next} />}
         <input type="hidden" name="locale" value={locale} />
 

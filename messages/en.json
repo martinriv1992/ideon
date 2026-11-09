@@ -258,7 +258,19 @@
       "disposableEmail": "Use a permanent email address (temporary emails are not allowed).",
       "tooManySignups": "Too many accounts were created from this connection today. Try again tomorrow or contact us."
     },
-    "linkInvalid": "This link is invalid or has expired. Sign in or, if you forgot your password, request a new link via “Forgot your password?”."
+    "linkInvalid": "This link is invalid or has expired. Sign in or, if you forgot your password, request a new link via “Forgot your password?”.",
+    "google": "Continue with Google",
+    "googleRedirecting": "Opening Google…",
+    "googleError": "Couldn't open Google sign-in. Try again or use your email.",
+    "orEmail": "or with your email",
+    "freeTitle": "Create your free account to see your project",
+    "freeLoginTitle": "Sign in to create your project",
+    "freeSteps": "You need an account to generate your project. It's free, no card needed: create the account, the AI prepares your preview and you only pay if you decide to publish it.",
+    "freeHasAccount": "Already have an account? Sign in and your idea becomes a project.",
+    "freeNoAccount": "No account yet? Create one free in a minute.",
+    "yourIdea": "Your idea",
+    "googleCancelled": "Google sign-in wasn't completed. Try again or sign in with your email.",
+    "pendingIdeaLogin": "Your idea is saved. When you sign in it becomes a project."
   },
   "app": {
     "nav": {
