@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { headers } from "next/headers";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { Container } from "@/components/ui/card";
-import { CtaLink } from "@/components/site/sections";
+import { CtaLink, OwnershipBand } from "@/components/site/sections";
 import { TrackOnView } from "@/components/site/site-analytics";
 import { PRICING, formatFrom, regionForCountry } from "@/content/commercial/pricing";
 import { jsonLd, pageMetadata, serviceLd } from "@/lib/seo";
@@ -60,6 +60,7 @@ export default async function CrmPage({ params }: { params: Promise<{ locale: st
           <p className="text-[15px] text-fg-muted">{t("priceText", { price: formatFrom(from, plan.currency, locale) })}</p>
           <CtaLink href={`/${locale}/contact?solution=crm`} track="proposal_requested" trackLabel="crm_pricing" className="shrink-0">{t("cta")}</CtaLink>
         </div>
+        <div className="mt-6"><OwnershipBand /></div>
       </Container>
     </div>
   );

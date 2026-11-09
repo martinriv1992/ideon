@@ -153,7 +153,7 @@
     "fromLabel": "From {price}",
     "quoteLabel": "Priced by scope",
     "cta": "Request a proposal",
-    "footnote": "Plus: optional subscription for hosting, maintenance and evolution of your product on our infrastructure.",
+    "footnote": "One-time payment: the software is yours. Optional: hosting, domain and improvements on our infrastructure, or take it to your own server.",
     "features": {
       "single_module": "One module or website",
       "responsive": "Responsive design",
@@ -184,6 +184,10 @@
         "a": "It depends on scope. After the initial conversation you receive a proposal with features, estimated time and price. No paid work starts without your approval."
       },
       {
+        "q": "Is it a licence or a subscription?",
+        "a": "Neither. We sell you the software, not a licence: you pay once and it's yours, with no monthly fees or per-user charges. The only recurring costs, if you want them, are yearly hosting and domain, or extra services such as AI prospecting."
+      },
+      {
         "q": "What if my idea doesn't fit any category?",
         "a": "Categories are just a guide. Describe the problem in your own words and the AI consultant will propose the most suitable solution."
       },
@@ -193,7 +197,7 @@
       },
       {
         "q": "Who owns the code?",
-        "a": "You do. You can keep your product on our infrastructure with a subscription or take it with you."
+        "a": "You do. You pay once for the build and the software, code and data belong to your company. Keep it online with our hosting (optional yearly fee for hosting and domain) or take it to your own server."
       },
       {
         "q": "What if something can't be automated?",
@@ -1058,7 +1062,7 @@
     "tryDemo": "Try demo",
     "want": "I want it",
     "complete": "Most complete",
-    "priceNote": "One-time implementation · then annual hosting and support plan",
+    "priceNote": "One-time payment · the software is yours · optional yearly hosting",
     "footnote": "Demos use sample data and save changes in your browser. Your version is built with your data, fields, roles and brand; you can ask for extra modules during customization.",
     "stepsTitle": "How it works",
     "steps": [
@@ -1130,7 +1134,8 @@
       "subtitle": "From custom business applications to intelligent automation systems, we turn complex business needs into working digital solutions.",
       "ctaPrimary": "Book a free consultation",
       "ctaSecondary": "Explore our solutions",
-      "selfServe": "Prefer to start on your own? Describe your idea for a free preview, or find your domain."
+      "selfServe": "Prefer to start on your own? Describe your idea for a free preview, or find your domain.",
+      "ownership": "One-time payment · The software is yours · No per-user licences"
     },
     "solutions": {
       "eyebrow": "Solutions",
@@ -1254,7 +1259,7 @@
         },
         {
           "title": "Code ownership",
-          "text": "Download your project's code according to the contract terms."
+          "text": "One-time payment, no licences: the software and code are yours to download whenever you want."
         }
       ]
     },
@@ -1322,8 +1327,9 @@
         }
       },
       "from": "From",
-      "note": "Indicative launch prices. Final quotes depend on each project's features, integrations, infrastructure and scope. Annual hosting and maintenance are quoted separately.",
-      "cta": "Request a proposal"
+      "note": "Indicative launch prices, paid once: the software is yours and there are no licence fees. Final quotes depend on features, integrations and scope. Yearly hosting and domain are optional.",
+      "cta": "Request a proposal",
+      "oneTime": "One-time payment"
     },
     "finalCta": {
       "title": "Your next business solution starts here.",
@@ -1390,7 +1396,7 @@
         "Integration with e-invoicing or other systems (depending on scope)"
       ],
       "priceTitle": "Investment",
-      "priceText": "Custom implementation from {price}. Final quotes depend on scope."
+      "priceText": "One-time payment from {price}: the software is yours, with no licences or monthly fees. Final quotes depend on scope."
     },
     "crm": {
       "eyebrow": "Ideon CRM",
@@ -1431,7 +1437,7 @@
       ],
       "demoTitle": "Product demo",
       "demoText": "Ideon CRM with fictional data from a B2B company.",
-      "priceText": "Custom implementation from {price}. Final quotes depend on scope."
+      "priceText": "One-time payment from {price}: the software is yours, with no licences or monthly fees. Final quotes depend on scope."
     },
     "custom": {
       "eyebrow": "Custom software",
@@ -1541,6 +1547,29 @@
       "text": "We use analytics cookies to understand how the site is used and improve it. Form data is never sent to analytics.",
       "accept": "Accept",
       "reject": "Reject"
+    },
+    "ownership": {
+      "eyebrow": "One-time payment",
+      "title": "You buy your software, not a licence",
+      "text": "We don't sell software subscriptions or charge per user. You pay once for the build and the system is yours.",
+      "items": [
+        {
+          "title": "One payment",
+          "text": "You pay for the build once. No monthly fees or renewals to use your software."
+        },
+        {
+          "title": "It's yours",
+          "text": "The software, the code and your data belong to you. Download it whenever you want."
+        },
+        {
+          "title": "No per-user licences",
+          "text": "Your whole team uses it without paying per person."
+        },
+        {
+          "title": "Optional hosting",
+          "text": "If you want us to keep it online, you only pay yearly hosting and domain. Or install it on your own server."
+        }
+      ]
     }
   }
 }

@@ -153,7 +153,7 @@
     "fromLabel": "Desde {price}",
     "quoteLabel": "Precio según alcance",
     "cta": "Pedir propuesta",
-    "footnote": "Además: suscripción opcional de hosting, mantenimiento y evolución de tu producto en nuestra infraestructura.",
+    "footnote": "Pago único: el software es tuyo. Opcional: hosting, dominio y mejoras en nuestra infraestructura, o lo llevas a tu servidor.",
     "features": {
       "single_module": "Un módulo o sitio web",
       "responsive": "Diseño responsive",
@@ -184,6 +184,10 @@
         "a": "Depende del alcance. Tras la conversación inicial recibes una propuesta con funcionalidades, tiempo estimado y precio. No se inicia ningún trabajo de pago sin tu aprobación."
       },
       {
+        "q": "¿Es una licencia o una suscripción?",
+        "a": "Ninguna de las dos. Te vendemos el software, no una licencia: pagas una vez y es tuyo, sin mensualidades ni cobro por usuario. Lo único recurrente, si lo quieres, es el hosting y el dominio anual, o servicios extra como la prospección con IA."
+      },
+      {
         "q": "¿Qué pasa si mi idea no encaja en ninguna categoría?",
         "a": "Las categorías son orientativas. Describe el problema con tus palabras y el consultor de IA propondrá la solución más adecuada."
       },
@@ -193,7 +197,7 @@
       },
       {
         "q": "¿De quién es el código?",
-        "a": "Tuyo. Puedes mantener tu producto en nuestra infraestructura con una suscripción o llevártelo."
+        "a": "Tuyo. Pagas una sola vez por el desarrollo y el software, el código y los datos son de tu empresa. Puedes dejarlo en línea con nuestro hosting (pago anual opcional por alojamiento y dominio) o llevártelo a tu servidor."
       },
       {
         "q": "¿Y si algo no puede automatizarse?",
@@ -1058,7 +1062,7 @@
     "tryDemo": "Probar demo",
     "want": "Lo quiero",
     "complete": "Más completo",
-    "priceNote": "Pago único de implementación · luego plan anual de hosting y soporte",
+    "priceNote": "Pago único · el software es tuyo · hosting anual opcional",
     "footnote": "Las demos usan datos de ejemplo y guardan los cambios en tu navegador. Tu versión se construye con tus datos, campos, roles y marca; puedes pedir módulos adicionales durante la personalización.",
     "stepsTitle": "Cómo funciona",
     "steps": [
@@ -1130,7 +1134,8 @@
       "subtitle": "Desde aplicaciones empresariales hasta sistemas inteligentes de automatización, convertimos necesidades complejas en soluciones digitales reales.",
       "ctaPrimary": "Agenda una consulta gratuita",
       "ctaSecondary": "Descubre nuestras soluciones",
-      "selfServe": "¿Prefieres empezar tú mismo? Describe tu idea y recibe una vista previa gratis, o busca tu dominio."
+      "selfServe": "¿Prefieres empezar tú mismo? Describe tu idea y recibe una vista previa gratis, o busca tu dominio.",
+      "ownership": "Pago único · El software es tuyo · Sin licencias por usuario"
     },
     "solutions": {
       "eyebrow": "Soluciones",
@@ -1254,7 +1259,7 @@
         },
         {
           "title": "Propiedad del código",
-          "text": "Descargas el código de tu proyecto según los términos del contrato."
+          "text": "Pago único, sin licencias: el software y el código son tuyos y los descargas cuando quieras."
         }
       ]
     },
@@ -1322,8 +1327,9 @@
         }
       },
       "from": "Desde",
-      "note": "Precios indicativos de lanzamiento. La cotización final depende de las funcionalidades, integraciones, infraestructura y alcance de cada proyecto. Hosting y mantenimiento anual aparte.",
-      "cta": "Solicitar una propuesta"
+      "note": "Precios indicativos de lanzamiento, en pago único: el software es tuyo y no pagas licencias. La cotización final depende de las funcionalidades, integraciones y alcance. El hosting y el dominio anual son opcionales.",
+      "cta": "Solicitar una propuesta",
+      "oneTime": "Pago único"
     },
     "finalCta": {
       "title": "Tu próxima solución empresarial empieza aquí.",
@@ -1390,7 +1396,7 @@
         "Integración con facturación electrónica u otros sistemas (según alcance)"
       ],
       "priceTitle": "Inversión",
-      "priceText": "Implementación personalizada desde {price}. La cotización final depende del alcance."
+      "priceText": "Pago único desde {price}: el software es tuyo, sin licencias ni mensualidades. La cotización final depende del alcance."
     },
     "crm": {
       "eyebrow": "Ideon CRM",
@@ -1431,7 +1437,7 @@
       ],
       "demoTitle": "Demostración de producto",
       "demoText": "Ideon CRM con datos ficticios de una empresa B2B.",
-      "priceText": "Implementación personalizada desde {price}. La cotización final depende del alcance."
+      "priceText": "Pago único desde {price}: el software es tuyo, sin licencias ni mensualidades. La cotización final depende del alcance."
     },
     "custom": {
       "eyebrow": "Software a medida",
@@ -1541,6 +1547,29 @@
       "text": "Usamos cookies de analítica para entender cómo se usa el sitio y mejorarlo. No enviamos los datos de tus formularios a la analítica.",
       "accept": "Aceptar",
       "reject": "Rechazar"
+    },
+    "ownership": {
+      "eyebrow": "Pago único",
+      "title": "Compras tu software, no una licencia",
+      "text": "No vendemos suscripciones al software ni cobramos por usuario. Pagas una vez por el desarrollo y el sistema queda a tu nombre.",
+      "items": [
+        {
+          "title": "Un solo pago",
+          "text": "Pagas el desarrollo una vez. Sin mensualidades ni renovaciones por usar tu software."
+        },
+        {
+          "title": "Es tuyo",
+          "text": "El software, el código y tus datos te pertenecen. Puedes descargarlo cuando quieras."
+        },
+        {
+          "title": "Sin licencias por usuario",
+          "text": "Todo tu equipo lo usa sin pagar por cada persona."
+        },
+        {
+          "title": "Hosting opcional",
+          "text": "Si quieres que lo mantengamos en línea, solo pagas alojamiento y dominio al año. O lo instalas en tu propio servidor."
+        }
+      ]
     }
   }
 }
