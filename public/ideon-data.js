@@ -9,7 +9,7 @@
  *   db.all(col) · db.get(col, id) · db.find(col, fn) · db.count(col)
  *   db.insert(col, data) · db.update(col, id, patch) · db.remove(col, id) · db.increment(col, id, campo, delta)
  *   db.seed(col, registros) · db.sample(col, registros) · db.on('change', fn) · db.user · db.users() · db.logout()
- *   db.exportJSON() · db.downloadJSON(nombre) · db.mode · db.status
+ *   db.prospect(texto, {location, max}) · db.exportJSON() · db.downloadJSON(nombre) · db.mode · db.status
  */
 (function () {
   "use strict";
@@ -36,6 +36,8 @@
       pwChanged: "Contraseña actualizada.", pwWrong: "La contraseña actual no es correcta.", pwWeak: "La nueva contraseña debe tener al menos 8 caracteres.",
       rejected: "Un cambio no se pudo guardar y se descartó.", leave: "Hay cambios sin guardar.", demoUser: "Usuario de demostración",
       powered: "Datos seguros con Ideonapp", role: { admin: "Administrador", member: "Miembro" },
+      quota: "Llegaste al límite mensual de búsquedas de prospección.", badQuery: "Escribe qué tipo de empresas buscas (mínimo 3 letras).",
+      searchFailed: "No se pudo completar la búsqueda. Inténtalo de nuevo.", demoNote: "Resultado de ejemplo (vista previa): en la app real la IA busca en la web y cita la fuente.",
     },
     en: {
       signIn: "Sign in", email: "Email", password: "Password", enter: "Sign in", wrong: "Wrong email or password.",
@@ -46,6 +48,8 @@
       pwChanged: "Password updated.", pwWrong: "The current password is wrong.", pwWeak: "The new password must be at least 8 characters.",
       rejected: "A change couldn't be saved and was discarded.", leave: "There are unsaved changes.", demoUser: "Demo user",
       powered: "Data secured by Ideonapp", role: { admin: "Admin", member: "Member" },
+      quota: "You've reached this month's prospecting search limit.", badQuery: "Type what kind of businesses you're looking for (3+ letters).",
+      searchFailed: "The search couldn't be completed. Try again.", demoNote: "Sample result (preview): in the live app the AI searches the web and cites the source.",
     },
   }[LANG];
 
@@ -224,6 +228,21 @@
       if (MODE !== "live") return Promise.resolve();
       return req("POST", "/auth/logout").catch(function () {}).then(function () { lsDel(qKey()); location.reload(); });
     },
+    /**
+     * Prospección con IA: busca en la web empresas que encajan (p. ej. «ferreterías», {location: "Medellín"})
+     * y devuelve sus datos de contacto corporativos con la fuente. Tarda hasta ~1 minuto.
+     * En la vista previa devuelve ejemplos ficticios.
+     */
+    prospect: function (query, opts) {
+      opts = opts || {};
+      if (MODE !== "live") return demoProspects(String(query || ""), opts);
+      return req("POST", "/prospect", { query: String(query || ""), location: opts.location || undefined, max: opts.max || 10 }).then(function (j) {
+        return { results: j.results || [], remaining: j.remaining, demo: false };
+      }, function (e) {
+        var msg = e.code === "quota_exceeded" ? TXT.quota : e.code === "invalid_query" ? TXT.badQuery : TXT.searchFailed;
+        var err = new Error(msg); err.code = e.code; throw err;
+      });
+    },
     exportJSON: function () {
       var out = {}; Object.keys(recs).forEach(function (x) { var r = recs[x]; if (r.collection.indexOf("__") === 0) return; (out[r.collection] = out[r.collection] || []).push(view(r)); });
       return out;
@@ -233,6 +252,22 @@
       var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = (name || "datos") + ".json"; document.body.appendChild(a); a.click(); a.remove();
     },
   };
+
+  /** Vista previa: empresas ficticias con la forma real de los resultados. */
+  function demoProspects(query, opts) {
+    var city = opts.location || (LANG === "en" ? "Madrid" : "Bogotá");
+    var kind = query.replace(/\s+en\s+.*$/i, "").trim() || (LANG === "en" ? "Business" : "Comercial");
+    var Kind = kind.charAt(0).toUpperCase() + kind.slice(1);
+    var names = ["Andina", "Del Valle", "Central", "La Esquina", "Horizonte", "El Puente", "Sol y Luna", "Nova", "Prado", "Altamira"];
+    var n = Math.min(opts.max || 6, 8);
+    var results = names.slice(0, n).map(function (nm, i) {
+      var slug = (kind + "-" + nm).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-");
+      return { empresa: Kind + " " + nm, sector: Kind, ciudad: city, direccion: (LANG === "en" ? "Fictional street " : "Calle ficticia ") + (10 + i * 7) + " # " + (20 + i) + "-" + (5 + i),
+        telefono: "+57601555" + (1000 + i * 37), whatsapp: i % 2 ? "+57300555" + (2000 + i * 41) : "", correo: i % 3 === 2 ? "" : "contacto@" + slug + ".ejemplo.test",
+        web: "https://" + slug + ".ejemplo.test/", fuente: "https://" + slug + ".ejemplo.test/contacto", nota: TXT.demoNote };
+    });
+    return new Promise(function (res) { setTimeout(function () { res({ results: results, remaining: null, demo: true }); }, 1200); });
+  }
 
   function initial(col, records, kind) {
     checkCol(col);

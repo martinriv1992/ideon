@@ -201,8 +201,8 @@ function modal(h,w){$('#modal').innerHTML=`<div class="box ${w?'wide':''}">${h}<
 function closeM(){$('#modal').classList.remove('on');$('#modal').innerHTML=''}
 function ask(msg,fn,lbl){ask.fn=fn;modal(`<h3>Confirmar</h3><p>${msg}</p><div class="btns"><button class="btn ghost" onclick="closeM()">Cancelar</button><button class="btn danger" onclick="const f=ask.fn;closeM();f()">${lbl||'Eliminar'}</button></div>`)}
 
-const IC={campanas:'M3 11v2a1 1 0 001 1h2l5 4V6L6 10H4a1 1 0 00-1 1zM16 8a5 5 0 010 8M19 5a9 9 0 010 14',dashboard:'M4 13h6V4H4zM14 20h6V4h-6zM4 20h6v-3H4z',clientes:'M4 21V6l8-3 8 3v15M9 21v-5h6v5M9 9h2M13 9h2',contactos:'M12 11a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6',oportunidades:'M3 4h18l-7 8v7l-4 2v-9z',tareas:'M4 5h16v15H4zM8 12l3 3 5-6',cotizaciones:'M6 3h9l4 4v14H6zM9 12h7M9 16h7',productos:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8',equipo:'M4 20V10M10 20V4M16 20v-8M22 20H2',reportes:'M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3',ajustes:'M12 15a3 3 0 100-6 3 3 0 000 6zM4 12h2M18 12h2M12 4v2M12 18v2'};
-const NAV=[['dashboard','Panel gerencial'],['clientes','Clientes'],['contactos','Contactos'],['campanas','Campañas'],['oportunidades','Oportunidades'],['tareas','Tareas'],['cotizaciones','Cotizaciones'],['productos','Productos'],['equipo','Equipo y metas'],['reportes','Reportes'],['ajustes','Ajustes']];
+const IC={prospeccion:'M11 4a7 7 0 100 14 7 7 0 000-14zM21 21l-5-5M8 11h6M11 8v6',campanas:'M3 11v2a1 1 0 001 1h2l5 4V6L6 10H4a1 1 0 00-1 1zM16 8a5 5 0 010 8M19 5a9 9 0 010 14',dashboard:'M4 13h6V4H4zM14 20h6V4h-6zM4 20h6v-3H4z',clientes:'M4 21V6l8-3 8 3v15M9 21v-5h6v5M9 9h2M13 9h2',contactos:'M12 11a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6',oportunidades:'M3 4h18l-7 8v7l-4 2v-9z',tareas:'M4 5h16v15H4zM8 12l3 3 5-6',cotizaciones:'M6 3h9l4 4v14H6zM9 12h7M9 16h7',productos:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8',equipo:'M4 20V10M10 20V4M16 20v-8M22 20H2',reportes:'M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3',ajustes:'M12 15a3 3 0 100-6 3 3 0 000 6zM4 12h2M18 12h2M12 4v2M12 18v2'};
+const NAV=[['dashboard','Panel gerencial'],['clientes','Clientes'],['contactos','Contactos'],['campanas','Campañas'],['prospeccion','Prospección IA'],['oportunidades','Oportunidades'],['tareas','Tareas'],['cotizaciones','Cotizaciones'],['productos','Productos'],['equipo','Equipo y metas'],['reportes','Reportes'],['ajustes','Ajustes']];
 function go(v,keep){ui.view=v;if(!keep)ui.cli=null;render();window.scrollTo(0,0)}
 function setUser(id){S.user=id;ui.fv='';ui.cli=null;save();render()}
 const fvSel=()=>`<select id="fv" onchange="ui.fv=this.value;render()"><option value="">Todo el equipo</option>${so(sellers().map(v=>[v.id,v.nombre]),ui.fv)}</select>`;
@@ -332,7 +332,7 @@ return[{id:'k1',creador:'v1',nombre:'Lanzamiento: plataforma de inventario',cana
 /* ===== Exportar contactos y campañas (correo / WhatsApp) ===== */
 const CANALES=['Correo','WhatsApp'];
 const VARS=[['{nombre}','Nombre'],['{empresa}','Empresa'],['{cargo}','Cargo'],['{vendedor}','Vendedor']];
-const chipK=e=>`<span class="chip ${{Enviada:'ok',Respondió:'ok',Programada:'w',Borrador:'',Enviado:''}[e]||''}">${esc(e)}</span>`;
+const chipK=e=>`<span class="chip ${{Importada:'ok',Enviada:'ok',Respondió:'ok',Programada:'w',Borrador:'',Enviado:''}[e]||''}">${esc(e)}</span>`;
 const pCli=p=>byId('clientes',p.cliente)||{};
 const perso=(t,p)=>String(t||'').replace(/\{nombre\}/g,(p.nombre||'').split(' ')[0]).replace(/\{empresa\}/g,cn(p.cliente)).replace(/\{cargo\}/g,p.cargo||'').replace(/\{vendedor\}/g,vn(pCli(p).vendedor));
 const waNum=p=>'57'+String(p.telefono||'').replace(/\D/g,'');
@@ -445,6 +445,40 @@ const _hookOpp=HOOK.oportunidades;
 HOOK.oportunidades=function(o,id){const cp=!id&&ui.campOpp;if(cp)o.campana=cp.k;const err=_hookOpp(o,id);
 if(!err&&cp){const op=S.oportunidades[S.oportunidades.length-1],k=S.campanas.find(x=>x.id===cp.k),d=k&&k.dest.find(x=>x.p===cp.p);if(d){d.opp=op.id;d.st='Respondió'}ui.campOpp=null}return err};
 const _closeM=closeM;closeM=function(){ui.campOpp=null;_closeM()};
+
+/* ===== Prospección con IA (demostración: resultados ficticios) ===== */
+const PROS_N=['Andina','Del Valle','Central','La Esquina','Horizonte','El Puente','Sol y Luna','Nova','Prado','Altamira'];
+function prosGen(q,ciudad){const k=q.trim()||'Comercial',K=k.charAt(0).toUpperCase()+k.slice(1);
+return PROS_N.slice(0,8).map((nm,i)=>{const slug=noacc((k+'-'+nm).toLowerCase()).replace(/[^a-z0-9]+/g,'-');
+return{empresa:K+' '+nm,ciudad,direccion:'Calle ficticia '+(10+i*7)+' # '+(20+i)+'-'+(5+i),telefono:'601 555 '+(1000+i*37),whatsapp:i%2?'300 555 '+(2000+i*41):'',correo:i%3===2?'':'contacto@'+slug+'.ejemplo.test',web:'https://'+slug+'.ejemplo.test/',fuente:'https://'+slug+'.ejemplo.test/contacto',nota:['Atiende empresas y hogares; horario extendido.','Tiene varias sedes en la ciudad.','Publica catálogo en línea, sin tienda virtual.','Empresa familiar con más de 15 años.'][i%4]}})}
+V.prospeccion=()=>{const P=ui.pros||{};
+return head('Prospección con IA','Encuentra empresas y sus datos de contacto en la web para llenar tu embudo')+
+`<div class="card"><form class="fb" onsubmit="return prosBuscar(event)" style="align-items:flex-end">
+<label style="margin:0;flex:2;min-width:220px">¿Qué empresas buscas?<input id="pq" value="${esc(P.q||'')}" placeholder="Ej.: ferreterías, clínicas dentales, colegios" required minlength="3"></label>
+<label style="margin:0;flex:1;min-width:160px">Ciudad<select id="pc">${so(CIU,P.ciudad||'Bogotá')}</select></label>
+<label style="margin:0;flex:1;min-width:160px">Sector en el CRM<select id="ps">${so(SECT,P.sector||'Retail')}</select></label>
+<button class="btn" id="pb" ${P.busy?'disabled':''}>${P.busy?'Buscando…':'Buscar con IA'}</button></form>
+<p class="mut">Demostración: los resultados son ficticios para mostrar el flujo. En tu CRM, la IA busca en la web en tiempo real, abre la web de cada empresa y cita la fuente de cada dato (sin LinkedIn ni redes sociales).</p></div>`+
+(P.busy?`<div class="card"><p><b>La IA está buscando en la web…</b></p><p class="mut">Consulta buscadores y abre la web oficial de cada empresa para confirmar sus datos. Suele tardar menos de un minuto.</p></div>`:'')+
+(P.res&&!P.busy?`<div class="card"><div class="fb" style="justify-content:space-between;align-items:center"><b>${P.res.length} empresas encontradas: ${esc(P.q)} en ${esc(P.ciudad)}</b><span class="ha"><button class="btn sm ghost" onclick="prosSel(true)">Seleccionar todas</button><button class="btn sm" onclick="prosImportar()">Importar seleccionadas</button></span></div>`+
+tbl(['','Empresa','Contacto','Web y fuente','Nota',''],P.res.map((r,i)=>{const dup=prosDup(r);return`<tr><td>${r.importada||dup?'':`<input type="checkbox" ${r.sel?'checked':''} onchange="ui.pros.res[${i}].sel=this.checked" aria-label="Seleccionar ${esc(r.empresa)}">`}</td>
+<td><b>${esc(r.empresa)}</b><br><span class="mut">${esc(r.direccion)} · ${esc(r.ciudad)}</span></td>
+<td>${r.correo?esc(r.correo)+'<br>':''}${esc(r.telefono)}${r.whatsapp?'<br>WhatsApp '+esc(r.whatsapp):''}</td>
+<td><a href="${esc(r.web)}" target="_blank" rel="noopener">${esc(r.web.replace(/^https?:\/\//,'').replace(/\/$/,''))}</a><br><a class="mut" href="${esc(r.fuente)}" target="_blank" rel="noopener">fuente</a></td><td class="mut">${esc(r.nota)}</td>
+<td>${r.importada?chipK('Importada'):dup?'<span class="chip">Ya está en el CRM</span>':`<button class="btn sm sec" onclick="prosImportar(${i})">Importar</button>`}</td></tr>`}).join(''))+
+(P.res.some(r=>r.importada)?`<div class="btns"><button class="btn sec" onclick="go('campanas');campForm();setTimeout(()=>{const f=$('#cf');if(f){f.estado.value='Prospecto';f.nombre.value='Presentación a prospectos de '+(ui.pros.q||'');campPrev()}},50)">Crear campaña para los importados</button></div>`:'')+`</div>`:'')};
+function prosBuscar(e){e.preventDefault();const q=$('#pq').value.trim();if(q.length<3)return false;
+ui.pros={q,ciudad:$('#pc').value,sector:$('#ps').value,busy:true};render();
+setTimeout(()=>{ui.pros.busy=false;ui.pros.res=prosGen(q,ui.pros.ciudad);render()},1600);return false}
+const prosDup=r=>S.clientes.some(c=>noacc(c.empresa.toLowerCase())===noacc(r.empresa.toLowerCase())||(r.web&&c.web===r.web));
+function prosSel(v){(ui.pros.res||[]).forEach(r=>{if(!r.importada&&!prosDup(r))r.sel=v});render()}
+function prosImportar(i){const L=i==null?ui.pros.res.filter(r=>r.sel&&!r.importada&&!prosDup(r)):[ui.pros.res[i]];
+if(!L.length){toast('Selecciona al menos una empresa');return}
+const vend=mgr()?(sellers()[0]||cur()).id:cur().id;
+L.forEach(r=>{const cid=uid('c');S.clientes.push({id:cid,empresa:r.empresa,nit:'',sector:ui.pros.sector,ciudad:r.ciudad,vendedor:vend,estado:'Prospecto',web:r.web,origen:'Prospección IA',fuente:r.fuente});
+if(r.correo||r.telefono)S.contactos.push({id:uid('p'),nombre:'Contacto general',cliente:cid,cargo:'Atención comercial',email:r.correo,telefono:r.whatsapp||r.telefono});
+logAct('Sistema',cid,vend,'Empresa importada desde Prospección IA · fuente: '+r.fuente);r.importada=true;r.sel=false});
+save();render();toast(L.length+(L.length===1?' empresa importada':' empresas importadas')+' como prospecto')}
 
 V.oportunidades=()=>{
 const o=oppS(),cols=ui.etapa?[ui.etapa]:ETAPAS;

@@ -891,7 +891,9 @@
       "previewBudget": "Daily cap (USD) on AI spend for free previews across the platform.",
       "maxSignups": "Maximum new accounts per connection in 24 hours.",
       "includedChanges": "Chat changes included per year in the annual plan.",
-      "changePacks": "Extra change packs: JSON list of objects with qty (changes) and price (billing currency)."
+      "changePacks": "Extra change packs: JSON list of objects with qty (changes) and price (billing currency).",
+      "prospectLimit": "AI prospecting searches per app every 30 days (each costs ~0.35 USD with Opus 5.5).",
+      "publishReview": "Manual review before publishing (true/false)."
     },
     "leads": {
       "title": "Sales leads",
