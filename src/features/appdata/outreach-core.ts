@@ -19,8 +19,12 @@ export interface OutreachConfig {
   remitente: string;
   responderA: string;
   firma: string;
+  /** Diseño del correo: «pieza» (banner de marca + botón) o «texto» (correo sencillo). */
+  diseno: "pieza" | "texto";
+  /** Redactar cada mensaje con IA (Haiku); si falla, se usa la plantilla. */
+  usarIA: boolean;
 }
-export const DEFAULT_OUTREACH: OutreachConfig = { activo: false, modo: "aprobacion", limiteDiario: 20, fitMin: 50, remitente: "Martín de Ideonapp", responderA: "", firma: "Martín" };
+export const DEFAULT_OUTREACH: OutreachConfig = { activo: false, modo: "aprobacion", limiteDiario: 20, fitMin: 50, remitente: "Martín de Ideonapp", responderA: "", firma: "Martín", diseno: "pieza", usarIA: false };
 
 export interface CadStep { dia: number; canal: Canal; texto?: string }
 export interface Lead {
@@ -46,6 +50,8 @@ export function outreachConfigFrom(raw: unknown): OutreachConfig {
     remitente: String(r.remitente || DEFAULT_OUTREACH.remitente).replace(/[<>"\r\n]/g, "").slice(0, 60),
     responderA: isEmail(r.responderA) ? String(r.responderA).trim() : "",
     firma: String(r.firma || DEFAULT_OUTREACH.firma).slice(0, 60),
+    diseno: r.diseno === "texto" ? "texto" : "pieza",
+    usarIA: r.usarIA === true,
   };
 }
 
@@ -93,20 +99,20 @@ export function nextStep(lead: Lead, cad: CadStep[], items: Item[], cfg: Outreac
  * Textos por sector: una pregunta concreta sobre su día a día y una frase de cómo ayudamos
  * (resultado, no lista de funciones). Se elige por palabras del sector o de la empresa.
  */
-const SECTOR_COPY: { match: RegExp; asunto: string; pregunta: string; ayuda: string }[] = [
-  { match: /odont|dental|ortodon|sonris/i, asunto: "citas sin confirmar", pregunta: "¿cuántas citas se les caen al mes porque nadie alcanzó a confirmarlas?", ayuda: "Ayudamos a consultorios a que el recordatorio y la confirmación salgan solos, sin que recepción tenga que perseguir a nadie." },
-  { match: /pilates|yoga|gimnas|fitness|crossfit|entren/i, asunto: "clases y paquetes", pregunta: "¿cómo saben hoy cuántas clases le quedan a cada alumno?", ayuda: "Ayudamos a estudios como el suyo a llevar reservas, paquetes y vencimientos sin hojas de cálculo." },
-  { match: /cl[ií]nic|consultorio|m[eé]dic|salud|fisio/i, asunto: "agenda de pacientes", pregunta: "¿cómo hacen hoy para que ningún paciente se quede sin su próximo control?", ayuda: "Ayudamos a centros de salud a tener agenda, recordatorios y controles en un solo lugar." },
-  { match: /barber|peluq|belleza|est[eé]tica|spa|u[ñn]as|nails|capilar|sal[oó]n/i, asunto: "reservas por WhatsApp", pregunta: "¿cuántos mensajes de reserva contestan al día entre un cliente y otro?", ayuda: "Ayudamos a salones a que los clientes reserven solos y reciban su recordatorio." },
-  { match: /veterin|mascota|pet/i, asunto: "recordatorios de vacunas", pregunta: "¿cómo le avisan hoy a cada dueño que toca vacuna o control?", ayuda: "Ayudamos a veterinarias a que esos recordatorios salgan solos y la historia de cada mascota esté a la mano." },
-  { match: /distribu|mayorist|comerciali|alimentos|licores|aseo/i, asunto: "pedidos de los vendedores", pregunta: "¿cómo les llegan hoy los pedidos de los vendedores a bodega?", ayuda: "Ayudamos a distribuidoras a recibir pedidos y ver el inventario al instante, sin pasar todo a Excel." },
-  { match: /ferret|construc|materiales|el[eé]ctric/i, asunto: "inventario y cotizaciones", pregunta: "¿cuánto tiempo se les va armando una cotización con tantas referencias?", ayuda: "Ayudamos a ferreterías a cotizar en minutos y a saber qué se está agotando antes de que pase." },
-  { match: /agencia|marketing|dise[ñn]o|branding|publicidad|creativ/i, asunto: "una idea para tus clientes", pregunta: "¿qué hacen hoy cuando un cliente les pide un sistema o una app, además de la web?", ayuda: "Desarrollamos CRM, inventarios y apps en marca blanca para agencias: ustedes venden, nosotros construimos." },
-  { match: /restaur|caf[eé]|cocina|comida|panader|helad/i, asunto: "costos por plato", pregunta: "¿saben hoy cuánto les cuesta de verdad cada plato?", ayuda: "Ayudamos a restaurantes a conectar pedidos, recetas e inventario para que el costo real salga solo." },
-  { match: /inmobil|arriendo|propiedad/i, asunto: "seguimiento de interesados", pregunta: "¿dónde queda registrado cada interesado que pregunta por un inmueble?", ayuda: "Ayudamos a inmobiliarias a que ningún interesado se quede sin seguimiento." },
+const SECTOR_COPY: { key: string; match: RegExp; asunto: string; pregunta: string; ayuda: string }[] = [
+  { key: "odontologia", match: /odont|dental|ortodon|sonris/i, asunto: "citas sin confirmar", pregunta: "¿cuántas citas se les caen al mes porque nadie alcanzó a confirmarlas?", ayuda: "Ayudamos a consultorios a que el recordatorio y la confirmación salgan solos, sin que recepción tenga que perseguir a nadie." },
+  { key: "fitness", match: /pilates|yoga|gimnas|fitness|crossfit|entren/i, asunto: "clases y paquetes", pregunta: "¿cómo saben hoy cuántas clases le quedan a cada alumno?", ayuda: "Ayudamos a estudios como el suyo a llevar reservas, paquetes y vencimientos sin hojas de cálculo." },
+  { key: "salud", match: /cl[ií]nic|consultorio|m[eé]dic|salud|fisio/i, asunto: "agenda de pacientes", pregunta: "¿cómo hacen hoy para que ningún paciente se quede sin su próximo control?", ayuda: "Ayudamos a centros de salud a tener agenda, recordatorios y controles en un solo lugar." },
+  { key: "belleza", match: /barber|peluq|belleza|est[eé]tica|spa|u[ñn]as|nails|capilar|sal[oó]n/i, asunto: "reservas por WhatsApp", pregunta: "¿cuántos mensajes de reserva contestan al día entre un cliente y otro?", ayuda: "Ayudamos a salones a que los clientes reserven solos y reciban su recordatorio." },
+  { key: "veterinaria", match: /veterin|mascota|pet/i, asunto: "recordatorios de vacunas", pregunta: "¿cómo le avisan hoy a cada dueño que toca vacuna o control?", ayuda: "Ayudamos a veterinarias a que esos recordatorios salgan solos y la historia de cada mascota esté a la mano." },
+  { key: "distribucion", match: /distribu|mayorist|comerciali|alimentos|licores|aseo/i, asunto: "pedidos de los vendedores", pregunta: "¿cómo les llegan hoy los pedidos de los vendedores a bodega?", ayuda: "Ayudamos a distribuidoras a recibir pedidos y ver el inventario al instante, sin pasar todo a Excel." },
+  { key: "ferreteria", match: /ferret|construc|materiales|el[eé]ctric/i, asunto: "inventario y cotizaciones", pregunta: "¿cuánto tiempo se les va armando una cotización con tantas referencias?", ayuda: "Ayudamos a ferreterías a cotizar en minutos y a saber qué se está agotando antes de que pase." },
+  { key: "agencia", match: /agencia|marketing|dise[ñn]o|branding|publicidad|creativ/i, asunto: "una idea para tus clientes", pregunta: "¿qué hacen hoy cuando un cliente les pide un sistema o una app, además de la web?", ayuda: "Desarrollamos CRM, inventarios y apps en marca blanca para agencias: ustedes venden, nosotros construimos." },
+  { key: "restaurante", match: /restaur|caf[eé]|cocina|comida|panader|helad/i, asunto: "costos por plato", pregunta: "¿saben hoy cuánto les cuesta de verdad cada plato?", ayuda: "Ayudamos a restaurantes a conectar pedidos, recetas e inventario para que el costo real salga solo." },
+  { key: "inmobiliaria", match: /inmobil|arriendo|propiedad/i, asunto: "seguimiento de interesados", pregunta: "¿dónde queda registrado cada interesado que pregunta por un inmueble?", ayuda: "Ayudamos a inmobiliarias a que ningún interesado se quede sin seguimiento." },
 ];
-const GENERIC = { asunto: "una pregunta rápida", pregunta: "¿qué parte de la operación sigue dependiendo de Excel o de WhatsApp?", ayuda: "Armamos sistemas a la medida para que eso deje de depender de hojas de cálculo y mensajes sueltos." };
-export function sectorCopy(lead: Pick<Lead, "sector" | "empresa">) {
+const GENERIC = { key: "general", asunto: "una pregunta rápida", pregunta: "¿qué parte de la operación sigue dependiendo de Excel o de WhatsApp?", ayuda: "Armamos sistemas a la medida para que eso deje de depender de hojas de cálculo y mensajes sueltos." };
+export function sectorCopy(lead: Pick<Lead, "sector" | "empresa">): { key: string; asunto: string; pregunta: string; ayuda: string } {
   const txt = `${lead.sector ?? ""} ${lead.empresa ?? ""}`;
   return SECTOR_COPY.find((c) => c.match.test(txt)) ?? GENERIC;
 }
@@ -142,9 +148,95 @@ export function templateMessage(lead: Lead, paso: number, canal: Canal, firma: s
   return { asunto: subj[i], texto: body[i] };
 }
 
-/** Correo en HTML a partir del texto plano, con pie para darse de baja. */
-export function emailHtml(texto: string, unsubscribeUrl: string) {
+/* ---------------- Firma corporativa ---------------- */
+export interface Signature { nombre: string; cargo?: string; empresa: string; telefono?: string; web: string; ctaText: string; ctaUrl: string; logo?: string }
+export const DEFAULT_SIGNATURE: Omit<Signature, "nombre"> = {
+  empresa: "Ideonapp", web: "https://ideonapp.com",
+  ctaText: "Crea tu CRM personalizado gratis", ctaUrl: "https://ideonapp.com/es?utm_source=firma&utm_medium=email",
+};
+/** Firma de un usuario: datos de la empresa (settings/firma) + los suyos (firmas/<usuario>). */
+export function signatureFrom(company: unknown, mine: unknown, fallbackName: string): Signature {
+  const c = (company && typeof company === "object" ? company : {}) as Partial<Signature>;
+  const m = (mine && typeof mine === "object" ? mine : {}) as Partial<Signature>;
+  const url = (u: unknown, d: string) => { const v = String(u || "").trim(); return /^https?:\/\/[^\s"<>]+$/i.test(v) ? v : d; };
+  const txt = (v: unknown, max: number) => String(v ?? "").replace(/[\r\n<>]/g, " ").trim().slice(0, max);
+  return {
+    nombre: txt(m.nombre || fallbackName, 60) || "Equipo",
+    cargo: txt(m.cargo ?? c.cargo, 60),
+    telefono: txt(m.telefono ?? c.telefono, 30),
+    empresa: txt(c.empresa, 60) || DEFAULT_SIGNATURE.empresa,
+    web: url(c.web, DEFAULT_SIGNATURE.web),
+    ctaText: txt(c.ctaText, 60) || DEFAULT_SIGNATURE.ctaText,
+    ctaUrl: url(c.ctaUrl, DEFAULT_SIGNATURE.ctaUrl),
+  };
+}
+const webLabel = (u: string) => u.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+export function signatureText(sig: Signature) {
+  return [`${sig.nombre}${sig.cargo ? ` · ${sig.cargo}` : ""}`, `${sig.empresa} · ${webLabel(sig.web)}`, sig.telefono ? `WhatsApp ${sig.telefono}` : "", `${sig.ctaText}: ${sig.ctaUrl}`].filter(Boolean).join("\n");
+}
+export function signatureHtml(sig: Signature) {
   const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-  const paras = texto.split(/\n{2,}/).map((p) => `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
-  return `<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55;color:#111;max-width:560px">${paras}<p style="margin:28px 0 0;font-size:12px;color:#888">Si prefieres no recibir más mensajes, <a href="${esc(unsubscribeUrl)}" style="color:#888">date de baja aquí</a>.</p></div>`;
+  const tel = (sig.telefono ?? "").replace(/\D/g, "");
+  const wa = tel ? `https://wa.me/${tel.length === 10 ? "57" + tel : tel}` : "";
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:22px;border-top:1px solid #eeeef3;padding-top:16px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif">
+<tr>${sig.logo ? `<td style="vertical-align:top;padding:16px 14px 0 0"><a href="${esc(sig.web)}"><img src="${esc(sig.logo)}" width="44" height="44" alt="${esc(sig.empresa)}" style="display:block;border:0;border-radius:11px"></a></td>` : ""}
+<td style="vertical-align:top;padding-top:14px;font-size:13.5px;line-height:1.5;color:#16151d">
+<div style="font-weight:700;font-size:15px">${esc(sig.nombre)}</div>
+${sig.cargo ? `<div style="color:#6b6b7b">${esc(sig.cargo)} · ${esc(sig.empresa)}</div>` : `<div style="color:#6b6b7b">${esc(sig.empresa)}</div>`}
+<div style="margin-top:4px"><a href="${esc(sig.web)}" style="color:#6f5ff0;text-decoration:none;font-weight:600">${esc(webLabel(sig.web))}</a>${wa ? ` &nbsp;·&nbsp; <a href="${wa}" style="color:#6f5ff0;text-decoration:none">WhatsApp ${esc(sig.telefono!)}</a>` : ""}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:10px"><tr><td style="border-radius:8px;background:#0b0a14"><a href="${esc(sig.ctaUrl)}" style="display:inline-block;padding:8px 14px;font-size:12.5px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:8px">${esc(sig.ctaText)} &rarr;</a></td></tr></table>
+</td></tr></table>`;
+}
+/** Quita la despedida «Nombre\nEmpresa» del final del texto (la reemplaza la firma corporativa). */
+export function stripSignoff(texto: string, nombre: string) {
+  const lines = texto.replace(/\s+$/, "").split("\n");
+  const first = (nombre || "").split(" ")[0].toLowerCase();
+  for (let i = lines.length - 1; i >= Math.max(0, lines.length - 6); i--) {
+    const l = lines[i].trim().toLowerCase();
+    if (first && (l === first || l === (nombre || "").toLowerCase() || l.startsWith(first + " ·"))) {
+      const next = (lines[i + 1] ?? "").trim().toLowerCase();
+      const cut = next.startsWith("ideonapp") ? 2 : 1;
+      lines.splice(i, cut);
+      return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+    }
+  }
+  return texto.trim();
+}
+
+export interface EmailDesign { diseno?: "pieza" | "texto"; banner?: string; logo?: string; ctaUrl?: string; ctaText?: string; link?: string }
+
+/**
+ * Correo en HTML a partir del texto plano, con pie para darse de baja.
+ * Con diseño «pieza»: banner de la marca según el sector, el texto, un botón y el logo
+ * (tablas e estilos en línea para que se vea bien en Gmail, Outlook y el celular).
+ */
+export function emailHtml(texto: string, unsubscribeUrl: string, d: EmailDesign = {}, sig?: Signature) {
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+  const firma = sig ? signatureHtml(sig) : "";
+  const paras = (sig ? stripSignoff(texto, sig.nombre) : texto).split(/\n{2,}/).map((p) => `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
+  const baja = `Si prefieres no recibir más mensajes, <a href="${esc(unsubscribeUrl)}" style="color:#8a8a96">date de baja aquí</a>.`;
+  if (d.diseno !== "pieza" || !d.banner) {
+    return `<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55;color:#111;max-width:560px">${paras}${firma}<p style="margin:24px 0 0;font-size:12px;color:#888">${baja}</p></div>`;
+  }
+  const link = esc(d.link || d.ctaUrl || "https://ideonapp.com");
+  const btn = d.ctaUrl ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:6px 0 4px"><tr><td style="border-radius:999px;background:#7c6cf5;background-image:linear-gradient(135deg,#8b7cf6,#5eb0ff)"><a href="${esc(d.ctaUrl)}" style="display:inline-block;padding:12px 22px;font-weight:700;font-size:15px;color:#0b0a14;text-decoration:none;border-radius:999px">${esc(d.ctaText || "Agendar 15 minutos")}</a></td></tr></table>` : "";
+  return `<!doctype html><html><body style="margin:0;padding:0;background:#f4f4f7"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:24px 12px"><tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#16151d">
+<tr><td><a href="${link}"><img src="${esc(d.banner)}" width="600" alt="Ideonapp: software a la medida, pago único" style="display:block;width:100%;height:auto;border:0"></a></td></tr>
+<tr><td style="padding:28px 32px 8px;font-size:15.5px;line-height:1.6">${paras}${btn}${firma}</td></tr>
+<tr><td style="padding:18px 32px 26px;border-top:1px solid #eeeef3">${d.logo ? `<img src="${esc(d.logo)}" width="110" alt="ideonapp" style="display:block;border:0;margin-bottom:10px">` : ""}<p style="margin:0;font-size:12px;line-height:1.5;color:#8a8a96">Software a la medida con pago único: el sistema es tuyo, sin licencias.<br>${baja}</p></td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+/** Instrucciones para que la IA escriba un mensaje con el estilo acordado (corto, humano, una pregunta). */
+export function aiMessagePrompt(lead: Lead & { notas?: string }, paso: number, canal: Canal, firma: string, descripcion: string) {
+  const correo = canal === "Correo";
+  const etapa = ["primer contacto", "seguimiento (ya le escribimos hace unos días)", "propuesta de una llamada corta", "último mensaje, amable, para cerrar"][Math.min(paso, 3)];
+  return `Escribes mensajes de prospección para ${firma}, de Ideonapp. Qué hacemos: ${descripcion || "software a la medida (CRM, inventarios, apps) con pago único; el sistema queda a nombre del cliente, sin licencias."}
+Escribe UN ${correo ? "correo" : "WhatsApp"} de ${etapa}. Debe sonar a una persona escribiendo a otra.
+Reglas: ${correo ? "45 a 85 palabras sin la firma; asunto de 2 a 5 palabras en minúsculas, sin el nombre de la empresa con dos puntos" : "20 a 40 palabras, empieza con «Hola, soy " + firma + " de Ideonapp»"}. Una observación concreta del negocio tomada de los datos (sin inventar; si no hay, usa su sector), UNA pregunta sobre su día a día, una frase de cómo ayudamos contada como resultado (sin lista de funciones) y un cierre fácil («¿Te muestro un ejemplo en 15 minutos?»). Saludo «Hola, {nombre}» o «Hola, ¿qué tal?». Tuteo, español de Colombia.
+Prohibido: «soluciones», «innovador», «transformación digital», «potenciar», «optimizar procesos», «espero que estés bien», «estimado», «no dudes en», listas, ${correo ? "emojis" : "más de un emoji"}.
+${correo ? "Termina con «" + firma + "» en una línea. Opcional, una posdata: «P. D.: es pago único; el sistema queda a nombre de ustedes.»" : "Sin firma."}
+Devuelve SOLO JSON: {"asunto":"${correo ? "..." : ""}","mensaje":"texto con saltos de línea \\n"}.
+PROSPECTO: ${JSON.stringify({ nombre: (lead.nombre || "").split(" ")[0], empresa: lead.empresa, sector: lead.sector, ciudad: lead.ciudad, dolor: lead.dolor, angulo: lead.angulo, notas: lead.notas })}`;
 }
