@@ -578,7 +578,9 @@
       "activateProject": "Activate project",
       "payOnActivate": "This proposal is paid when you activate the project, together with the first year of hosting and domain (Publish tab). Until then the preview is free.",
       "planChangesLeft": "Plan changes this year: {n} of {total} left",
-      "buyMoreChanges": "Buy more changes"
+      "buyMoreChanges": "Buy more changes",
+      "adminView": "Team mode: you're viewing {client}'s project. The client will see your messages in the chat as «Ideonapp team», and your changes don't use up their included changes.",
+      "teamIdeon": "Ideonapp team"
     },
     "settings": {
       "title": "Settings",
@@ -832,7 +834,10 @@
       "aiCost": "AI cost",
       "margin": "Margin",
       "updated": "Updated",
-      "empty": "No projects."
+      "empty": "No projects.",
+      "idea": "Client's idea",
+      "open": "Open",
+      "openHelp": "Open the project as part of the client's team: see their conversation and versions, and request changes."
     },
     "runs": {
       "date": "Date",

@@ -578,7 +578,9 @@
       "activateProject": "Activar proyecto",
       "payOnActivate": "Esta propuesta se paga al activar el proyecto, junto con el primer año de hosting y dominio (pestaña Publicar). Antes puedes ver la vista previa gratis.",
       "planChangesLeft": "Cambios del plan este año: te quedan {n} de {total}",
-      "buyMoreChanges": "Comprar más cambios"
+      "buyMoreChanges": "Comprar más cambios",
+      "adminView": "Modo equipo: estás viendo el proyecto de {client}. El cliente verá tus mensajes en el chat como «Equipo Ideonapp», y tus cambios no gastan los cambios incluidos de su plan.",
+      "teamIdeon": "Equipo Ideonapp"
     },
     "settings": {
       "title": "Configuración",
@@ -832,7 +834,10 @@
       "aiCost": "Coste IA",
       "margin": "Margen",
       "updated": "Actualizado",
-      "empty": "Sin proyectos."
+      "empty": "Sin proyectos.",
+      "idea": "Idea del cliente",
+      "open": "Abrir",
+      "openHelp": "Abre el proyecto como si fueras del equipo del cliente: ves su conversación y sus versiones, y puedes pedir cambios."
     },
     "runs": {
       "date": "Fecha",
