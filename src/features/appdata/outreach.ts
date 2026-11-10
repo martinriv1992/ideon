@@ -22,7 +22,7 @@ export function checkUnsubscribe(projectId: string, leadId: string, token: strin
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-async function sendOutreachEmail(a: { from: string; to: string; replyTo?: string; subject: string; texto: string; unsub: string }) {
+export async function sendOutreachEmail(a: { from: string; to: string; replyTo?: string; subject: string; texto: string; unsub: string }) {
   if (!process.env.RESEND_API_KEY) return { ok: false, error: "Correo no configurado (RESEND_API_KEY)" };
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -38,6 +38,14 @@ async function sendOutreachEmail(a: { from: string; to: string; replyTo?: string
     return { ok: false, error: `Resend ${res.status}: ${(await res.text()).slice(0, 200)}` };
   } catch (e) { return { ok: false, error: e instanceof Error ? e.message : String(e) }; }
 }
+
+/** Remitente: «Nombre <firma@ideonapp.com>» (dominio verificado en Resend). */
+export function senderFor(cfg: { remitente: string; firma: string }) {
+  const local = cfg.firma.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "") || "hola";
+  return `${cfg.remitente} <${local}@${FROM_DOMAIN}>`;
+}
+export const unsubscribeUrl = (projectId: string, leadId: string) =>
+  `${process.env.NEXT_PUBLIC_APP_URL || "https://ideonapp.com"}/api/apps/${projectId}/unsubscribe?l=${encodeURIComponent(leadId)}&t=${unsubscribeToken(projectId, leadId)}`;
 
 export interface OutreachSummary { activo: boolean; creados: number; enviados: number; whatsapp: number; errores: number; omitidos: number; limiteRestante: number }
 
@@ -82,15 +90,14 @@ export async function runOutreach(projectId: string, opts: { force?: boolean } =
   const today = new Date(now.getTime() - 5 * 3600_000).toISOString().slice(0, 10);
   const sentToday = items.filter((i) => i.estado === "enviado" && i.canal === "Correo" && i.enviadoEn && new Date(new Date(i.enviadoEn).getTime() - 5 * 3600_000).toISOString().slice(0, 10) === today).length;
   let quota = Math.max(0, cfg.limiteDiario - sentToday);
-  const unsubBase = `${process.env.NEXT_PUBLIC_APP_URL || "https://ideonapp.com"}/api/apps/${projectId}/unsubscribe`;
-  const from = `${cfg.remitente} <${cfg.firma.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "") || "hola"}@${FROM_DOMAIN}>`;
+  const from = senderFor(cfg);
   // Sin «Responder a» no se envía: las respuestas de los prospectos se perderían.
   if (!cfg.responderA) quota = 0;
   for (const it of items.filter((i) => i.estado === "aprobado" && i.canal === "Correo").sort((a, b) => (a.creado ?? "").localeCompare(b.creado ?? ""))) {
     if (quota <= 0) break;
     const l = leads.find((x) => x.id === it.leadId);
     if (!l?.correo) continue;
-    const r = await sendOutreachEmail({ from, to: l.correo, replyTo: cfg.responderA || undefined, subject: it.asunto || `Ideonapp para ${l.empresa ?? ""}`, texto: it.texto ?? "", unsub: `${unsubBase}?l=${encodeURIComponent(l.id)}&t=${unsubscribeToken(projectId, l.id)}` });
+    const r = await sendOutreachEmail({ from, to: l.correo, replyTo: cfg.responderA || undefined, subject: it.asunto || `Ideonapp para ${l.empresa ?? ""}`, texto: it.texto ?? "", unsub: unsubscribeUrl(projectId, l.id) });
     if (r.ok) {
       quota--; summary.enviados++;
       await patch("outreach", it.id, { estado: "enviado", enviadoEn: new Date().toISOString(), error: null });
