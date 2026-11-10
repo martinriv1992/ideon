@@ -186,3 +186,24 @@ export function extendPlan(cur: { until: string | null; since: string | null; gr
     granted: (active ? cur.granted : 0) + p.planSearches,
   };
 }
+
+/* ---------------- IA para apps (db.ai) ---------------- */
+export const appAiRequestSchema = z.object({
+  prompt: z.string().trim().min(1).max(40000),
+  json: z.boolean().default(false),
+  tier: z.enum(["quick", "default"]).default("default"),
+  system: z.string().max(4000).optional(),
+});
+
+/** Saca JSON (objeto o array) de una respuesta de texto: con o sin bloque ```json. Devuelve undefined si no hay. */
+export function parseJsonLoose(text: string): unknown {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const body = (fenced ? fenced[1] : text).trim();
+  try { return JSON.parse(body); } catch { /* sigue */ }
+  const starts = [body.indexOf("{"), body.indexOf("[")].filter((i) => i >= 0);
+  if (!starts.length) return undefined;
+  const start = Math.min(...starts);
+  const end = Math.max(body.lastIndexOf("}"), body.lastIndexOf("]"));
+  if (end <= start) return undefined;
+  try { return JSON.parse(body.slice(start, end + 1)); } catch { return undefined; }
+}

@@ -28,6 +28,8 @@ contraseña. Antes, cada navegador tenía su propia copia en `localStorage`.
 - `db.seed`: configuración inicial, se crea una sola vez y también en la app real.
 - `db.sample`: datos de ejemplo, solo en la vista previa.
 - `db.on('change')`: cambios de otros usuarios (sondeo cada 8 s).
+- `db.put(col, id, data)`: crea o reemplaza un registro con id propio (útil para ajustes).
+- `db.ai(texto)` → `{text}` y `db.ai.json(texto)` → objeto/array: IA para la app publicada (`tier: "quick"` Haiku, `"default"` Sonnet). Tope `app_ai_daily_limit` (100 por app cada 24 h); el coste va en `ai_usage`.
 - `db.user`, `db.users()`, `db.logout()`, `db.downloadJSON()`.
 
 ## Garantías

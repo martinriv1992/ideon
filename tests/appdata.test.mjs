@@ -85,3 +85,13 @@ test("prospección: precios desde ajustes, orden de saldos y extensión del plan
   const expired = extendPlan({ until: "2026-10-01T00:00:00Z", since: "2026-09-01T00:00:00Z", granted: 20 }, { planDays: 30, planSearches: 20 }, now);
   assert.equal(expired.granted, 20); assert.equal(expired.since, now.toISOString());
 });
+
+test("db.ai: JSON tolerante en las respuestas de la IA", async () => {
+  const { parseJsonLoose, appAiRequestSchema } = await import("../dist-tests/features/appdata/core.js");
+  assert.deepEqual(parseJsonLoose('[{"a":1}]'), [{ a: 1 }]);
+  assert.deepEqual(parseJsonLoose('Aquí tienes:\n```json\n{"x":[1,2]}\n```'), { x: [1, 2] });
+  assert.deepEqual(parseJsonLoose('Resultado: [{"n":"A"},{"n":"B"}] listo'), [{ n: "A" }, { n: "B" }]);
+  assert.equal(parseJsonLoose("sin json"), undefined);
+  assert.equal(appAiRequestSchema.parse({ prompt: "hola" }).tier, "default");
+  assert.equal(appAiRequestSchema.safeParse({ prompt: "" }).success, false);
+});
