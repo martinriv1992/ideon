@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { aiProviderName } from "@/lib/ai/provider";
 import { billingFromSettings } from "@/features/billing/pricing";
 import type {
@@ -34,6 +35,10 @@ export interface ProjectDetail {
   /** Vista previa gratuita: cambios incluidos y si el usuario es administrador de la plataforma. */
   freeChanges: number;
   isPlatformAdmin: boolean;
+  /** Un administrador de la plataforma viendo el proyecto de un cliente (no es miembro de su organización). */
+  adminView: { clientName: string } | null;
+  /** Autores de mensajes que son del equipo de Ideonapp (se muestran como «Equipo Ideonapp»). */
+  teamAuthorIds: string[];
   /** Paquete anual: cambios incluidos por año, paquetes en venta y moneda de cobro. */
   includedChanges: number;
   changePacks: { qty: number; price: number }[];
@@ -90,6 +95,16 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
     const { data } = await supabase.from("messages").select("*").eq("conversation_id", conversation.id).order("created_at", { ascending: true }).limit(500);
     messages = data ?? [];
   }
+  // Equipo de Ideonapp: quién de los autores es administrador y si el que mira es del equipo y no del cliente.
+  const admin = createAdminClient();
+  const authorIds = [...new Set(messages.filter((m) => m.role === "user" && m.author_id).map((m) => m.author_id as string))];
+  const [{ data: team }, { data: membership }, { data: org }] = await Promise.all([
+    authorIds.length ? admin.from("profiles").select("id").in("id", authorIds).eq("is_platform_admin", true) : Promise.resolve({ data: [] as { id: string }[] }),
+    profile?.is_platform_admin && user ? admin.from("organization_members").select("user_id").eq("organization_id", project.organization_id).eq("user_id", user.id).maybeSingle() : Promise.resolve({ data: null }),
+    profile?.is_platform_admin ? admin.from("organizations").select("name").eq("id", project.organization_id).maybeSingle() : Promise.resolve({ data: null }),
+  ]);
+  const adminView = profile?.is_platform_admin && !membership ? { clientName: org?.name ?? "—" } : null;
+
   let activeRun: AgentRun | null = null;
   if (project.active_run_id) {
     const { data } = await supabase.from("agent_runs").select("*").eq("id", project.active_run_id).maybeSingle();
@@ -98,7 +113,7 @@ export async function getProjectDetail(projectId: string): Promise<ProjectDetail
 
   return {
     project, conversation, messages, events: events ?? [],
-    proposal: proposals?.[0] ?? null, specification: specs?.[0] ?? null, versions: versions ?? [], images: images ?? [], assets: assets ?? [], domainOrder: domainOrder ?? null, subscription: subscription ?? null, freeChanges: billingFromSettings(settings ?? []).freeChanges, isPlatformAdmin: Boolean(profile?.is_platform_admin),
+    proposal: proposals?.[0] ?? null, specification: specs?.[0] ?? null, versions: versions ?? [], images: images ?? [], assets: assets ?? [], domainOrder: domainOrder ?? null, subscription: subscription ?? null, freeChanges: billingFromSettings(settings ?? []).freeChanges, isPlatformAdmin: Boolean(profile?.is_platform_admin), adminView, teamAuthorIds: (team ?? []).map((r) => r.id),
     includedChanges: billingFromSettings(settings ?? []).includedChanges, changePacks: billingFromSettings(settings ?? []).changePacks, billingCurrency: billingFromSettings(settings ?? []).currency,
     reviewRequired: reviewSetting !== false && reviewSetting !== "false",
     publishReview: review && !reviewPayload.superseded ? { id: review.id, decision: review.decision, note: reviewPayload.note ?? null, versionNumber: reviewPayload.version_number ?? null, createdAt: review.created_at, decidedAt: review.decided_at } : null,

@@ -96,13 +96,16 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
       {!aiConfigured && (
         <div className="shrink-0 border-b border-warning/30 bg-warning/10 px-4 py-2 text-[13px] text-warning">{t("aiNotConfigured")}</div>
       )}
+      {detail.adminView && (
+        <div className="shrink-0 border-b border-accent/30 bg-accent-soft px-4 py-2 text-[13px]">{t("adminView", { client: detail.adminView.clientName })}</div>
+      )}
 
       <div className="lg:flex-1 lg:min-h-0 grid grid-cols-1 lg:grid-cols-[380px_1fr_320px] xl:grid-cols-[420px_1fr_340px]">
         {/* IZQUIERDA */}
         <section className="h-[72vh] lg:h-auto lg:min-h-0 flex flex-col border-b lg:border-b-0 lg:border-r border-border">
           <Tabs value={leftTab} onChange={setLeftTab} items={[{ key: "conversation", label: t("conversation"), icon: MessageSquare }, { key: "history", label: t("history"), icon: History }]} />
           {leftTab === "conversation" ? (
-            <Conversation
+            <Conversation teamAuthorIds={detail.teamAuthorIds}
               messages={messages}
               busy={busy ?? (activeRun ? activeRun.step : null)}
               error={error}
@@ -231,8 +234,8 @@ function Field({ label, children }: { label: string; children?: React.ReactNode 
 }
 
 /* ------------------------------------------------------------- conversación */
-function Conversation({ messages, busy, error, disabled, canAnswer, onSend, onRetryBuild, onOpenProposal, waitingApproval, previewNote, onOpenPublish, noteAction }: {
-  messages: Message[]; busy: string | null; error: string | null; disabled: boolean; canAnswer: boolean;
+function Conversation({ teamAuthorIds, messages, busy, error, disabled, canAnswer, onSend, onRetryBuild, onOpenProposal, waitingApproval, previewNote, onOpenPublish, noteAction }: {
+  teamAuthorIds: string[]; messages: Message[]; busy: string | null; error: string | null; disabled: boolean; canAnswer: boolean;
   onSend: (c: string) => void; onRetryBuild: () => void; onOpenProposal: () => void; waitingApproval: boolean;
   previewNote: string | null; onOpenPublish: () => void; noteAction: string;
 }) {
@@ -261,7 +264,7 @@ function Conversation({ messages, busy, error, disabled, canAnswer, onSend, onRe
               <div className={cn("size-7 shrink-0 rounded-full flex items-center justify-center", isUser ? "bg-white/8 text-fg-muted" : "bg-accent-gradient text-accent-fg")}>{isUser ? <User className="size-3.5" /> : <Bot className="size-3.5" />}</div>
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] text-fg-subtle mb-1 flex items-center gap-1.5 flex-wrap">
-                  {isUser ? t("you") : <Badge tone="accent" className="h-[18px] text-[11px]">{m.agent_type ? t(`agents.${m.agent_type}`) : "Ideon"}</Badge>}
+                  {isUser ? (m.author_id && teamAuthorIds.includes(m.author_id) ? <Badge tone="accent" className="h-[18px] text-[11px]">{t("teamIdeon")}</Badge> : t("you")) : <Badge tone="accent" className="h-[18px] text-[11px]">{m.agent_type ? t(`agents.${m.agent_type}`) : "Ideon"}</Badge>}
                   {j.progress && <Badge className="h-[18px] text-[11px]">{t("step", { step: j.progress.step, total: j.progress.total })}</Badge>}
                   · <RelativeTime value={m.created_at} />
                 </p>
