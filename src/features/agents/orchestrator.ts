@@ -84,6 +84,12 @@ async function creatorIsAdmin(db: Admin, project: Project) {
   return Boolean(data?.is_platform_admin);
 }
 
+async function authorIsAdmin(db: Admin, authorId: string | null) {
+  if (!authorId) return false;
+  const { data } = await db.from("profiles").select("is_platform_admin").eq("id", authorId).maybeSingle();
+  return Boolean(data?.is_platform_admin);
+}
+
 async function billing(db: Admin) {
   return billingFromSettings((await db.from("platform_settings").select("key,value")).data ?? []);
 }
@@ -292,7 +298,8 @@ export async function handleUserMessage(projectId: string) {
   const last = [...messages].reverse().find((m) => m.role === "user");
   if (!last) return;
   if (project.current_version_id) {
-    const admin = await creatorIsAdmin(db, project);
+    // Si el cambio lo pide el equipo de Ideonapp (o el proyecto es de un admin), no gasta los cambios del cliente.
+    const admin = (await creatorIsAdmin(db, project)) || (await authorIsAdmin(db, last.author_id));
     // Vista previa gratuita: un número limitado de cambios antes de activar el proyecto.
     if (!project.paid_at && !admin) {
       const s = await billing(db);
