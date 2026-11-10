@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
 import { appFail, appJson, guardApp } from "@/features/appdata/guard";
 import { isEmail, outreachConfigFrom } from "@/features/appdata/outreach-core";
-import { sendOutreachEmail, senderFor, signatureFor, unsubscribeUrl } from "@/features/appdata/outreach";
+import { logMessage, replyAddress, sendOutreachEmail, senderFor, signatureFor, unsubscribeUrl } from "@/features/appdata/outreach";
 
 export const dynamic = "force-dynamic";
 
@@ -52,13 +52,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ project
   // Firma corporativa: datos de la empresa + los del usuario que envía (nombre de su cuenta por defecto).
   const company = firmaRows?.find((r) => r.collection === "settings")?.data, mine = firmaRows?.find((r) => r.collection === "firmas")?.data;
   const sig = signatureFor(company, mine, g.user.name);
-  const r = await sendOutreachEmail({ from: senderFor({ remitente: `${sig.nombre} de ${sig.empresa}`, firma: sig.nombre }), to: l.correo!.trim(), replyTo, subject: body.data.subject, texto: body.data.text, unsub: unsubscribeUrl(projectId, body.data.leadId), lead: l, diseno: body.data.design, sig });
+  const r = await sendOutreachEmail({ from: senderFor({ remitente: `${sig.nombre} de ${sig.empresa}`, firma: sig.nombre }), to: l.correo!.trim(), replyTo: replyAddress(projectId, body.data.leadId) ?? replyTo, subject: body.data.subject, texto: body.data.text, unsub: unsubscribeUrl(projectId, body.data.leadId), lead: l, diseno: body.data.design, sig });
   if (!r.ok) return appJson({ error: { code: "send_failed", detail: r.error } }, 502);
   await db.from("rate_limits").insert({ bucket: "app_mail", ip_hash: projectId });
 
   const now = new Date();
   const hist = Array.isArray(l.historial) ? l.historial : [];
+  await logMessage(projectId, { leadId: body.data.leadId, dir: "saliente", canal: "Correo", asunto: body.data.subject, texto: body.data.text, de: sig.nombre });
   const patch: Record<string, unknown> = {
+    pendiente: false,
     historial: [...hist, { fecha: now.toISOString(), tipo: "Correo", texto: `${body.data.tag ? `[${body.data.tag}] ` : ""}${body.data.subject} · enviado por ${g.user.name}` }],
     ...(!l.etapa || l.etapa === "Nuevo" ? { etapa: "Contactado" } : {}),
     ...(body.data.nextDays ? { proximo: new Date(now.getTime() + body.data.nextDays * 86_400_000).toISOString().slice(0, 10) } : {}),

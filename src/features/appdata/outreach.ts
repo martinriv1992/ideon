@@ -56,6 +56,24 @@ export function senderFor(cfg: { remitente: string; firma: string }) {
   const local = cfg.firma.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "") || "hola";
   return `${cfg.remitente} <${local}@${FROM_DOMAIN}>`;
 }
+/**
+ * Respuestas: si hay dominio de recepción (INBOUND_DOMAIN, p. ej. respuestas.ideonapp.com o el *.resend.app
+ * de la cuenta), cada correo lleva una dirección de respuesta única por prospecto. Así la respuesta vuelve al CRM.
+ */
+const replySig = (projectId: string, leadId: string) => createHmac("sha256", secret()).update(`reply:${projectId}:${leadId}`).digest("hex").slice(0, 10);
+export function replyAddress(projectId: string, leadId: string) {
+  const dom = (process.env.INBOUND_DOMAIN || "").trim().toLowerCase();
+  if (!dom || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(dom) || !/^[a-z0-9_-]{1,40}$/i.test(leadId)) return null;
+  return `r.${projectId.slice(0, 8)}.${leadId.toLowerCase()}.${replySig(projectId, leadId.toLowerCase())}@${dom}`;
+}
+export const checkReplySig = (projectId: string, leadId: string, sig: string) => replySig(projectId, leadId) === sig;
+
+/** Guarda un mensaje en la conversación del prospecto (colección «mensajes»). */
+export async function logMessage(projectId: string, m: { leadId: string; dir: "saliente" | "entrante"; canal: "Correo" | "WhatsApp"; asunto?: string; texto: string; de?: string }) {
+  const id = `m_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+  await createAdminClient().from("app_records").insert({ id, project_id: projectId, collection: "mensajes", data: { ...m, fecha: new Date().toISOString(), leido: m.dir === "saliente" } as Json });
+}
+
 export const unsubscribeUrl = (projectId: string, leadId: string) =>
   `${process.env.NEXT_PUBLIC_APP_URL || "https://ideonapp.com"}/api/apps/${projectId}/unsubscribe?l=${encodeURIComponent(leadId)}&t=${unsubscribeToken(projectId, leadId)}`;
 
@@ -127,10 +145,11 @@ export async function runOutreach(projectId: string, opts: { force?: boolean } =
     if (quota <= 0) break;
     const l = leads.find((x) => x.id === it.leadId);
     if (!l?.correo) continue;
-    const r = await sendOutreachEmail({ from, to: l.correo, replyTo: cfg.responderA || undefined, subject: it.asunto || `Ideonapp para ${l.empresa ?? ""}`, texto: it.texto ?? "", unsub: unsubscribeUrl(projectId, l.id), lead: l, diseno: cfg.diseno, sig });
+    const r = await sendOutreachEmail({ from, to: l.correo, replyTo: replyAddress(projectId, l.id) ?? (cfg.responderA || undefined), subject: it.asunto || `Ideonapp para ${l.empresa ?? ""}`, texto: it.texto ?? "", unsub: unsubscribeUrl(projectId, l.id), lead: l, diseno: cfg.diseno, sig });
     if (r.ok) {
       quota--; summary.enviados++;
       await patch("outreach", it.id, { estado: "enviado", enviadoEn: new Date().toISOString(), error: null });
+      await logMessage(projectId, { leadId: l.id, dir: "saliente", canal: "Correo", asunto: it.asunto ?? "", texto: it.texto ?? "", de: sig.nombre });
       const hist = Array.isArray(l.historial) ? l.historial : [];
       const nextDay = cad[it.paso + 1] ? cad[it.paso + 1].dia - cad[it.paso].dia : null;
       await patch("leads", l.id, {

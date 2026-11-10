@@ -54,3 +54,12 @@ test("firma corporativa: datos por usuario, enlaces seguros y sin despedida dupl
   assert.equal((html.match(/>Martín</g) || []).length, 0, "la despedida del texto se reemplaza por la firma");
   assert.match(signatureText(sig), /ideonapp\.com/);
 });
+
+test("respuestas: dirección por prospecto y texto sin lo citado", async () => {
+  const { parseReplyLocal, stripQuoted } = await import("../dist-tests/features/appdata/outreach-core.js");
+  assert.deepEqual(parseReplyLocal("Ideonapp <r.2c5cbc89.l1a1b785c8c0hefo.ab12cd34ef@respuestas.ideonapp.com>"), { p8: "2c5cbc89", leadId: "l1a1b785c8c0hefo", sig: "ab12cd34ef" });
+  assert.equal(parseReplyLocal("martin@ideonapp.com"), null);
+  const t = "Hola Martín, sí me interesa. ¿El jueves?\n\nEl lun, 10 nov 2026 a las 9:00, Martín <x@y.com> escribió:\n> Hola, ¿qué tal?\n> texto";
+  assert.equal(stripQuoted(t), "Hola Martín, sí me interesa. ¿El jueves?");
+  assert.equal(stripQuoted("Ok\n\nOn Mon, Nov 10, 2026 at 9:00 AM Martin wrote:\n> hi"), "Ok");
+});
