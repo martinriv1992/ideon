@@ -240,3 +240,23 @@ ${correo ? "Termina con «" + firma + "» en una línea. Opcional, una posdata: 
 Devuelve SOLO JSON: {"asunto":"${correo ? "..." : ""}","mensaje":"texto con saltos de línea \\n"}.
 PROSPECTO: ${JSON.stringify({ nombre: (lead.nombre || "").split(" ")[0], empresa: lead.empresa, sector: lead.sector, ciudad: lead.ciudad, dolor: lead.dolor, angulo: lead.angulo, notas: lead.notas })}`;
 }
+
+/* ---------------- Respuestas de los prospectos ---------------- */
+/** Quita lo citado de una respuesta («El lun., … escribió:», líneas con «>», mensaje original). */
+export function stripQuoted(text: string) {
+  const lines = String(text || "").replace(/\r\n/g, "\n").split("\n");
+  const out: string[] = [];
+  for (const line of lines) {
+    const t = line.trim();
+    if (/^(el|on)\s.+(escribi[oó]|wrote):?\s*$/i.test(t) || /^-{2,}\s*(original message|mensaje original)/i.test(t) || /^(de|from):\s.+@/i.test(t) || /^_{5,}$/.test(t)) break;
+    if (t.startsWith(">")) continue;
+    out.push(line);
+  }
+  return out.join("\n").replace(/\n{3,}/g, "\n\n").trim().slice(0, 8000);
+}
+/** Dirección de respuesta: «r.<proyecto 8>.<prospecto>.<firma>@dominio». */
+export function parseReplyLocal(address: string): { p8: string; leadId: string; sig: string } | null {
+  const local = String(address || "").trim().toLowerCase().replace(/^.*</, "").replace(/>.*$/, "").split("@")[0];
+  const m = local.match(/^r\.([0-9a-f]{8})\.([a-z0-9_-]{1,64})\.([a-z0-9_-]{6,16})$/i);
+  return m ? { p8: m[1], leadId: m[2], sig: m[3] } : null;
+}
