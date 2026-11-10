@@ -44,11 +44,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ project
     body.data.json ? "Responde SOLO con JSON válido, sin texto antes ni después y sin bloques de código." : undefined,
   ].filter(Boolean).join("\n") || undefined;
   try {
-    const res = await getClient().messages.create({
+    // Igual que los agentes: en streaming, y sin razonamiento solo en Haiku (rápido y barato).
+    const res = await getClient().messages.stream({
       model: m.model, max_tokens: 8000, system,
-      thinking: { type: "disabled" },
+      ...(body.data.tier === "quick" ? { thinking: { type: "disabled" as const } } : { output_config: { effort: "low" as const } }),
       messages: [{ role: "user", content: body.data.prompt }],
-    });
+    }).finalMessage();
     const text = res.content.filter((b): b is Anthropic.TextBlock => b.type === "text").map((b) => b.text).join("");
     const input = res.usage.input_tokens, output = res.usage.output_tokens;
     const { data: project } = await db.from("projects").select("organization_id").eq("id", projectId).single();
@@ -58,8 +59,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ project
     if (json === undefined) return appFail("ai_bad_json", 502);
     return appJson({ json });
   } catch (e) {
-    console.error("app ai failed", projectId, e instanceof Error ? e.message : e);
+    const detail = e instanceof Error ? e.message.slice(0, 300) : String(e);
+    console.error("app ai failed", projectId, detail);
     if (slot) await db.from("rate_limits").delete().eq("id", slot.id);
-    return appFail("ai_failed", 502);
+    // El motivo ayuda a diagnosticar (no contiene secretos: es el mensaje de la API de IA).
+    return appJson({ error: { code: "ai_failed", detail } }, 502);
   }
 }

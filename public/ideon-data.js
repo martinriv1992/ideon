@@ -99,7 +99,7 @@
       headers: body ? { "Content-Type": "application/json" } : {}, body: body ? JSON.stringify(body) : undefined,
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
-        if (!r.ok) { var e = new Error((j && j.error && j.error.code) || "http_" + r.status); e.status = r.status; e.code = j && j.error && j.error.code; throw e; }
+        if (!r.ok) { var e = new Error((j && j.error && j.error.code) || "http_" + r.status); e.status = r.status; e.code = j && j.error && j.error.code; e.detail = j && j.error && j.error.detail; throw e; }
         return j;
       });
     });
@@ -276,7 +276,7 @@
     if (MODE !== "live") { var pe = new Error(TXT.aiPreview); pe.code = "preview_only"; return Promise.reject(pe); }
     var tier = opts.tier || (opts.modelTier === "quick" ? "quick" : "default");
     return req("POST", "/ai", { prompt: String(prompt || ""), json: json, tier: tier, system: opts.system || undefined }).catch(function (e) {
-      var err = new Error(e.code === "ai_limit" ? TXT.aiLimit : TXT.aiFailed); err.code = e.code || "ai_failed"; throw err;
+      var err = new Error(e.code === "ai_limit" ? TXT.aiLimit : TXT.aiFailed); err.code = e.code || "ai_failed"; err.detail = e.detail; if (e.detail) console.error("IdeonDB.ai:", e.detail); throw err;
     });
   }
 
