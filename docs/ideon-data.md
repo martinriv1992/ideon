@@ -100,6 +100,18 @@ contraseña. Antes, cada navegador tenía su propia copia en `localStorage`.
 - **Si `web_fetch` no está permitido** (como en entornos con red restringida), se busca solo con `web_search`.
 - **Vista previa y demo:** resultados ficticios marcados como tales. En el demo CRM, vista «Prospección IA» con importación como prospectos y campaña para los importados.
 
+## Cadencias automáticas (`settings/outreach`)
+
+- **Qué hace:** cada mañana (Vercel Cron, 14:00 UTC = 9:00 Colombia, `vercel.json`) o con «Ejecutar ahora» en el CRM, el motor (`src/features/appdata/outreach.ts`, lógica pura en `outreach-core.ts`):
+  1. Detiene los pendientes de prospectos que respondieron, se cerraron o se dieron de baja.
+  2. Crea el mensaje del paso que toca (colección `outreach`, id `o_<lead>_<paso>`) con plantillas propias, sin IA: dolor y ángulo de la auditoría + «pago único».
+  3. Envía por correo (Resend, desde `<firma>@ideonapp.com`, con *Responder a* del usuario) los aprobados, hasta el límite diario. WhatsApp queda en cola para enviar con un clic.
+- **Elegibles:** prospectos «Nuevo» con encaje ≥ `fitMin` y algún canal. Los pasos siguientes respetan los días de la cadencia de Seguimiento.
+- **Baja:** cada correo lleva enlace y cabecera `List-Unsubscribe` (`/api/apps/[id]/unsubscribe`, token HMAC). Marca `baja: true` en el prospecto.
+- **Modo aprobación** (por defecto): los correos quedan como borrador hasta que se aprueban en el CRM.
+- **Seguridad del cron:** con `CRON_SECRET` exige `Authorization: Bearer`; sin él, solo acepta el agente de Vercel Cron. El motor es idempotente y respeta el límite diario.
+- **Pantalla de acceso con marca:** `IdeonDB.brand({title, logo, accent, accent2, dark})` antes de `ready()`.
+
 ## Rollback
 
 - **Código:** revertir el merge o usar Instant Rollback en Vercel. Las apps publicadas antes de este cambio no usan el SDK y no se ven afectadas.

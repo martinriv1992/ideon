@@ -314,12 +314,23 @@
 
   // ------------------------------------------------------------------ interfaz (Shadow DOM, aislada del CSS de la app)
   var host = null, root = null;
+  var BRAND = { title: "", logo: "", accent: "", accent2: "", dark: false };
+  function hex(c) { return /^#[0-9a-f]{3,8}$/i.test(c || "") ? c : ""; }
+  function brandCss() {
+    var a = hex(BRAND.accent), a2 = hex(BRAND.accent2) || a, out = [".logo{display:block;width:44px;height:44px;margin:0 0 14px;border-radius:12px}"];
+    if (a) out.push(".pri{background:linear-gradient(135deg," + a + "," + a2 + ");color:#0b0a14}input:focus{outline-color:" + a + ";border-color:" + a + "}");
+    if (BRAND.dark) out.push(".ov{background:radial-gradient(900px 500px at 15% 10%,rgba(139,124,246,.22),transparent),radial-gradient(800px 500px at 90% 95%,rgba(94,176,255,.16),transparent),#09090b}" +
+      ".card{background:#131316;border-color:rgba(255,255,255,.09);color:#fafafa;box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}h1{color:#fafafa}p{color:#a1a1aa}label{color:#d4d4d8}" +
+      "input{background:#0f0f12;border-color:rgba(255,255,255,.12);color:#fafafa}.foot{color:#71717a}.err{color:#f87171}");
+    return out.join("");
+  }
   function ui() {
     if (root) return root;
     host = document.createElement("div"); host.setAttribute("data-ideon-data-ui", "");
     (document.body || document.documentElement).appendChild(host);
     root = host.attachShadow ? host.attachShadow({ mode: "open" }) : host;
-    var st = document.createElement("style");
+    var st = document.createElement("style"), bs = document.createElement("style");
+    bs.textContent = brandCss();
     st.textContent = [
       ":host{all:initial}",
       "*{box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}",
@@ -341,7 +352,7 @@
       ".st{font-size:12px;color:#71717a;padding:6px 10px}",
       ".toast{position:fixed;z-index:2147483647;left:50%;transform:translateX(-50%);bottom:20px;background:#18181b;color:#fff;padding:10px 16px;border-radius:10px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.25)}",
     ].join("");
-    root.appendChild(st);
+    root.appendChild(st); bs.setAttribute("data-brand", ""); root.appendChild(bs);
     return root;
   }
   function el(tag, attrs, html) { var e = document.createElement(tag); for (var a in attrs || {}) e.setAttribute(a, attrs[a]); if (html != null) e.innerHTML = html; return e; }
@@ -357,8 +368,8 @@
     loginPromise = new Promise(function (resolve) {
       var r = ui();
       var ov = el("div", { class: "ov" });
-      var title = esc(document.title || "");
-      ov.innerHTML = '<form class="card" novalidate><h1>' + (title || TXT.signIn) + "</h1><p>" + TXT.signIn + "</p>" +
+      var title = esc(BRAND.title || document.title || "");
+      ov.innerHTML = '<form class="card" novalidate>' + (BRAND.logo ? '<img class="logo" alt="" src="' + esc(BRAND.logo) + '">' : "") + '<h1>' + (title || TXT.signIn) + "</h1><p>" + TXT.signIn + "</p>" +
         '<label>' + TXT.email + '<input name="email" type="email" autocomplete="username" required></label>' +
         '<label>' + TXT.password + '<input name="password" type="password" autocomplete="current-password" required></label>' +
         '<div class="err" role="alert"></div><button class="pri" type="submit">' + TXT.enter + '</button><div class="foot">' + TXT.powered + "</div></form>";
@@ -464,6 +475,8 @@
   window.IdeonDB = {
     version: 1,
     mode: MODE,
+    /** Marca de la pantalla de acceso: {title, logo (URL o data:), accent, accent2, dark}. Llamar antes de ready(). */
+    brand: function (b) { b = b || {}; ["title", "logo", "accent", "accent2"].forEach(function (k) { if (typeof b[k] === "string") BRAND[k] = b[k]; }); BRAND.dark = b.dark === true; if (root) { var x = root.querySelector("style[data-brand]"); if (x) x.textContent = brandCss(); } },
     ready: function () { if (!readyPromise) readyPromise = new Promise(function (res) { if (document.body) res(); else document.addEventListener("DOMContentLoaded", function () { res(); }); }).then(boot); return readyPromise; },
   };
 })();
