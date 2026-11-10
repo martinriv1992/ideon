@@ -37,7 +37,7 @@
       rejected: "Un cambio no se pudo guardar y se descartó.", leave: "Hay cambios sin guardar.", demoUser: "Usuario de demostración",
       powered: "Datos seguros con Ideonapp", role: { admin: "Administrador", member: "Miembro" },
       quota: "Llegaste al límite mensual de búsquedas de prospección.", noSearches: "No quedan búsquedas de prospección. El dueño de la cuenta puede activar el plan o comprar búsquedas en Ideonapp (Publicar → Prospección con IA).", badQuery: "Escribe qué tipo de empresas buscas (mínimo 3 letras).",
-      searchFailed: "No se pudo completar la búsqueda. Inténtalo de nuevo.", demoNote: "Resultado de ejemplo (vista previa): en la app real la IA busca en la web y cita la fuente.",
+      searchFailed: "No se pudo completar la búsqueda. Inténtalo de nuevo.", aiPreview: "La IA está disponible en la app publicada (en la vista previa no se usa).", aiLimit: "Se alcanzó el límite diario de uso de IA de esta app. Inténtalo mañana.", aiFailed: "La IA no pudo responder. Inténtalo de nuevo.", demoNote: "Resultado de ejemplo (vista previa): en la app real la IA busca en la web y cita la fuente.",
     },
     en: {
       signIn: "Sign in", email: "Email", password: "Password", enter: "Sign in", wrong: "Wrong email or password.",
@@ -49,7 +49,7 @@
       rejected: "A change couldn't be saved and was discarded.", leave: "There are unsaved changes.", demoUser: "Demo user",
       powered: "Data secured by Ideonapp", role: { admin: "Admin", member: "Member" },
       quota: "You've reached this month's prospecting search limit.", noSearches: "No prospecting searches left. The account owner can activate the plan or buy searches in Ideonapp (Publish → AI prospecting).", badQuery: "Type what kind of businesses you're looking for (3+ letters).",
-      searchFailed: "The search couldn't be completed. Try again.", demoNote: "Sample result (preview): in the live app the AI searches the web and cites the source.",
+      searchFailed: "The search couldn't be completed. Try again.", aiPreview: "AI is available in the published app (not in the preview).", aiLimit: "This app reached its daily AI limit. Try again tomorrow.", aiFailed: "The AI couldn't answer. Try again.", demoNote: "Sample result (preview): in the live app the AI searches the web and cites the source.",
     },
   }[LANG];
 
@@ -78,7 +78,7 @@
   var listeners = { change: [], status: [] };
   var user = null;
   var status = "saved";
-  function emit(ev, arg) { (listeners[ev] || []).slice().forEach(function (fn) { try { fn(arg); } catch { console.error(e); } }); }
+  function emit(ev, arg) { (listeners[ev] || []).slice().forEach(function (fn) { try { fn(arg); } catch (e) { console.error(e); } }); }
   function view(r) { var o = clone(r.data) || {}; o.id = r.id; o.createdAt = r.createdAt; o.updatedAt = r.updatedAt; o.createdBy = r.createdBy || null; return o; }
   function list(col) {
     return Object.keys(recs).map(function (x) { return recs[x]; }).filter(function (r) { return r.collection === col; })
@@ -207,6 +207,17 @@
       need(col, id); var p = strip(patch); if (!Object.keys(p).length) return db.get(col, id);
       commit({ op: "update", collection: col, id: id, patch: p }); return db.get(col, id);
     },
+    /** Crea o reemplaza el registro con ese id (útil para configuración: «settings/general»). */
+    put: function (col, id, data) {
+      checkCol(col); id = String(id);
+      if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) throw new Error("IdeonDB: id no válido «" + id + "».");
+      var cur = recs[k(col, id)], d = strip(data);
+      if (!cur) { commit({ op: "insert", collection: col, id: id, data: d }); return db.get(col, id); }
+      var patch = {}; Object.keys(cur.data || {}).forEach(function (f) { if (!(f in d)) patch[f] = null; });
+      Object.keys(d).forEach(function (f) { patch[f] = d[f]; });
+      if (Object.keys(patch).length) commit({ op: "update", collection: col, id: id, patch: patch });
+      return db.get(col, id);
+    },
     remove: function (col, id) { need(col, id); commit({ op: "remove", collection: col, id: id }); return true; },
     increment: function (col, id, field, delta) {
       need(col, id); var d = Number(delta);
@@ -243,6 +254,11 @@
         var err = new Error(msg); err.code = e.code; throw err;
       });
     },
+    /**
+     * IA para la app (solo en la app publicada y con sesión): db.ai("texto") → {text}; db.ai.json("…") → objeto/array.
+     * opts.tier: "quick" (rápido y barato) o "default" (mejor calidad).
+     */
+    ai: aiCall,
     exportJSON: function () {
       var out = {}; Object.keys(recs).forEach(function (x) { var r = recs[x]; if (r.collection.indexOf("__") === 0) return; (out[r.collection] = out[r.collection] || []).push(view(r)); });
       return out;
@@ -252,6 +268,17 @@
       var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = (name || "datos") + ".json"; document.body.appendChild(a); a.click(); a.remove();
     },
   };
+
+  function aiCall(prompt, opts) { return aiReq(prompt, opts, false).then(function (j) { return { text: j.text || "" }; }); }
+  aiCall.json = function (prompt, opts) { return aiReq(prompt, opts, true).then(function (j) { return j.json; }); };
+  function aiReq(prompt, opts, json) {
+    opts = opts || {};
+    if (MODE !== "live") { var pe = new Error(TXT.aiPreview); pe.code = "preview_only"; return Promise.reject(pe); }
+    var tier = opts.tier || (opts.modelTier === "quick" ? "quick" : "default");
+    return req("POST", "/ai", { prompt: String(prompt || ""), json: json, tier: tier, system: opts.system || undefined }).catch(function (e) {
+      var err = new Error(e.code === "ai_limit" ? TXT.aiLimit : TXT.aiFailed); err.code = e.code || "ai_failed"; throw err;
+    });
+  }
 
   /** Vista previa: empresas ficticias con la forma real de los resultados. */
   function demoProspects(query, opts) {
