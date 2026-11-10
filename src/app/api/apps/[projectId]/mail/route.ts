@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
 import { appFail, appJson, guardApp } from "@/features/appdata/guard";
 import { isEmail, outreachConfigFrom } from "@/features/appdata/outreach-core";
-import { sendOutreachEmail, senderFor, unsubscribeUrl } from "@/features/appdata/outreach";
+import { sendOutreachEmail, senderFor, signatureFor, unsubscribeUrl } from "@/features/appdata/outreach";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +14,8 @@ const schema = z.object({
   /** Días hasta el próximo seguimiento (opcional). */
   nextDays: z.number().int().min(1).max(90).optional(),
   tag: z.string().max(80).optional(),
+  /** «pieza»: banner de la marca + botón; «texto»: correo sencillo. Ambos llevan la firma corporativa. */
+  design: z.enum(["pieza", "texto"]).default("pieza"),
 });
 const DAILY = 300;
 
@@ -30,20 +32,27 @@ export async function POST(req: Request, { params }: { params: Promise<{ project
   if (!body.success) return appFail("invalid", 400);
 
   const db = createAdminClient();
-  const [{ data: lead }, { data: cfgRow }, { count }] = await Promise.all([
+  const [{ data: lead }, { data: cfgRow }, { count }, { data: firmaRows }] = await Promise.all([
     db.from("app_records").select("data").eq("project_id", projectId).eq("collection", "leads").eq("id", body.data.leadId).is("deleted_at", null).maybeSingle(),
     db.from("app_records").select("data").eq("project_id", projectId).eq("collection", "settings").eq("id", "outreach").is("deleted_at", null).maybeSingle(),
     db.from("rate_limits").select("id", { count: "exact", head: true }).eq("bucket", "app_mail").eq("ip_hash", projectId).gte("created_at", new Date(Date.now() - 86_400_000).toISOString()),
+    db.from("app_records").select("collection,id,data").eq("project_id", projectId).is("deleted_at", null)
+      .or(`and(collection.eq.settings,id.eq.firma),and(collection.eq.firmas,id.eq.${g.user.id})`),
   ]);
-  const l = (lead?.data ?? null) as { correo?: string; baja?: boolean; etapa?: string; historial?: unknown[] } | null;
+  const l = (lead?.data ?? null) as { correo?: string; baja?: boolean; etapa?: string; historial?: unknown[]; sector?: string; empresa?: string } | null;
   if (!l) return appFail("not_found", 404);
   if (l.baja) return appFail("unsubscribed", 409);
   if (!isEmail(l.correo)) return appFail("no_email", 400);
   const cfg = outreachConfigFrom(cfgRow?.data);
-  if (!cfg.responderA) return appFail("no_reply_to", 400);
+  // Las respuestas llegan a quien envía (su correo de acceso); si no es válido, al «Responder a» general.
+  const replyTo = isEmail(g.user.email) ? g.user.email : cfg.responderA;
+  if (!replyTo) return appFail("no_reply_to", 400);
   if ((count ?? 0) >= DAILY) return appFail("mail_limit", 429);
 
-  const r = await sendOutreachEmail({ from: senderFor(cfg), to: l.correo!.trim(), replyTo: cfg.responderA, subject: body.data.subject, texto: body.data.text, unsub: unsubscribeUrl(projectId, body.data.leadId) });
+  // Firma corporativa: datos de la empresa + los del usuario que envía (nombre de su cuenta por defecto).
+  const company = firmaRows?.find((r) => r.collection === "settings")?.data, mine = firmaRows?.find((r) => r.collection === "firmas")?.data;
+  const sig = signatureFor(company, mine, g.user.name);
+  const r = await sendOutreachEmail({ from: senderFor({ remitente: `${sig.nombre} de ${sig.empresa}`, firma: sig.nombre }), to: l.correo!.trim(), replyTo, subject: body.data.subject, texto: body.data.text, unsub: unsubscribeUrl(projectId, body.data.leadId), lead: l, diseno: body.data.design, sig });
   if (!r.ok) return appJson({ error: { code: "send_failed", detail: r.error } }, 502);
   await db.from("rate_limits").insert({ bucket: "app_mail", ip_hash: projectId });
 

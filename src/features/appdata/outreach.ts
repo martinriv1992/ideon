@@ -2,9 +2,10 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
+import Anthropic from "@anthropic-ai/sdk";
 import {
-  cadenceFrom, emailHtml, itemId, nextStep, outreachConfigFrom, templateMessage,
-  type Item, type Lead,
+  aiMessagePrompt, cadenceFrom, emailHtml, itemId, nextStep, outreachConfigFrom, sectorCopy, signatureFrom, signatureText, stripSignoff, templateMessage,
+  type Canal, type Item, type Lead, type Signature,
 } from "./outreach-core";
 
 /**
@@ -22,14 +23,25 @@ export function checkUnsubscribe(projectId: string, leadId: string, token: strin
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-export async function sendOutreachEmail(a: { from: string; to: string; replyTo?: string; subject: string; texto: string; unsub: string }) {
+const BASE = () => (process.env.NEXT_PUBLIC_APP_URL || "https://ideonapp.com").replace(/\/$/, "");
+/** Recursos del correo con diseño: banner del sector, logo y botón para agendar. */
+export function emailDesignFor(lead: Pick<Lead, "sector" | "empresa">, diseno: "pieza" | "texto") {
+  return { diseno, banner: `${BASE()}/email/${sectorCopy(lead).key}.jpg`, logo: `${BASE()}/email/logo.png`, link: `${BASE()}/es`, ctaUrl: process.env.NEXT_PUBLIC_BOOKING_URL || `${BASE()}/es/contact`, ctaText: "Agendar 15 minutos" };
+}
+export function signatureFor(company: unknown, mine: unknown, fallbackName: string): Signature {
+  return { ...signatureFrom(company, mine, fallbackName), logo: `${BASE()}/email/isotipo.png` };
+}
+
+export async function sendOutreachEmail(a: { from: string; to: string; replyTo?: string; subject: string; texto: string; unsub: string; lead?: Pick<Lead, "sector" | "empresa">; diseno?: "pieza" | "texto"; sig?: Signature }) {
   if (!process.env.RESEND_API_KEY) return { ok: false, error: "Correo no configurado (RESEND_API_KEY)" };
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: a.from, to: [a.to], subject: a.subject, text: `${a.texto}\n\n—\nPara no recibir más mensajes: ${a.unsub}`, html: emailHtml(a.texto, a.unsub),
+        from: a.from, to: [a.to], subject: a.subject,
+        text: `${a.sig ? `${stripSignoff(a.texto, a.sig.nombre)}\n\n${signatureText(a.sig)}` : a.texto}\n\n—\nPara no recibir más mensajes: ${a.unsub}`,
+        html: emailHtml(a.texto, a.unsub, a.lead ? emailDesignFor(a.lead, a.diseno ?? "pieza") : {}, a.sig),
         ...(a.replyTo ? { reply_to: a.replyTo } : {}),
         headers: { "List-Unsubscribe": `<${a.unsub}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
       }),
@@ -47,12 +59,28 @@ export function senderFor(cfg: { remitente: string; firma: string }) {
 export const unsubscribeUrl = (projectId: string, leadId: string) =>
   `${process.env.NEXT_PUBLIC_APP_URL || "https://ideonapp.com"}/api/apps/${projectId}/unsubscribe?l=${encodeURIComponent(leadId)}&t=${unsubscribeToken(projectId, leadId)}`;
 
+let ai: Anthropic | null = null;
+/** Redacta con IA (Haiku) un paso de la cadencia; null si falla (se usa la plantilla). */
+async function aiMessage(projectId: string, orgId: string | null, lead: Lead, paso: number, canal: Canal, firma: string, descripcion: string) {
+  if (!process.env.ANTHROPIC_API_KEY) return null;
+  try {
+    ai ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const res = await ai.messages.create({ model: "claude-haiku-5-5", max_tokens: 700, thinking: { type: "disabled" }, messages: [{ role: "user", content: aiMessagePrompt(lead, paso, canal, firma, descripcion) }] });
+    const text = res.content.filter((b): b is Anthropic.TextBlock => b.type === "text").map((b) => b.text).join("");
+    if (orgId) await createAdminClient().from("ai_usage").insert({ organization_id: orgId, project_id: projectId, provider: "anthropic", model: "claude-haiku-5-5", input_tokens: res.usage.input_tokens, output_tokens: res.usage.output_tokens, cost_usd: Number(((res.usage.input_tokens * 0.1 + res.usage.output_tokens * 0.5) / 1e6).toFixed(6)) });
+    const m = text.match(/\{[\s\S]*\}/); if (!m) return null;
+    const j = JSON.parse(m[0]) as { asunto?: string; mensaje?: string };
+    if (!j.mensaje || j.mensaje.length < 20) return null;
+    return { asunto: canal === "Correo" ? String(j.asunto || "").slice(0, 120) : "", texto: String(j.mensaje).replace(/\\n/g, "\n").slice(0, 3000) };
+  } catch { return null; }
+}
+
 export interface OutreachSummary { activo: boolean; creados: number; enviados: number; whatsapp: number; errores: number; omitidos: number; limiteRestante: number }
 
 export async function runOutreach(projectId: string, opts: { force?: boolean } = {}): Promise<OutreachSummary> {
   const db = createAdminClient();
   const { data } = await db.from("app_records").select("id,collection,data").eq("project_id", projectId).is("deleted_at", null)
-    .in("collection", ["settings", "leads", "outreach"]).limit(30000);
+    .in("collection", ["settings", "leads", "outreach", "firmas"]).limit(30000);
   const rows = (data ?? []) as unknown as Row[];
   const setting = (id: string) => rows.find((r) => r.collection === "settings" && r.id === id)?.data;
   const cfg = outreachConfigFrom(setting("outreach"));
@@ -60,6 +88,8 @@ export async function runOutreach(projectId: string, opts: { force?: boolean } =
   if (!cfg.activo && !opts.force) return summary;
 
   const cad = cadenceFrom(setting("templates"));
+  const orgId = cfg.usarIA ? ((await db.from("projects").select("organization_id").eq("id", projectId).maybeSingle()).data?.organization_id ?? null) : null;
+  const sig = signatureFor(setting("firma"), null, cfg.firma);
   const leads = rows.filter((r) => r.collection === "leads").map((r) => ({ ...(r.data as object), id: r.id }) as Lead & { historial?: unknown[] });
   const items = rows.filter((r) => r.collection === "outreach").map((r) => ({ ...(r.data as object), id: r.id }) as Item);
   const now = new Date(), nowIso = now.toISOString();
@@ -78,7 +108,7 @@ export async function runOutreach(projectId: string, opts: { force?: boolean } =
   for (const l of leads) {
     const step = nextStep(l, cad, items, cfg, now);
     if (!step) continue;
-    const msg = templateMessage(l, step.paso, step.canal, cfg.firma);
+    const msg = (cfg.usarIA ? await aiMessage(projectId, orgId, l, step.paso, step.canal, cfg.firma, String(setting("general")?.descripcion ?? "")) : null) ?? templateMessage(l, step.paso, step.canal, cfg.firma);
     const estado = step.canal === "WhatsApp" ? "whatsapp" : cfg.modo === "auto" ? "aprobado" : "borrador";
     const it: Item = { id: itemId(l.id, step.paso), leadId: l.id, paso: step.paso, canal: step.canal, estado, asunto: msg.asunto, texto: msg.texto, creado: nowIso, enviadoEn: null };
     const { id, ...rest } = it;
@@ -97,7 +127,7 @@ export async function runOutreach(projectId: string, opts: { force?: boolean } =
     if (quota <= 0) break;
     const l = leads.find((x) => x.id === it.leadId);
     if (!l?.correo) continue;
-    const r = await sendOutreachEmail({ from, to: l.correo, replyTo: cfg.responderA || undefined, subject: it.asunto || `Ideonapp para ${l.empresa ?? ""}`, texto: it.texto ?? "", unsub: unsubscribeUrl(projectId, l.id) });
+    const r = await sendOutreachEmail({ from, to: l.correo, replyTo: cfg.responderA || undefined, subject: it.asunto || `Ideonapp para ${l.empresa ?? ""}`, texto: it.texto ?? "", unsub: unsubscribeUrl(projectId, l.id), lead: l, diseno: cfg.diseno, sig });
     if (r.ok) {
       quota--; summary.enviados++;
       await patch("outreach", it.id, { estado: "enviado", enviadoEn: new Date().toISOString(), error: null });

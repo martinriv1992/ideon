@@ -41,3 +41,16 @@ test("configuración saneada y plantillas con pago único", () => {
   assert.equal(channelFor({ dia: 0, canal: "WhatsApp" }, { id: "x", correo: "a@b.co" }), "Correo");
   assert.match(emailHtml("Hola <b>\n\nChao", "https://x/u"), /&lt;b&gt;.*date de baja/s);
 });
+
+test("firma corporativa: datos por usuario, enlaces seguros y sin despedida duplicada", async () => {
+  const { signatureFrom, stripSignoff, emailHtml, signatureText } = await import("../dist-tests/features/appdata/outreach-core.js");
+  const sig = signatureFrom({ cargo: "Ventas", web: "javascript:alert(1)", telefono: "300 111 2233" }, { cargo: "Fundador" }, "Martín Riviere");
+  assert.equal(sig.nombre, "Martín Riviere"); assert.equal(sig.cargo, "Fundador"); assert.equal(sig.web, "https://ideonapp.com");
+  assert.match(sig.ctaText, /CRM personalizado gratis/);
+  const t = "Hola, ¿qué tal?\n\nUna pregunta.\n\nMartín\nIdeonapp\n\nP. D.: es pago único.";
+  assert.equal(stripSignoff(t, "Martín Riviere"), "Hola, ¿qué tal?\n\nUna pregunta.\n\nP. D.: es pago único.");
+  const html = emailHtml(t, "https://x/u", { diseno: "pieza", banner: "https://ideonapp.com/email/general.jpg", ctaUrl: "https://cal.com/x" }, sig);
+  assert.match(html, /email\/general\.jpg/); assert.match(html, /Agendar 15 minutos/); assert.match(html, /CRM personalizado gratis &rarr;/); assert.match(html, /wa\.me\/573001112233/);
+  assert.equal((html.match(/>Martín</g) || []).length, 0, "la despedida del texto se reemplaza por la firma");
+  assert.match(signatureText(sig), /ideonapp\.com/);
+});
