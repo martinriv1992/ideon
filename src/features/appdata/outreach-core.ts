@@ -89,33 +89,54 @@ export function nextStep(lead: Lead, cad: CadStep[], items: Item[], cfg: Outreac
   return canal ? { paso: k, canal } : null;
 }
 
-const lc = (s: string) => s ? s.charAt(0).toLowerCase() + s.slice(1).replace(/\.\s*$/, "") : s;
+/**
+ * Textos por sector: una pregunta concreta sobre su día a día y una frase de cómo ayudamos
+ * (resultado, no lista de funciones). Se elige por palabras del sector o de la empresa.
+ */
+const SECTOR_COPY: { match: RegExp; asunto: string; pregunta: string; ayuda: string }[] = [
+  { match: /odont|dental|ortodon|sonris/i, asunto: "citas sin confirmar", pregunta: "¿cuántas citas se les caen al mes porque nadie alcanzó a confirmarlas?", ayuda: "Ayudamos a consultorios a que el recordatorio y la confirmación salgan solos, sin que recepción tenga que perseguir a nadie." },
+  { match: /pilates|yoga|gimnas|fitness|crossfit|entren/i, asunto: "clases y paquetes", pregunta: "¿cómo saben hoy cuántas clases le quedan a cada alumno?", ayuda: "Ayudamos a estudios como el suyo a llevar reservas, paquetes y vencimientos sin hojas de cálculo." },
+  { match: /cl[ií]nic|consultorio|m[eé]dic|salud|fisio/i, asunto: "agenda de pacientes", pregunta: "¿cómo hacen hoy para que ningún paciente se quede sin su próximo control?", ayuda: "Ayudamos a centros de salud a tener agenda, recordatorios y controles en un solo lugar." },
+  { match: /barber|peluq|belleza|est[eé]tica|spa|u[ñn]as|nails|capilar|sal[oó]n/i, asunto: "reservas por WhatsApp", pregunta: "¿cuántos mensajes de reserva contestan al día entre un cliente y otro?", ayuda: "Ayudamos a salones a que los clientes reserven solos y reciban su recordatorio." },
+  { match: /veterin|mascota|pet/i, asunto: "recordatorios de vacunas", pregunta: "¿cómo le avisan hoy a cada dueño que toca vacuna o control?", ayuda: "Ayudamos a veterinarias a que esos recordatorios salgan solos y la historia de cada mascota esté a la mano." },
+  { match: /distribu|mayorist|comerciali|alimentos|licores|aseo/i, asunto: "pedidos de los vendedores", pregunta: "¿cómo les llegan hoy los pedidos de los vendedores a bodega?", ayuda: "Ayudamos a distribuidoras a recibir pedidos y ver el inventario al instante, sin pasar todo a Excel." },
+  { match: /ferret|construc|materiales|el[eé]ctric/i, asunto: "inventario y cotizaciones", pregunta: "¿cuánto tiempo se les va armando una cotización con tantas referencias?", ayuda: "Ayudamos a ferreterías a cotizar en minutos y a saber qué se está agotando antes de que pase." },
+  { match: /agencia|marketing|dise[ñn]o|branding|publicidad|creativ/i, asunto: "una idea para tus clientes", pregunta: "¿qué hacen hoy cuando un cliente les pide un sistema o una app, además de la web?", ayuda: "Desarrollamos CRM, inventarios y apps en marca blanca para agencias: ustedes venden, nosotros construimos." },
+  { match: /restaur|caf[eé]|cocina|comida|panader|helad/i, asunto: "costos por plato", pregunta: "¿saben hoy cuánto les cuesta de verdad cada plato?", ayuda: "Ayudamos a restaurantes a conectar pedidos, recetas e inventario para que el costo real salga solo." },
+  { match: /inmobil|arriendo|propiedad/i, asunto: "seguimiento de interesados", pregunta: "¿dónde queda registrado cada interesado que pregunta por un inmueble?", ayuda: "Ayudamos a inmobiliarias a que ningún interesado se quede sin seguimiento." },
+];
+const GENERIC = { asunto: "una pregunta rápida", pregunta: "¿qué parte de la operación sigue dependiendo de Excel o de WhatsApp?", ayuda: "Armamos sistemas a la medida para que eso deje de depender de hojas de cálculo y mensajes sueltos." };
+export function sectorCopy(lead: Pick<Lead, "sector" | "empresa">) {
+  const txt = `${lead.sector ?? ""} ${lead.empresa ?? ""}`;
+  return SECTOR_COPY.find((c) => c.match.test(txt)) ?? GENERIC;
+}
 
-/** Mensaje de plantilla (sin IA): usa el dolor y el ángulo de la auditoría si existen. */
+/**
+ * Mensaje de plantilla (sin IA). Corto, con una sola pregunta y sin frases de catálogo;
+ * el «pago único» va como posdata en los correos.
+ */
 export function templateMessage(lead: Lead, paso: number, canal: Canal, firma: string): { asunto: string; texto: string } {
-  const empresa = lead.empresa || "tu negocio";
-  const hola = lead.nombre ? `Hola, ${lead.nombre.split(" ")[0]}` : `Hola, equipo de ${empresa}`;
-  const solucion = lead.angulo ? lc(lead.angulo) : "agenda, pedidos, inventario o un CRM, según lo que más tiempo les quite hoy";
-  const gancho = lead.dolor
-    ? `Te escribo porque creo que podemos ayudarles con algo concreto: ${lc(lead.dolor)}.`
-    : `Ayudamos a negocios${lead.sector ? ` de ${lc(lead.sector)}` : ""}${lead.ciudad ? ` en ${lead.ciudad}` : ""} a dejar de operar con Excel y WhatsApp.`;
-  const pago = "Es pago único: el sistema queda a nombre de ustedes, sin licencias ni cobro por usuario.";
-  const firmaTxt = `${firma}\nIdeonapp · ideonapp.com`;
+  const c = sectorCopy(lead);
+  const empresa = lead.empresa || "su negocio";
+  const nombre = lead.nombre ? lead.nombre.split(" ")[0] : "";
+  const hola = nombre ? `Hola, ${nombre}` : "Hola, ¿qué tal?";
+  const firmaTxt = `${firma}\nIdeonapp`;
+  const pd = "P. D.: es pago único; el sistema queda a nombre de ustedes, sin licencias.";
   if (canal === "WhatsApp") {
     const t = [
-      `${hola} 👋 Soy ${firma}, de Ideonapp. ${gancho} Hacemos software a la medida (${solucion}). ${pago} ¿Te cuento cómo quedaría para ${empresa}?`,
-      `${hola}, te escribí hace unos días. Un ejemplo de lo que podríamos montarles en 2 a 4 semanas: ${solucion}. ¿Te mando una demo corta?`,
-      `${hola}. Te dejo una idea concreta para ${empresa}: ${solucion}, con presupuesto cerrado y pago único. ¿Lo vemos en una llamada de 15 minutos?`,
-      `${hola}, último mensaje para no molestar 🙂 Si en algún momento quieren ordenar ${lead.dolor ? lc(lead.dolor) : "su operación"} con un sistema propio, aquí estoy. ¡Éxitos!`,
+      `Hola${nombre ? ` ${nombre}` : ""}, soy ${firma} de Ideonapp. Una pregunta rápida para ${empresa}: ${c.pregunta}`,
+      `Hola${nombre ? ` ${nombre}` : ""}, soy ${firma} de Ideonapp otra vez. ${c.ayuda} Si te sirve, te mando un video corto con un ejemplo.`,
+      `Hola${nombre ? ` ${nombre}` : ""}, ¿les sirve que les muestre en 15 minutos cómo quedaría para ${empresa}? Sin compromiso.`,
+      `Hola${nombre ? ` ${nombre}` : ""}, no te escribo más para no llenarte el chat 🙂 Si en algún momento lo quieren ver, aquí estoy. ¡Éxitos!`,
     ];
     return { asunto: "", texto: t[Math.min(paso, t.length - 1)] };
   }
-  const subj = [`${empresa}: una idea para ahorrar tiempo`, `Ejemplo para ${empresa}`, `Mini propuesta para ${empresa}`, `¿Lo dejamos para más adelante?`];
+  const subj = [c.asunto, `re: ${c.asunto}`, "un ejemplo concreto", "¿lo dejamos para después?"];
   const body = [
-    `${hola}:\n\n${gancho}\n\nEn Ideonapp hacemos software a la medida: ${solucion}. ${pago}\n\n¿Te muestro en 15 minutos cómo quedaría para ${empresa}?\n\n${firmaTxt}`,
-    `${hola}:\n\nTe escribí hace unos días. Para que sea concreto: en 2 a 4 semanas podríamos tenerles ${solucion}, con su marca y acceso para todo el equipo.\n\n¿Te mando una demo de algo parecido que ya tenemos funcionando?\n\n${firmaTxt}`,
-    `${hola}:\n\nTe comparto cómo trabajaríamos con ${empresa}:\n\n1. Una llamada de 20 minutos para entender cómo operan hoy.\n2. Una propuesta con alcance, plazo y precio cerrado.\n3. Una primera versión funcionando en pocas semanas.\n\n${pago}\n\n¿Agendamos la llamada?\n\n${firmaTxt}`,
-    `${hola}:\n\nNo quiero llenarte el correo, así que este es mi último mensaje. Si más adelante quieren un sistema propio para ${lead.dolor ? lc(lead.dolor) : "ordenar su operación"}, respóndeme y lo retomamos.\n\n¡Éxitos!\n\n${firmaTxt}`,
+    `${hola}\n\nUna pregunta rápida sobre ${empresa}: ${c.pregunta}\n\nLo pregunto porque ${c.ayuda.charAt(0).toLowerCase()}${c.ayuda.slice(1)}\n\n¿Te muestro un ejemplo en 15 minutos?\n\n${firmaTxt}\n\n${pd}`,
+    `${hola}\n\nTe escribí hace unos días sobre esto. Para que sea concreto: en 2 a 4 semanas les podemos tener funcionando algo así, con su marca y acceso para todo el equipo.\n\n¿Te mando un video corto con un ejemplo?\n\n${firmaTxt}`,
+    `${hola}\n\nAsí trabajaríamos: una llamada de 20 minutos para entender cómo operan, una propuesta con precio cerrado y una primera versión funcionando en pocas semanas.\n\n¿Te queda bien una llamada esta semana?\n\n${firmaTxt}\n\n${pd}`,
+    `${hola}\n\nNo quiero llenarte el correo, así que este es el último. Si más adelante quieren verlo, respóndeme y lo retomamos.\n\n¡Éxitos!\n\n${firmaTxt}`,
   ];
   const i = Math.min(paso, body.length - 1);
   return { asunto: subj[i], texto: body[i] };

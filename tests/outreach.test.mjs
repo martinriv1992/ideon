@@ -30,8 +30,13 @@ test("pasos siguientes respetan los días y los pendientes", () => {
 test("configuración saneada y plantillas con pago único", () => {
   const c = outreachConfigFrom({ limiteDiario: 9999, modo: "x", responderA: "malo", remitente: "Martín <x>" });
   assert.equal(c.limiteDiario, 200); assert.equal(c.modo, "aprobacion"); assert.equal(c.responderA, ""); assert.equal(c.remitente, "Martín x");
-  const m = templateMessage({ ...L, dolor: "Inventario en Excel.", angulo: "Inventario con alertas de stock" }, 0, "Correo", "Martín");
-  assert.match(m.asunto, /Ferretería X/); assert.match(m.texto, /inventario en Excel/); assert.match(m.texto, /pago único/);
+  const m = templateMessage(L, 0, "Correo", "Martín");
+  assert.equal(m.asunto, "inventario y cotizaciones"); assert.match(m.texto, /Ferretería X/); assert.match(m.texto, /P\. D\.: es pago único/);
+  assert.ok(m.texto.split(/\s+/).length <= 90, "correo corto");
+  assert.ok((m.texto.match(/\?/g) || []).length <= 3, "saludo, una pregunta y la invitación");
+  assert.doesNotMatch(m.texto, /soluciones|innovador|transformaci|potenci|espero que/i);
+  assert.equal(templateMessage({ id: "y", empresa: "Barbería Z" }, 0, "Correo", "Martín").asunto, "reservas por WhatsApp");
+  assert.equal(templateMessage({ id: "y", empresa: "Comercial Q" }, 0, "Correo", "Martín").asunto, "una pregunta rápida");
   assert.equal(templateMessage(L, 1, "WhatsApp", "Martín").asunto, "");
   assert.equal(channelFor({ dia: 0, canal: "WhatsApp" }, { id: "x", correo: "a@b.co" }), "Correo");
   assert.match(emailHtml("Hola <b>\n\nChao", "https://x/u"), /&lt;b&gt;.*date de baja/s);
