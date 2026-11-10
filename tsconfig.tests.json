@@ -18,6 +18,7 @@
     "src/features/billing/epayco-sign.ts",
     "src/features/packages/catalog.ts",
     "src/features/leads/schema.ts",
+    "src/features/appdata/outreach-core.ts",
     "src/content/commercial/pricing.ts",
     "src/features/appdata/core.ts"
   ]
