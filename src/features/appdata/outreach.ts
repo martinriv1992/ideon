@@ -97,9 +97,15 @@ export interface OutreachSummary { activo: boolean; creados: number; enviados: n
 
 export async function runOutreach(projectId: string, opts: { force?: boolean } = {}): Promise<OutreachSummary> {
   const db = createAdminClient();
-  const { data } = await db.from("app_records").select("id,collection,data").eq("project_id", projectId).is("deleted_at", null)
-    .in("collection", ["settings", "leads", "outreach", "firmas"]).limit(30000);
-  const rows = (data ?? []) as unknown as Row[];
+  // La API devuelve como máximo 1.000 filas por consulta: se lee por páginas para no perder prospectos ni envíos.
+  const rows: Row[] = [];
+  for (let from = 0; from < 60000; from += 1000) {
+    const { data, error } = await db.from("app_records").select("id,collection,data").eq("project_id", projectId).is("deleted_at", null)
+      .in("collection", ["settings", "leads", "outreach", "firmas"]).order("collection").order("id").range(from, from + 999);
+    if (error) throw new Error(`No se pudieron leer los datos: ${error.message}`);
+    rows.push(...((data ?? []) as unknown as Row[]));
+    if ((data ?? []).length < 1000) break;
+  }
   const setting = (id: string) => rows.find((r) => r.collection === "settings" && r.id === id)?.data;
   const cfg = outreachConfigFrom(setting("outreach"));
   const summary: OutreachSummary = { activo: cfg.activo, creados: 0, enviados: 0, whatsapp: 0, errores: 0, omitidos: 0, limiteRestante: 0 };
