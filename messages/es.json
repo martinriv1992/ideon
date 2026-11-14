@@ -256,7 +256,8 @@
       "generic": "No se pudo completar la operación. Inténtalo de nuevo.",
       "rateLimited": "Demasiados intentos. Espera un momento y vuelve a intentarlo.",
       "disposableEmail": "Usa un correo permanente (no se admiten correos temporales).",
-      "tooManySignups": "Se han creado demasiadas cuentas desde esta conexión hoy. Inténtalo mañana o escríbenos."
+      "tooManySignups": "Se han creado demasiadas cuentas desde esta conexión hoy. Inténtalo mañana o escríbenos.",
+      "captcha": "No pudimos comprobar que no eres un robot. Espera un segundo a que cargue la verificación e inténtalo de nuevo."
     },
     "linkInvalid": "El enlace no es válido o ya caducó. Inicia sesión o, si olvidaste tu contraseña, pide un enlace nuevo en «¿Olvidaste tu contraseña?».",
     "google": "Continuar con Google",
