@@ -932,7 +932,8 @@
       "prospectSinglePrice": "Precio de cada búsqueda suelta de prospección (moneda de cobro).",
       "prospectTrial": "Búsquedas de prueba gratis por app.",
       "publishReview": "Revisión manual antes de publicar (true/false).",
-      "appAiLimit": "Llamadas de IA por app cada 24 h (db.ai en las apps publicadas; Haiku o Sonnet, el coste lo asume Ideonapp)."
+      "appAiLimit": "Llamadas de IA por app cada 24 h (db.ai en las apps publicadas; Haiku o Sonnet, el coste lo asume Ideonapp).",
+      "maxProjectsIp": "Proyectos nuevos por conexión (IP) cada 24 h. Los administradores no tienen límite."
     },
     "leads": {
       "title": "Leads comerciales",

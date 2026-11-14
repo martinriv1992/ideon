@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 import { deriveProjectName, slugify } from "@/lib/utils";
 import { getCurrentContext } from "@/features/organizations/queries";
 import { getPackage } from "@/features/packages/catalog";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { rateLimit } from "@/features/auth/abuse";
 
 export interface ActionState {
   error?: string;
@@ -39,6 +41,19 @@ export async function createProjectAction(_prev: ActionState, formData: FormData
   if (!ctx) return { error: "unauthenticated" };
   const locale = await getLocale();
   const supabase = await createClient();
+
+  // Antiabuso: proyectos nuevos por conexión en 24 h (cada uno puede generar una vista previa con IA).
+  // Cubre también las cuentas creadas con Google, que no pasan por el límite de registros.
+  const { data: profile } = await supabase.from("profiles").select("is_platform_admin").eq("id", ctx.user.id).maybeSingle();
+  if (!profile?.is_platform_admin) {
+    const { data: setting } = await createAdminClient().from("platform_settings").select("value").eq("key", "max_projects_per_ip_day").maybeSingle();
+    const max = Math.max(1, Math.floor(Number(setting?.value ?? 3)) || 3);
+    if (!(await rateLimit("project_create", max, 86_400_000))) {
+      return { error: locale === "en"
+        ? `You've reached today's limit of ${max} new projects from this connection. Try again tomorrow, or write to us and we'll help you.`
+        : `Llegaste al límite de ${max} proyectos nuevos por día desde esta conexión. Inténtalo mañana o escríbenos y te ayudamos.` };
+    }
+  }
 
   const name = parsed.data.name || deriveProjectName(parsed.data.idea, locale === "en" ? "New project" : "Nuevo proyecto");
   const slug = `${slugify(name) || "proyecto"}-${Math.random().toString(36).slice(2, 7)}`;
