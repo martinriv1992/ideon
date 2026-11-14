@@ -9,6 +9,7 @@ import { FieldError, Input, Label } from "@/components/ui/input";
 import type { AuthState } from "@/features/auth/actions";
 import { readPendingIdea } from "@/features/projects/pending-idea";
 import { GoogleButton } from "./google-button";
+import { Turnstile } from "./turnstile";
 
 type Mode = "login" | "register" | "forgot" | "reset";
 
@@ -151,6 +152,8 @@ export function AuthForm({ mode, action, next, configured, google = false }: Pro
             {t("resetSent")}
           </p>
         )}
+
+        {mode !== "reset" && <Turnstile resetKey={state} locale={locale} />}
 
         <Button type="submit" size="lg" className="w-full" loading={pending} disabled={!configured}>
           {mode === "login" && t("login")}

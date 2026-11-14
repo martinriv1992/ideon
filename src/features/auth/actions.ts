@@ -25,8 +25,15 @@ function mapSupabaseError(message: string): string {
   const m = message.toLowerCase();
   if (m.includes("invalid login credentials")) return "invalidCredentials";
   if (m.includes("already registered") || m.includes("already exists")) return "emailTaken";
+  if (m.includes("captcha")) return "captcha";
   if (m.includes("rate limit") || m.includes("too many")) return "rateLimited";
   return "generic";
+}
+
+/** Token del captcha (Turnstile) que envía el formulario; undefined si el captcha no está activo. */
+function captchaFrom(formData: FormData) {
+  const t = formData.get("captchaToken");
+  return typeof t === "string" && t ? t : undefined;
 }
 
 function fieldErrorsFrom(error: { issues: { path: PropertyKey[]; message: string }[] }) {
@@ -47,6 +54,7 @@ export async function loginAction(_prev: AuthState, formData: FormData): Promise
   const { error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
+    options: { captchaToken: captchaFrom(formData) },
   });
   if (error) return { error: mapSupabaseError(error.message) };
 
@@ -69,6 +77,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
     email,
     password,
     options: {
+      captchaToken: captchaFrom(formData),
       data: { full_name: fullName, locale },
       emailRedirectTo: `${publicEnv.NEXT_PUBLIC_APP_URL}/api/auth/callback?next=${encodeURIComponent(`/${locale}${nextPath}`)}`,
     },
@@ -91,6 +100,7 @@ export async function forgotPasswordAction(_prev: AuthState, formData: FormData)
   const supabase = await createClient();
   // No revelamos si el correo existe: la respuesta es la misma en ambos casos.
   await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    captchaToken: captchaFrom(formData),
     redirectTo: `${publicEnv.NEXT_PUBLIC_APP_URL}/api/auth/callback?next=${encodeURIComponent(`/${locale}/reset-password`)}`,
   });
   return { success: "resetSent" };
