@@ -31,23 +31,20 @@ export async function SiteHero({ isAuthenticated }: { isAuthenticated: boolean }
   const t = await getTranslations("site.hero");
   const locale = await getLocale();
   return (
-    <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 overflow-hidden">
+    <section className="relative pt-24 pb-12 sm:pt-36 sm:pb-20 overflow-hidden">
       <div className="absolute inset-0 grid-fade pointer-events-none" aria-hidden />
       <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[900px] h-[480px] rounded-full bg-accent/15 blur-[140px] opacity-60 pointer-events-none" aria-hidden />
       <Container className="relative">
-        <div className="text-center max-w-4xl mx-auto">
-          <Badge tone="accent" className="animate-fade-in"><span className="size-1.5 rounded-full bg-accent" />{t("badge")}</Badge>
-          <h1 className="mt-6 text-4xl sm:text-6xl font-semibold tracking-[-0.03em] leading-[1.05] text-balance animate-fade-up">{t("title")}</h1>
-          <p className="mt-6 mx-auto max-w-2xl text-base sm:text-lg text-fg-muted leading-relaxed text-pretty animate-fade-up [animation-delay:120ms]">{t("subtitle")}</p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center animate-fade-up [animation-delay:180ms]">
-            <CtaLink href={`/${locale}/contact?intent=meeting`} track="meeting_cta_clicked" trackLabel="hero">{t("ctaPrimary")} <ArrowRight className="size-4" aria-hidden /></CtaLink>
-            <CtaLink href={`/${locale}#solutions`} variant="secondary">{t("ctaSecondary")}</CtaLink>
-          </div>
-          <p className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-fg-muted animate-fade-up [animation-delay:220ms]"><Check className="size-4 text-accent" aria-hidden />{t("ownership")}</p>
+        <div className="text-center max-w-3xl mx-auto">
+          <h1 className="text-[32px] sm:text-6xl font-semibold tracking-[-0.03em] leading-[1.08] text-balance animate-fade-up">{t("title")}</h1>
+          <p className="mt-4 mx-auto max-w-xl text-[15px] sm:text-lg text-fg-muted leading-relaxed text-pretty animate-fade-up [animation-delay:120ms]">{t("subtitle")}</p>
         </div>
-        <div className="mt-16 animate-fade-up [animation-delay:260ms]">
-          <p className="text-center text-[13.5px] text-fg-subtle mb-4">{t("selfServe")}</p>
+        <div className="mt-7 sm:mt-10 animate-fade-up [animation-delay:180ms]">
           <HeroStart isAuthenticated={isAuthenticated} />
+        </div>
+        <div className="mt-6 flex flex-col items-center gap-3 text-center animate-fade-up [animation-delay:240ms]">
+          <p className="inline-flex items-center gap-1.5 text-[13px] font-medium text-fg-muted"><Check className="size-4 text-accent shrink-0" aria-hidden />{t("ownership")}</p>
+          <a href={`/${locale}/contact?intent=meeting`} data-track="meeting_cta_clicked" data-track-label="hero" className="text-[13.5px] text-accent hover:underline inline-flex items-center gap-1">{t("ctaPrimary")} <ArrowRight className="size-3.5" aria-hidden /></a>
         </div>
       </Container>
     </section>
@@ -58,7 +55,8 @@ export async function SiteHero({ isAuthenticated }: { isAuthenticated: boolean }
 const SOLUTION_ICONS = { custom: Code2, inventory: Boxes, crm: Users, business: BriefcaseBusiness, ai: Bot, web: Globe, automation: Workflow } as const;
 export const SOLUTION_KEYS = Object.keys(SOLUTION_ICONS) as (keyof typeof SOLUTION_ICONS)[];
 
-export async function Solutions() {
+export async function Solutions({ only }: { only?: (keyof typeof SOLUTION_ICONS)[] } = {}) {
+  const keys = only ?? SOLUTION_KEYS;
   const t = await getTranslations("site.solutions");
   const locale = await getLocale();
   const href: Record<keyof typeof SOLUTION_ICONS, string> = {
@@ -66,11 +64,11 @@ export async function Solutions() {
     ai: `/${locale}/contact?solution=ai`, web: `/${locale}#start`, automation: `/${locale}/contact?solution=automation`,
   };
   return (
-    <section id="solutions" className="py-24 scroll-mt-16 border-t border-border">
+    <section id="solutions" className="py-14 sm:py-24 scroll-mt-16 border-t border-border">
       <Container>
-        <Reveal><SectionHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} /></Reveal>
-        <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {SOLUTION_KEYS.map((k, i) => {
+        <Reveal><SectionHeading eyebrow={t("eyebrow")} title={t("title")} /></Reveal>
+        <div className="mt-8 sm:mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {keys.map((k, i) => {
             const Icon = SOLUTION_ICONS[k];
             return (
               <Reveal key={k} delay={Math.min(i * 0.04, 0.24)} className={cn(k === "custom" && "lg:col-span-1")}>
@@ -98,7 +96,7 @@ export async function FeaturedInventory() {
   const points = t.raw("points") as string[];
   const demo = locale === "en" ? "nova-distribution-en" : "nova-distribution";
   return (
-    <section id="featured" className="py-24 scroll-mt-16 border-t border-border bg-bg-elevated">
+    <section id="featured" className="py-14 sm:py-24 scroll-mt-16 border-t border-border bg-bg-elevated">
       <Container>
         <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
           <Reveal>
@@ -134,7 +132,7 @@ export async function HowWeWork() {
   const t = await getTranslations("site.how");
   const steps = t.raw("steps") as { title: string; text: string }[];
   return (
-    <section id="process" className="py-24 scroll-mt-16 border-t border-border">
+    <section id="process" className="py-14 sm:py-24 scroll-mt-16 border-t border-border">
       <Container>
         <Reveal><SectionHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} /></Reveal>
         <div role="list" className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -165,7 +163,7 @@ export async function WhyIdeonapp() {
   const t = await getTranslations("site.why");
   const items = t.raw("items") as { title: string; text: string }[];
   return (
-    <section id="why" className="py-24 scroll-mt-16 border-t border-border bg-bg-elevated">
+    <section id="why" className="py-14 sm:py-24 scroll-mt-16 border-t border-border bg-bg-elevated">
       <Container>
         <Reveal><SectionHeading eyebrow={t("eyebrow")} title={t("title")} /></Reveal>
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
@@ -195,10 +193,10 @@ export async function PortfolioGrid({ heading = true }: { heading?: boolean }) {
     { key: "business", slug: "ideon-suite", page: `/demo/ideon-suite`, spanishOnly: locale === "en" },
   ];
   return (
-    <section id="portfolio" className="py-24 scroll-mt-16 border-t border-border">
+    <section id="portfolio" className="py-14 sm:py-24 scroll-mt-16 border-t border-border">
       <Container>
-        {heading && <Reveal><SectionHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} /></Reveal>}
-        <div className={cn("grid md:grid-cols-3 gap-5", heading && "mt-14")}>
+        {heading && <Reveal><SectionHeading eyebrow={t("eyebrow")} title={t("title")} /></Reveal>}
+        <div className={cn("grid md:grid-cols-3 gap-5", heading && "mt-8 sm:mt-14")}>
           {items.map((d, i) => (
             <Reveal key={d.key} delay={i * 0.05}>
               <article className="group h-full rounded-[18px] border border-border bg-surface overflow-hidden flex flex-col">
@@ -227,22 +225,12 @@ export async function PortfolioGrid({ heading = true }: { heading?: boolean }) {
 export async function StartAndPricing() {
   const t = await getTranslations("site.pricing");
   const locale = await getLocale();
-  const steps = t.raw("steps") as { title: string; text: string }[];
   const country = (await headers()).get("x-vercel-ip-country");
   return (
-    <section id="pricing" className="py-24 scroll-mt-16 border-t border-border bg-bg-elevated">
+    <section id="pricing" className="py-14 sm:py-24 scroll-mt-16 border-t border-border bg-bg-elevated">
       <Container>
         <Reveal><SectionHeading eyebrow={t("eyebrow")} title={t("title")} /></Reveal>
-        <ol className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {steps.map((s, i) => (
-            <li key={s.title} className="list-none rounded-[14px] border border-border bg-surface p-5">
-              <span className="text-[12px] font-medium text-accent tabular-nums">0{i + 1}</span>
-              <h3 className="mt-2 font-semibold">{s.title}</h3>
-              <p className="mt-1 text-[14px] text-fg-muted leading-relaxed">{s.text}</p>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-12"><OwnershipBand /></div>
+        <div className="mt-8 sm:mt-12"><OwnershipBand /></div>
         <div className="mt-12">
           <PricingTable defaultRegion={regionForCountry(country)} />
         </div>
@@ -291,7 +279,7 @@ export async function SiteFinalCta() {
   const t = await getTranslations("site.finalCta");
   const locale = await getLocale();
   return (
-    <section className="py-24 border-t border-border">
+    <section className="py-14 sm:py-24 border-t border-border">
       <Container>
         <div className="rounded-[24px] border border-border bg-surface-2 px-6 py-14 sm:px-12 text-center">
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-balance">{t("title")}</h2>

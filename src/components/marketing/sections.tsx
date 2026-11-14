@@ -274,16 +274,17 @@ export async function Pricing() {
 /* ----------------------------------------------------------------------------
  * FAQ
  * ------------------------------------------------------------------------- */
-export async function Faq() {
+export async function Faq({ only }: { only?: number[] } = {}) {
   const t = await getTranslations("faq");
-  const items = t.raw("items") as { q: string; a: string }[];
+  const all = t.raw("items") as { q: string; a: string }[];
+  const items = only ? only.map((i) => all[i]).filter(Boolean) : all;
   return (
-    <section id="faq" className="py-24 scroll-mt-16 border-t border-border bg-bg-elevated">
+    <section id="faq" className="py-14 sm:py-24 scroll-mt-16 border-t border-border bg-bg-elevated">
       <Container className="max-w-3xl">
         <Reveal>
           <SectionHeading eyebrow={t("eyebrow")} title={t("title")} />
         </Reveal>
-        <Reveal className="mt-12">
+        <Reveal className="mt-8 sm:mt-12">
           <FaqList items={items} />
         </Reveal>
       </Container>

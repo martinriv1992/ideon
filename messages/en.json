@@ -366,8 +366,8 @@
       "aiNotConfigured": "The AI provider is not configured (ANTHROPIC_API_KEY). Agents cannot respond until it is set.",
       "building": "Generating the first version…",
       "previewPending": {
-        "title": "No preview yet",
-        "text": "The preview appears when the developer generates the first version."
+        "title": "Your preview will appear here",
+        "text": "Answer the questions in the chat. When you finish, the preview is generated automatically in 1–2 minutes."
       },
       "you": "You",
       "step": "Step {step} of {total}",
@@ -580,7 +580,8 @@
       "planChangesLeft": "Plan changes this year: {n} of {total} left",
       "buyMoreChanges": "Buy more changes",
       "adminView": "Team mode: you're viewing {client}'s project. The client will see your messages in the chat as «Ideonapp team», and your changes don't use up their included changes.",
-      "teamIdeon": "Ideonapp team"
+      "teamIdeon": "Ideonapp team",
+      "mobileMore": "Details"
     },
     "settings": {
       "title": "Settings",
@@ -1149,7 +1150,7 @@
     "hero": {
       "badge": "AI Software Studio",
       "title": "We build the software your business actually needs.",
-      "subtitle": "From custom business applications to intelligent automation systems, we turn complex business needs into working digital solutions.",
+      "subtitle": "Describe your idea and get a free preview in minutes.",
       "ctaPrimary": "Book a free consultation",
       "ctaSecondary": "Explore our solutions",
       "selfServe": "Prefer to start on your own? Describe your idea for a free preview, or find your domain.",
@@ -1157,7 +1158,7 @@
     },
     "solutions": {
       "eyebrow": "Solutions",
-      "title": "Software for every part of your operation",
+      "title": "What clients ask for most",
       "description": "We start from what your business needs, not from a template. Every solution adapts to your processes, data and team.",
       "items": {
         "custom": {
@@ -1306,7 +1307,7 @@
     },
     "pricing": {
       "eyebrow": "Getting started and pricing",
-      "title": "Start with a conversation, not a contract",
+      "title": "Clear prices, one-time payment",
       "steps": [
         {
           "title": "Tell us what you need",
