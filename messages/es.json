@@ -366,8 +366,8 @@
       "aiNotConfigured": "El proveedor de IA no está configurado (ANTHROPIC_API_KEY). Los agentes no pueden responder hasta que se configure.",
       "building": "Generando la primera versión…",
       "previewPending": {
-        "title": "Sin vista previa todavía",
-        "text": "La vista previa aparece cuando el desarrollador genera la primera versión."
+        "title": "Tu vista previa aparecerá aquí",
+        "text": "Responde las preguntas del chat. Al terminar, la vista previa se genera sola en 1 o 2 minutos."
       },
       "you": "Tú",
       "step": "Paso {step} de {total}",
@@ -580,7 +580,8 @@
       "planChangesLeft": "Cambios del plan este año: te quedan {n} de {total}",
       "buyMoreChanges": "Comprar más cambios",
       "adminView": "Modo equipo: estás viendo el proyecto de {client}. El cliente verá tus mensajes en el chat como «Equipo Ideonapp», y tus cambios no gastan los cambios incluidos de su plan.",
-      "teamIdeon": "Equipo Ideonapp"
+      "teamIdeon": "Equipo Ideonapp",
+      "mobileMore": "Detalles"
     },
     "settings": {
       "title": "Configuración",
@@ -1149,7 +1150,7 @@
     "hero": {
       "badge": "AI Software Studio",
       "title": "Construimos el software que tu empresa realmente necesita.",
-      "subtitle": "Desde aplicaciones empresariales hasta sistemas inteligentes de automatización, convertimos necesidades complejas en soluciones digitales reales.",
+      "subtitle": "Describe tu idea y recibe una vista previa gratis en minutos.",
       "ctaPrimary": "Agenda una consulta gratuita",
       "ctaSecondary": "Descubre nuestras soluciones",
       "selfServe": "¿Prefieres empezar tú mismo? Describe tu idea y recibe una vista previa gratis, o busca tu dominio.",
@@ -1157,7 +1158,7 @@
     },
     "solutions": {
       "eyebrow": "Soluciones",
-      "title": "Software para cada parte de tu operación",
+      "title": "Lo que más nos piden",
       "description": "Partimos de lo que tu empresa necesita, no de una plantilla. Cada solución se adapta a tus procesos, tus datos y tu equipo.",
       "items": {
         "custom": {
@@ -1306,7 +1307,7 @@
     },
     "pricing": {
       "eyebrow": "Cómo empezar y precios",
-      "title": "Empieza con una conversación, no con un contrato",
+      "title": "Precios claros, pago único",
       "steps": [
         {
           "title": "Cuéntanos qué necesitas",

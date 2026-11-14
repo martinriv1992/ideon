@@ -66,10 +66,10 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
 
   return (
     <div id="start" className="w-full max-w-3xl mx-auto scroll-mt-28">
-      <div className="mb-3 flex flex-wrap justify-center gap-1.5" role="group" aria-label={t("kindLabel")}>
+      <div className="mb-3 flex gap-1.5 overflow-x-auto sm:flex-wrap sm:justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 px-4 sm:mx-0 sm:px-0" role="group" aria-label={t("kindLabel")}>
         {PROJECT_KINDS.map((k) => (
           <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k}
-            className={cn("h-8 px-3 rounded-full border text-[12.5px] font-medium transition-colors", kind === k ? "bg-accent-soft text-accent border-accent/40" : "bg-surface text-fg-muted border-border hover:text-fg hover:border-border-strong")}>
+            className={cn("h-8 px-3 shrink-0 whitespace-nowrap rounded-full border text-[12.5px] font-medium transition-colors", kind === k ? "bg-accent-soft text-accent border-accent/40" : "bg-surface text-fg-muted border-border hover:text-fg hover:border-border-strong")}>
             {tk(k)}
           </button>
         ))}
@@ -122,7 +122,7 @@ export function IdeaComposer({ isAuthenticated }: { isAuthenticated: boolean }) 
         <p className="mt-3 text-[13px] text-fg-subtle text-center">{t("hint")}</p>
       )}
 
-      <div className="mt-8">
+      <div className="hidden sm:block mt-8">
         <p className="text-[12px] uppercase tracking-wide text-fg-subtle text-center mb-3">
           {t("examplesLabel")}
         </p>

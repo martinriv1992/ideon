@@ -43,6 +43,9 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
   const [leftTab, setLeftTab] = useState<LeftTab>("conversation");
   const [rightTab, setRightTab] = useState<RightTab>(project.status === "proposal" ? "proposal" : "overview");
   const [device, setDevice] = useState<Device>("desktop");
+  // En el móvil se ve un panel a la vez: conversación, vista previa o detalles.
+  const [mobileTab, setMobileTab] = useState<"chat" | "preview" | "more">(project.current_version_id ? "preview" : "chat");
+  const hadVersion = useRef(Boolean(project.current_version_id));
   const [previewVersion, setPreviewVersion] = useState<string | null>(project.current_version_id);
   const [frameKey, setFrameKey] = useState(0);
   const [busy, setBusy] = useState<string | null>(activeRun ? activeRun.step : null);
@@ -56,7 +59,13 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
     const id = setInterval(() => router.refresh(), 3000);
     return () => clearInterval(id);
   }, [busy, activeRun, router]);
-  useEffect(() => { setPreviewVersion(project.current_version_id); setFrameKey((k) => k + 1); }, [project.current_version_id]);
+  useEffect(() => {
+    setPreviewVersion(project.current_version_id); setFrameKey((k) => k + 1);
+    // Cuando llega la primera versión, el móvil salta solo a la vista previa.
+    if (project.current_version_id && !hadVersion.current) { hadVersion.current = true; setMobileTab("preview"); }
+  }, [project.current_version_id]);
+  // Mientras se construye, el móvil muestra el panel de la vista previa (con el aviso de «construyendo»).
+  useEffect(() => { if (activeRun?.step === "developer" && !project.current_version_id) setMobileTab("preview"); }, [activeRun?.step, project.current_version_id]);
   useEffect(() => { if (!activeRun && busy && !busyLocal.current) setBusy(null); }, [activeRun, busy]);
   const busyLocal = useRef(false);
   const kicked = useRef(false);
@@ -100,9 +109,19 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
         <div className="shrink-0 border-b border-accent/30 bg-accent-soft px-4 py-2 text-[13px]">{t("adminView", { client: detail.adminView.clientName })}</div>
       )}
 
+      <div className="lg:hidden shrink-0 grid grid-cols-3 border-b border-border bg-bg-elevated" role="tablist">
+        {([["chat", t("conversation"), MessageSquare], ["preview", t("preview"), Monitor], ["more", t("mobileMore"), History]] as const).map(([k, label, Icon]) => (
+          <button key={k} type="button" role="tab" aria-selected={mobileTab === k} onClick={() => setMobileTab(k)}
+            className={cn("h-11 inline-flex items-center justify-center gap-1.5 text-[13px] font-medium border-b-2 transition-colors", mobileTab === k ? "border-accent text-fg" : "border-transparent text-fg-muted")}>
+            <Icon className="size-4" />{label}
+            {k === "preview" && currentVersion && mobileTab !== "preview" && <span className="size-1.5 rounded-full bg-accent" />}
+          </button>
+        ))}
+      </div>
+
       <div className="lg:flex-1 lg:min-h-0 grid grid-cols-1 lg:grid-cols-[380px_1fr_320px] xl:grid-cols-[420px_1fr_340px]">
         {/* IZQUIERDA */}
-        <section className="h-[72vh] lg:h-auto lg:min-h-0 flex flex-col border-b lg:border-b-0 lg:border-r border-border">
+        <section className={cn("h-[calc(100dvh-6.25rem)] lg:h-auto lg:min-h-0 flex-col lg:border-r border-border", mobileTab === "chat" ? "flex" : "hidden lg:flex")}>
           <Tabs value={leftTab} onChange={setLeftTab} items={[{ key: "conversation", label: t("conversation"), icon: MessageSquare }, { key: "history", label: t("history"), icon: History }]} />
           {leftTab === "conversation" ? (
             <Conversation teamAuthorIds={detail.teamAuthorIds}
@@ -113,7 +132,7 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
               canAnswer={!project.current_version_id && project.status !== "proposal"}
               onSend={sendMessage}
               onRetryBuild={rebuild}
-              onOpenProposal={() => setRightTab("proposal")}
+              onOpenProposal={() => { setRightTab("proposal"); setMobileTab("more"); }}
               waitingApproval={project.status === "proposal"}
               previewNote={project.current_version_id && !project.paid_at && !detail.isPlatformAdmin
                 ? t("freeChangesLeft", { n: Math.max(0, detail.freeChanges - project.free_changes_used), total: detail.freeChanges })
@@ -121,7 +140,7 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
                   ? t("planChangesLeft", { n: Math.max(0, detail.includedChanges + detail.subscription.extra_changes - detail.subscription.changes_used), total: detail.includedChanges + detail.subscription.extra_changes })
                   : null}
               noteAction={project.paid_at ? t("buyMoreChanges") : t("activateProject")}
-              onOpenPublish={() => setRightTab("publish")}
+              onOpenPublish={() => { setRightTab("publish"); setMobileTab("more"); }}
             />
           ) : (
             <div className="flex-1 overflow-y-auto p-4">
@@ -143,11 +162,11 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
         </section>
 
         {/* CENTRO */}
-        <section className="min-h-[420px] lg:min-h-0 flex flex-col bg-bg-elevated">
+        <section className={cn("h-[calc(100dvh-6.25rem)] lg:h-auto lg:min-h-0 flex-col bg-bg-elevated", mobileTab === "preview" ? "flex" : "hidden lg:flex")}>
           <div className="h-11 shrink-0 border-b border-border flex items-center justify-between gap-2 px-3">
             <span className="text-[13px] font-medium text-fg-muted truncate">{t("preview")}{previewing ? ` · v${previewing.number}` : ""}</span>
             <div className="flex items-center gap-2">
-              <div className="inline-flex h-8 items-center rounded-full border border-border bg-surface p-0.5">
+              <div className="hidden lg:inline-flex h-8 items-center rounded-full border border-border bg-surface p-0.5">
                 {(["desktop", "mobile"] as Device[]).map((d) => (
                   <button key={d} type="button" onClick={() => setDevice(d)} aria-pressed={device === d} className={cn("h-7 px-3 rounded-full text-[12px] inline-flex items-center gap-1.5 transition-colors", device === d ? "bg-white/10 text-fg" : "text-fg-subtle hover:text-fg")}>
                     {d === "desktop" ? <Monitor className="size-3.5" /> : <Smartphone className="size-3.5" />}{t(d)}
@@ -176,7 +195,7 @@ export function Workspace({ detail }: { detail: ProjectDetail }) {
         </section>
 
         {/* DERECHA */}
-        <section className="lg:min-h-0 flex flex-col border-t lg:border-t-0 lg:border-l border-border">
+        <section className={cn("min-h-[calc(100dvh-6.25rem)] lg:min-h-0 flex-col lg:border-l border-border", mobileTab === "more" ? "flex" : "hidden lg:flex")}>
           <Tabs value={rightTab} onChange={setRightTab} compact items={[
             { key: "overview", label: t("overview") },
             { key: "proposal", label: t("proposalTab"), dot: project.status === "proposal" },

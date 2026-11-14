@@ -4,7 +4,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { Faq } from "@/components/marketing/sections";
 import {
-  FeaturedInventory, HowWeWork, PortfolioGrid, SiteFinalCta, SiteHero, Solutions, StartAndPricing, WhyIdeonapp,
+  PortfolioGrid, SiteFinalCta, SiteHero, Solutions, StartAndPricing,
 } from "@/components/site/sections";
 import { jsonLd, organizationLd, pageMetadata, SITE_URL } from "@/lib/seo";
 
@@ -25,13 +25,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(organizationLd(locale))} />
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(website)} />
       <SiteHero isAuthenticated={Boolean(user)} />
-      <Solutions />
-      <FeaturedInventory />
-      <HowWeWork />
-      <WhyIdeonapp />
+      <Solutions only={["inventory", "crm", "custom"]} />
       <PortfolioGrid />
       <StartAndPricing />
-      <Faq />
+      <Faq only={[1, 2, 4, 5]} />
       <SiteFinalCta />
     </>
   );
