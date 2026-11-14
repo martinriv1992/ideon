@@ -85,7 +85,7 @@ export function AppTeamCard({ detail }: { detail: ProjectDetail }) {
                 <option value="admin">{t("roles.admin")}</option>
                 <option value="member">{t("roles.member")}</option>
               </select>
-              <Button size="sm" variant="ghost" title={t("resetPassword")} loading={busy === `reset-${u.id}`} onClick={() => void reset(u)}><KeyRound className="size-3.5" /></Button>
+              <Button size="sm" variant="secondary" title={t("resetPasswordHelp")} loading={busy === `reset-${u.id}`} onClick={() => void reset(u)}><KeyRound className="size-3.5" /> {t("resetPassword")}</Button>
               <Button size="sm" variant="ghost" onClick={() => void patch(u, { active: !u.active })} loading={busy === `patch-${u.id}`}>{u.active ? t("deactivate") : t("activate")}</Button>
               <Button size="sm" variant="ghost" title={t("delete")} onClick={() => remove(u)} loading={busy === `del-${u.id}`}><Trash2 className="size-3.5" /></Button>
             </div>
