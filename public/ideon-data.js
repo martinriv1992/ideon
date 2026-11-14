@@ -28,7 +28,7 @@
 
   var TXT = {
     es: {
-      signIn: "Iniciar sesión", email: "Correo", password: "Contraseña", enter: "Entrar", wrong: "Correo o contraseña incorrectos.",
+      signIn: "Iniciar sesión", email: "Correo", password: "Contraseña", enter: "Entrar", forgot: "¿Olvidaste tu contraseña?", forgotNeedEmail: "Escribe tu correo arriba y vuelve a pulsar.", forgotSent: "Si ese correo tiene acceso, te enviamos una contraseña temporal. Revisa tu bandeja (y el spam).", forgotSending: "Enviando…", wrong: "Correo o contraseña incorrectos.",
       tooMany: "Demasiados intentos. Espera unos minutos.", network: "No hay conexión con el servidor. Revisa tu internet.", retry: "Reintentar",
       notActive: "Esta aplicación aún no está activada.", suspended: "Esta aplicación está suspendida temporalmente por renovación pendiente.",
       saved: "Todo guardado", saving: "Guardando…", offline: "Sin conexión: los cambios se guardarán al volver", logout: "Cerrar sesión",
@@ -40,7 +40,7 @@
       searchFailed: "No se pudo completar la búsqueda. Inténtalo de nuevo.", aiPreview: "La IA está disponible en la app publicada (en la vista previa no se usa).", aiLimit: "Se alcanzó el límite diario de uso de IA de esta app. Inténtalo mañana.", aiFailed: "La IA no pudo responder. Inténtalo de nuevo.", demoNote: "Resultado de ejemplo (vista previa): en la app real la IA busca en la web y cita la fuente.",
     },
     en: {
-      signIn: "Sign in", email: "Email", password: "Password", enter: "Sign in", wrong: "Wrong email or password.",
+      signIn: "Sign in", email: "Email", password: "Password", enter: "Sign in", forgot: "Forgot your password?", forgotNeedEmail: "Type your email above and click again.", forgotSent: "If that email has access, we sent a temporary password. Check your inbox (and spam).", forgotSending: "Sending…", wrong: "Wrong email or password.",
       tooMany: "Too many attempts. Wait a few minutes.", network: "Can't reach the server. Check your connection.", retry: "Retry",
       notActive: "This application isn't activated yet.", suspended: "This application is temporarily suspended pending renewal.",
       saved: "All changes saved", saving: "Saving…", offline: "Offline: changes will be saved when you're back", logout: "Sign out",
@@ -344,6 +344,8 @@
       ".pri{width:100%;margin-top:18px;background:#18181b;color:#fff}.pri[disabled]{opacity:.6;cursor:default}",
       ".ghost{background:transparent;color:#3f3f46;height:36px;font-size:14px;font-weight:500;text-align:left;width:100%;border-radius:8px;padding:0 10px}.ghost:hover{background:#f4f4f5}",
       ".err{color:#dc2626;font-size:13px;margin-top:10px;min-height:18px}.ok{color:#16a34a}",
+      ".err.ok{color:#22c55e}",
+      ".link{display:block;width:100%;margin-top:10px;height:auto;padding:4px;background:none;color:#6d5df5;font-size:13px;font-weight:500}.link:hover{text-decoration:underline}.link[disabled]{opacity:.6}",
       ".foot{margin-top:18px;font-size:11.5px;color:#a1a1aa;text-align:center}",
       ".chip{position:fixed;z-index:2147483645;right:12px;bottom:12px;display:flex;align-items:center;gap:8px;height:34px;padding:0 12px 0 10px;border-radius:999px;background:rgba(24,24,27,.9);color:#fff;font-size:12.5px;font-weight:550;box-shadow:0 4px 14px rgba(0,0,0,.2);cursor:pointer;border:0}",
       ".dot{width:8px;height:8px;border-radius:50%;background:#22c55e}.dot.saving{background:#f59e0b}.dot.offline{background:#ef4444}",
@@ -372,9 +374,17 @@
       ov.innerHTML = '<form class="card" novalidate>' + (BRAND.logo ? '<img class="logo" alt="" src="' + esc(BRAND.logo) + '">' : "") + '<h1>' + (title || TXT.signIn) + "</h1><p>" + TXT.signIn + "</p>" +
         '<label>' + TXT.email + '<input name="email" type="email" autocomplete="username" required></label>' +
         '<label>' + TXT.password + '<input name="password" type="password" autocomplete="current-password" required></label>' +
-        '<div class="err" role="alert"></div><button class="pri" type="submit">' + TXT.enter + '</button><div class="foot">' + TXT.powered + "</div></form>";
+        '<div class="err" role="alert"></div><button class="pri" type="submit">' + TXT.enter + '</button><button class="link" type="button">' + TXT.forgot + '</button><div class="foot">' + TXT.powered + "</div></form>";
       r.appendChild(ov);
-      var form = ov.querySelector("form"), err = ov.querySelector(".err"), btn = ov.querySelector("button");
+      var form = ov.querySelector("form"), err = ov.querySelector(".err"), btn = ov.querySelector("button"), fg = ov.querySelector(".link");
+      fg.addEventListener("click", function () {
+        var em = String(form.email.value || "").trim();
+        err.className = "err";
+        if (!/^\S+@\S+\.\S+$/.test(em)) { err.textContent = TXT.forgotNeedEmail; form.email.focus(); return; }
+        fg.disabled = true; err.textContent = TXT.forgotSending;
+        req("POST", "/auth/forgot", { email: em }).then(function () { err.className = "err ok"; err.textContent = TXT.forgotSent; },
+          function (e2) { err.textContent = e2.status === 429 ? TXT.tooMany : TXT.network; }).then(function () { fg.disabled = false; });
+      });
       setTimeout(function () { var i = form.querySelector("input"); if (i) i.focus(); }, 50);
       form.addEventListener("submit", function (e) {
         e.preventDefault(); err.textContent = ""; btn.disabled = true;

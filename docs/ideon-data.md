@@ -47,6 +47,7 @@ contraseña. Antes, cada navegador tenía su propia copia en `localStorage`.
 - **Acceso:**
   - La app solo funciona con el proyecto activado y el plan al día (si no, 403 o 402).
   - Login con límite de 10 intentos cada 15 minutos por conexión.
+  - «¿Olvidaste tu contraseña?» en la pantalla de acceso (`POST /api/apps/[id]/auth/forgot`): envía una contraseña temporal al correo si tiene acceso; 5 intentos por conexión cada 15 min y 2 envíos por usuario al día.
 
 ## Seguridad
 
