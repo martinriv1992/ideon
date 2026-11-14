@@ -730,7 +730,7 @@
         "admin": "Admin",
         "member": "Member"
       },
-      "resetPassword": "Generate a new password",
+      "resetPassword": "New password",
       "deactivate": "Deactivate",
       "activate": "Activate",
       "delete": "Delete",
@@ -749,7 +749,8 @@
       "add": "Give access",
       "sendEmail": "Email them their access",
       "records": "{n} records stored",
-      "export": "Download a data backup (JSON)"
+      "export": "Download a data backup (JSON)",
+      "resetPasswordHelp": "Creates a new temporary password, shows it here and emails it. Signs that person out everywhere."
     },
     "review": {
       "pendingTitle": "In review",

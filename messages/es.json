@@ -730,7 +730,7 @@
         "admin": "Administrador",
         "member": "Miembro"
       },
-      "resetPassword": "Generar contraseña nueva",
+      "resetPassword": "Nueva contraseña",
       "deactivate": "Desactivar",
       "activate": "Activar",
       "delete": "Eliminar",
@@ -749,7 +749,8 @@
       "add": "Dar acceso",
       "sendEmail": "Enviarle el acceso por correo",
       "records": "{n} registros guardados",
-      "export": "Descargar copia de los datos (JSON)"
+      "export": "Descargar copia de los datos (JSON)",
+      "resetPasswordHelp": "Genera una contraseña temporal nueva, la muestra aquí y la envía por correo. Cierra las sesiones abiertas de esa persona."
     },
     "review": {
       "pendingTitle": "En revisión",
