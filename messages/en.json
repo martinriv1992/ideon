@@ -932,7 +932,8 @@
       "prospectSinglePrice": "Price per single prospecting search (billing currency).",
       "prospectTrial": "Free trial searches per app.",
       "publishReview": "Manual review before publishing (true/false).",
-      "appAiLimit": "AI calls per app every 24 h (db.ai in published apps; Haiku or Sonnet, cost covered by Ideonapp)."
+      "appAiLimit": "AI calls per app every 24 h (db.ai in published apps; Haiku or Sonnet, cost covered by Ideonapp).",
+      "maxProjectsIp": "New projects per connection (IP) every 24 h. Admins have no limit."
     },
     "leads": {
       "title": "Sales leads",
