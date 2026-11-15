@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
 import { isEmail, outreachConfigFrom, parseReplyLocal, stripQuoted } from "@/features/appdata/outreach-core";
 import { checkReplySig, logMessage, sendOutreachEmail } from "@/features/appdata/outreach";
+import { appUrl } from "@/features/appdata/server";
 
 export const dynamic = "force-dynamic";
 
@@ -64,9 +65,13 @@ export async function POST(req: Request) {
     const { data: cfgRow } = await db.from("app_records").select("data").eq("project_id", project.id).eq("collection", "settings").eq("id", "outreach").maybeSingle();
     const cfg = outreachConfigFrom(cfgRow?.data);
     if (cfg.responderA) {
-      await sendOutreachEmail({ from: "Ideonapp CRM <no-reply@ideonapp.com>", to: cfg.responderA, replyTo: isEmail(fromAddr) ? fromAddr : undefined,
+      // Responder a este aviso escribe al prospecto (nunca a un buzón nuestro que no recibe correo).
+      const own = /@(?:[a-z0-9-]+\.)*ideonapp\.com$/i;
+      const replyTo = [fromAddr, lead.correo ?? ""].find((e) => isEmail(e) && !own.test(e));
+      const crm = await appUrl(project.id);
+      await sendOutreachEmail({ from: "Ideonapp CRM <no-reply@ideonapp.com>", to: cfg.responderA, replyTo,
         subject: `💬 ${lead.empresa || lead.nombre || fromAddr} respondió: ${d.subject ?? ""}`.slice(0, 150),
-        texto: `${lead.empresa || lead.nombre || fromAddr} respondió a tu correo:\n\n${texto}\n\nYa está en su conversación del CRM y quedó en «Respondió», pendiente de respuesta.`, unsub: "https://ideonapp.com" });
+        texto: `${lead.empresa || lead.nombre || fromAddr} respondió a tu correo:\n\n${texto}\n\nYa está en su conversación del CRM y quedó en «Respondió», pendiente de respuesta.\n\nPara contestarle, ábrelo en el CRM y pulsa «Responder» (la IA lee su mensaje y la respuesta queda guardada)${crm ? `: ${crm}` : "."}\nSi respondes a este correo, tu mensaje le llega directo al prospecto, pero no queda en el CRM.`, unsub: "https://ideonapp.com" });
     }
     handled++;
   }
